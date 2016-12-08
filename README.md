@@ -1,6 +1,6 @@
 # MathJax Editor
 
-This is my personal try on building a mathematics editor. I'm trying to integrate it with MathJax because it would make the editor lightweight, since the MathJax would be responsible for rendering the mathematics. (And if you is using an editor for mathematics, you'll probably need a mathematics renderer anyway).
+This is my personal try on building a mathematics editor. I'm trying to integrate it with MathJax because it would make the editor lightweight, since the MathJax would be responsible for rendering the mathematics. (And if you are using an editor for mathematics, you'll probably need a mathematics renderer anyway).
 
 ## Installation
 
