@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MathJax Mathematics Editor</title>
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+  <textarea id="editor"></textarea>
+
+  <div>
+    <button id="btnSqrt">\(\sqrt{a}\)</button>
+    <button id="btnFrac">\(\frac{a}{b}\)</button>
+  </div>
+
+  <script src="../dist/MathJaxEditor.js"></script>
+  <script>
+    window.onload = function () {
+      const btnSqrt = document.getElementById('btnSqrt');
+      
+      const editor = new MathJaxEditor({
+        el: '#editor'
+      });
+
+      btnSqrt.addEventListener('click', () => {
+        editor.insertCommand('\\sqrt');
+      });
+
+      btnFrac.addEventListener('click', () => {
+        editor.insertCommand('\\frac', 2);
+      });
+    };
+  </script>
+</body>
+</html>

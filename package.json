@@ -1,0 +1,17 @@
+{
+  "name": "mathjax-editor",
+  "version": "1.0.0",
+  "description": "A Mathematics editor on top of MathJax.",
+  "main": "src/MathJaxEditor.js",
+  "scripts": {
+    "dev": "webpack --watch"
+  },
+  "author": "Ian Lucas <ianlucas_ferreira@hotmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^6.18.2",
+    "babel-loader": "^6.2.9",
+    "babel-preset-es2015": "^6.18.0",
+    "webpack": "^2.1.0-beta.26"
+  }
+}
