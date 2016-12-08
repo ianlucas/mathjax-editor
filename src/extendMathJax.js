@@ -12,13 +12,14 @@ export default function extendMathJax() {
   MathJax.Hub.Register.StartupHook("TeX Jax Ready", () => {
     TEX.Definitions.Add({
       macros: {
-        cursor: "Cursor",
+        cursor: 'Cursor'
       }
     }, null, true);
 
     MML.mcursor = MML.mbase.Subclass({
-      type: "cursor", isToken: true,
-      isSpacelike: function () {return true},
+      type: 'cursor',
+      isToken: true,
+      isSpacelike: () => true,
       texClass: MML.TEXCLASS.ORD,
       defaults: {
         mathvariant: MML.INHERIT,

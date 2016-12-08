@@ -567,12 +567,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
 	    TEX.Definitions.Add({
 	      macros: {
-	        cursor: "Cursor"
+	        cursor: 'Cursor'
 	      }
 	    }, null, true);
 
 	    MML.mcursor = MML.mbase.Subclass({
-	      type: "cursor", isToken: true,
+	      type: 'cursor',
+	      isToken: true,
 	      isSpacelike: function isSpacelike() {
 	        return true;
 	      },
