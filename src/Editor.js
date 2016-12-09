@@ -62,7 +62,7 @@ class Editor {
     const before = value.slice(0, this.cursor);
     const after = value.slice(this.cursor);
     this.$debug.innerHTML = before + '|' + after;
-    this.updateJaxElement(before + '{\\cursor}' + after);
+    this.updateJaxElement(before + '{\\cursor}' + after, this.updateCursorElement.bind(this));
   }
 
   /**
@@ -129,6 +129,16 @@ class Editor {
 
     this.cursor = next;
     this.updateDebug();
+  }
+
+  updateCursorElement() {
+    MathJax.Hub.Queue(() => {
+      const $cursor = this.$display.querySelector('.mjx-cursor');
+      if (!$cursor) {
+        return;
+      }
+      $cursor.style.marginLeft = `-${$cursor.offsetWidth}px`;   
+    });
   }
 
   /**

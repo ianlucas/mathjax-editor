@@ -212,7 +212,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var before = value.slice(0, this.cursor);
 	      var after = value.slice(this.cursor);
 	      this.$debug.innerHTML = before + '|' + after;
-	      this.updateJaxElement(before + '{\\cursor}' + after);
+	      this.updateJaxElement(before + '{\\cursor}' + after, this.updateCursorElement.bind(this));
 	    }
 
 	    /**
@@ -287,6 +287,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this.cursor = next;
 	      this.updateDebug();
 	    }
+	  }, {
+	    key: 'updateCursorElement',
+	    value: function updateCursorElement() {
+	      var _this2 = this;
+
+	      MathJax.Hub.Queue(function () {
+	        var $cursor = _this2.$display.querySelector('.mjx-cursor');
+	        if (!$cursor) {
+	          return;
+	        }
+	        $cursor.style.marginLeft = '-' + $cursor.offsetWidth + 'px';
+	      });
+	    }
 
 	    /**
 	     * Find a jax command at given position.
@@ -351,7 +364,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'handleInputEvent',
 	    value: function handleInputEvent(e) {
-	      var _this2 = this;
+	      var _this3 = this;
 
 	      var $input = this.$input;
 	      var inputValue = $input.value.trim();
@@ -368,7 +381,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      inputValue.split('').forEach(function (char) {
-	        _this2.handleInput(which, char);
+	        _this3.handleInput(which, char);
 	      });
 	    }
 
@@ -597,7 +610,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    TEX.Parse.Augment({
 	      Cursor: function Cursor(name) {
-	        var $cursor = MML.mcursor('|');
+	        var $cursor = MML.mcursor('0');
 	        this.Push($cursor);
 	      }
 	    });
@@ -619,7 +632,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	"use strict";
 
-	module.exports = "\n.mjx-cursor {\n  -webkit-animation: 1s mj-ed-blink step-end infinite;\n  -moz-animation: 1s mj-ed-blink step-end infinite;\n  -ms-animation: 1s mj-ed-blink step-end infinite;\n  -o-animation: 1s mj-ed-blink step-end infinite;\n  animation: 1s mj-ed-blink step-end infinite;\n}\n\n@keyframes mj-ed-blink {\n  from, to {\n    color: black;\n  }\n  50% {\n    color: transparent;\n  }\n}\n\n@-moz-keyframes mj-ed-blink {\n  from, to {\n    color: transparent;\n  }\n  50% {\n    color: black;\n  }\n}\n\n@-webkit-keyframes mj-ed-blink {\n  from, to {\n    color: transparent;\n  }\n  50% {\n    color: black;\n  }\n}\n\n@-ms-keyframes mj-ed-blink {\n  from, to {\n    color: transparent;\n  }\n  50% {\n    color: black;\n  }\n}\n\n@-o-keyframes mj-ed-blink {\n  from, to {\n    color: transparent;\n  }\n  50% {\n    color: black;\n  }\n}\n";
+	module.exports = "\n.mjx-cursor {\n  -webkit-animation: 1s mj-ed-blink step-end infinite;\n  -moz-animation: 1s mj-ed-blink step-end infinite;\n  -ms-animation: 1s mj-ed-blink step-end infinite;\n  -o-animation: 1s mj-ed-blink step-end infinite;\n  animation: 1s mj-ed-blink step-end infinite;\n  border-right: 2px solid #000;\n  color: transparent;\n}\n\n@keyframes mj-ed-blink {\n  from, to {\n    border-color: black;\n  }\n  50% {\n    border-color: transparent;\n  }\n}\n\n@-moz-keyframes mj-ed-blink {\n  from, to {\n    border-color: transparent;\n  }\n  50% {\n    border-color: black;\n  }\n}\n\n@-webkit-keyframes mj-ed-blink {\n  from, to {\n    border-color: transparent;\n  }\n  50% {\n    border-color: black;\n  }\n}\n\n@-ms-keyframes mj-ed-blink {\n  from, to {\n    border-color: transparent;\n  }\n  50% {\n    border-color: black;\n  }\n}\n\n@-o-keyframes mj-ed-blink {\n  from, to {\n    border-color: transparent;\n  }\n  50% {\n    border-color: black;\n  }\n}\n";
 
 /***/ }
 /******/ ])

@@ -36,7 +36,7 @@ export default function extendMathJax() {
 
     TEX.Parse.Augment({
       Cursor(name) {
-        const $cursor = MML.mcursor('|');
+        const $cursor = MML.mcursor('0');
         this.Push($cursor);
       }
     });

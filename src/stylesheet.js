@@ -5,50 +5,52 @@ module.exports = `
   -ms-animation: 1s mj-ed-blink step-end infinite;
   -o-animation: 1s mj-ed-blink step-end infinite;
   animation: 1s mj-ed-blink step-end infinite;
+  border-right: 2px solid #000;
+  color: transparent;
 }
 
 @keyframes mj-ed-blink {
   from, to {
-    color: black;
+    border-color: black;
   }
   50% {
-    color: transparent;
+    border-color: transparent;
   }
 }
 
 @-moz-keyframes mj-ed-blink {
   from, to {
-    color: transparent;
+    border-color: transparent;
   }
   50% {
-    color: black;
+    border-color: black;
   }
 }
 
 @-webkit-keyframes mj-ed-blink {
   from, to {
-    color: transparent;
+    border-color: transparent;
   }
   50% {
-    color: black;
+    border-color: black;
   }
 }
 
 @-ms-keyframes mj-ed-blink {
   from, to {
-    color: transparent;
+    border-color: transparent;
   }
   50% {
-    color: black;
+    border-color: black;
   }
 }
 
 @-o-keyframes mj-ed-blink {
   from, to {
-    color: transparent;
+    border-color: transparent;
   }
   50% {
-    color: black;
+    border-color: black;
   }
 }
 `;
