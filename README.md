@@ -7,7 +7,7 @@ This is my personal try on building a mathematics editor. I'm trying to integrat
 You can install it through NPM:
 
 ``` bash
-npm install # coming soon :3
+npm install mathjax-editor
 ```
 
 or grab `MathJaxEditor.js` at `dist/` folder.
