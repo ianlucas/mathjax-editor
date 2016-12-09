@@ -461,7 +461,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // e.q. \sqrt
 	      command = command + '{';
 	      this.insert(command);
-	      this.value += '}' + '{}'.repeat(blocks - 1);
+
+	      var value = this.value;
+	      var before = value.slice(0, this.cursor);
+	      var after = value.slice(this.cursor);
+	      this.value = before + '}' + '{}'.repeat(blocks - 1) + after;
 	      this.$input.focus();
 	      this.updateDebug();
 	    }
