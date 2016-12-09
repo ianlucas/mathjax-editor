@@ -99,7 +99,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var editor = new _Editor2.default(options);
 
 	    this.editor = editor;
-	    this.version = '1.0.1';
+	    this.version = '1.0.3';
 	  }
 
 	  /**
@@ -179,8 +179,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var KEY_BACKSPACE = 8;
+	var KEY_ENTER = 13;
 	var KEY_LEFT = 37;
 	var KEY_RIGHT = 39;
+	var KEY_DELETE = 46;
 
 	var Editor = function () {
 	  /**
@@ -310,6 +312,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var length = value.length;
 
 	      // Moving to the left.
+
 	      if (amount < 0) {
 	        if (value[next] === '{' && value[next - 1] !== '}') {
 	          var i = next;
@@ -324,21 +327,45 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (value[next - 1] === '}') {
 	          next -= 1;
 	        }
-	      }
 
-	      // Moving to the right.
-	      if (amount > 0) {
-	        if (value[current] === '\\') {
+	        if (value[next] === '\\' && value[next - 1] === '\\') {
+	          next -= 1;
+	        }
+
+	        if (value[next] === ' ') {
 	          var _i = next;
-	          while (_i++ < length) {
-	            if (value[_i] === '{') {
+	          while (_i--) {
+	            if (value[_i] === '\\') {
 	              break;
 	            }
 	          }
-	          next = _i + 1;
+	          next = _i;
+	        }
+	      }
+
+	      // Moving to the right.
+
+	      if (amount > 0) {
+	        if (value[current] === '\\' && value[next] !== '\\') {
+	          var _i2 = current;
+	          while (_i2++ < length) {
+	            if (value[_i2] === '{') {
+	              break;
+	            }
+
+	            if (value[_i2] === ' ') {
+	              _i2 += 1;
+	              break;
+	            }
+	          }
+	          next = _i2;
 	        }
 
 	        if (value[next] === '{') {
+	          next += 1;
+	        }
+
+	        if (value[current] === '\\' && value[next] === '\\') {
 	          next += 1;
 	        }
 	      }
@@ -419,6 +446,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	          coordinates.end = i;
 	          break;
 	        }
+
+	        if (value[i - 1] === ' ') {
+	          coordinates.end = i - 1;
+	          break;
+	        }
 	      }
 
 	      if (coordinates.end === null) {
@@ -456,7 +488,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return this.handleInput(which);
 	      }
 
+	      var translate = {
+	        '+': '+',
+	        '-': '-',
+	        '=': '=',
+	        '*': '\\cdot ',
+	        '/': '\\div '
+	      };
+
+	      var test = {
+	        char: /[\d\w]/
+	      };
+
 	      inputValue.split('').forEach(function (char) {
+	        if (!char.match(test.char) && !translate[char]) {
+	          return;
+	        }
+
+	        if (translate[char]) {
+	          char = translate[char];
+	        }
+
 	        _this3.handleInput(which, char);
 	      });
 	    }
@@ -488,6 +540,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        case KEY_BACKSPACE:
 	          this.erase();
+	          return;
+
+	        case KEY_DELETE:
+	          this.delete();
+	          return;
+
+	        case KEY_ENTER:
+	          this.insert('\\\\');
 	          return;
 	      }
 
@@ -572,16 +632,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function insertCommand(command) {
 	      var blockCount = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
 
-	      command = command + '{';
+	      this.focus();
+
+	      if (blockCount > 0) {
+	        command += '{';
+	      } else {
+	        command += ' ';
+	      }
+
 	      this.insert(command);
+
+	      if (blockCount < 1) {
+	        return;
+	      }
 
 	      var value = this.value;
 	      var cursor = this.cursor;
 	      var blocks = '}' + '{}'.repeat(blockCount - 1);
 
 	      this.value = (0, _utils.insertBetween)(value, cursor, blocks);
-	      this.$input.focus();
-
 	      this.update();
 	    }
 
@@ -597,16 +666,65 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var current = this.cursor;
 	      var previous = this.cursor - 1;
 	      var value = this.value;
+
 	      var before = void 0;
 	      var after = void 0;
 
-	      if (~['{', '}'].indexOf(value[previous])) {
+	      // Check if we are erasing a command.
+	      if (~['{', '}', ' '].indexOf(value[previous])) {
 	        var coordinates = this.findCommandAt(current);
 	        before = value.slice(0, coordinates.start);
 	        after = value.slice(coordinates.end + 1);
 	      } else {
-	        before = value.slice(0, current - 1);
+	        var beforeIndex = current - 1;
+
+	        // Check if we are erasing a new line.
+	        if (value[previous] === '\\' && value[previous - 1] === '\\') {
+	          beforeIndex -= 1;
+	        }
+
+	        before = value.slice(0, beforeIndex);
 	        after = value.slice(current);
+	      }
+
+	      this.value = before + after;
+	      this.cursor = before.length;
+
+	      this.update();
+	    }
+
+	    /**
+	     * Erases the character before the cursor.
+	     * 
+	     * @return {Void}
+	     */
+
+	  }, {
+	    key: 'delete',
+	    value: function _delete() {
+	      var current = this.cursor;
+	      var next = this.cursor + 1;
+	      var value = this.value;
+
+	      var before = void 0;
+	      var after = void 0;
+
+	      // Check if we are erasing a command (and not a new line).
+	      if (value[current] === '\\' && value[next] !== '\\' || value[current] === '}') {
+	        var coordinates = this.findCommandAt(current);
+	        before = value.slice(0, coordinates.start);
+	        after = value.slice(coordinates.end + 1);
+	      } else {
+	        var beforeIndex = current;
+	        var afterIndex = next;
+
+	        // Check if we are erasing a new line.
+	        if (value[current] === '\\' && value[next] === '\\') {
+	          afterIndex += 1;
+	        }
+
+	        before = value.slice(0, beforeIndex);
+	        after = value.slice(afterIndex);
 	      }
 
 	      this.value = before + after;
