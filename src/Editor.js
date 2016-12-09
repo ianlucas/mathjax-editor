@@ -9,6 +9,7 @@ const KEY_BACKSPACE = 8;
 const KEY_ENTER = 13;
 const KEY_LEFT = 37;
 const KEY_RIGHT = 39;
+const KEY_DELETE = 46;
 
 class Editor {
   /**
@@ -336,6 +337,10 @@ class Editor {
         this.erase();
         return;
 
+      case KEY_DELETE:
+        this.delete();
+        return;
+
       case KEY_ENTER:
         this.insert('\\\\');
         return;
@@ -461,6 +466,46 @@ class Editor {
 
       before = value.slice(0, beforeIndex);
       after = value.slice(current);
+    }
+
+    this.value = before + after;
+    this.cursor = before.length;
+
+    this.update();
+  }
+
+  /**
+   * Erases the character before the cursor.
+   * 
+   * @return {Void}
+   */
+  delete() {
+    const current = this.cursor;
+    const next = this.cursor + 1;
+    const value = this.value;
+
+    let before;
+    let after;
+
+    // Check if we are erasing a command (and not a new line).
+    if ((value[current] === '\\' && value[next] !== '\\') 
+          || value[current] === '}') {
+      const coordinates = this.findCommandAt(current);
+      before = value.slice(0, coordinates.start);
+      after = value.slice(coordinates.end + 1);
+    }
+    else {
+      let beforeIndex = current;
+      let afterIndex = next;
+
+      // Check if we are erasing a new line.
+      if (value[current] === '\\' 
+            && value[next] === '\\') {
+        afterIndex += 1;
+      }
+
+      before = value.slice(0, beforeIndex);
+      after = value.slice(afterIndex);
     }
 
     this.value = before + after;
