@@ -38,3 +38,39 @@ export function insertBetween(string, index, fragment) {
   const after = string.slice(index);
   return before + fragment + after;
 }
+
+/**
+ * Remove a class of an element.
+ * 
+ * @param {DOMElement} $el
+ * @param {String} className
+ * 
+ * @return {Void}
+ */
+export function removeClass($el, className) {
+  const classes = $el.className.split(' ');
+  let finalValue = '';
+
+  for (const c of classes) {
+    if (c !== className) {
+      finalValue += ` ${c}`;
+    }
+  }
+
+  $el.className = finalValue;
+}
+
+/**
+ * Add a class to an element.
+ * 
+ * @param {DOMElement} $el
+ * @param {String} className
+ * 
+ * @return {Void}
+ */
+export function addClass($el, className) {
+  const classes = $el.className.split(' ');
+  if (!(~classes.indexOf(className))) {
+    $el.className += ` ${className}`;
+  }
+}

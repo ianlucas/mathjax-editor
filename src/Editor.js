@@ -1,4 +1,9 @@
-import { mustFindElement, insertBetween } from './utils';
+import { 
+  mustFindElement,
+  insertBetween,
+  addClass,
+  removeClass
+} from './utils';
 
 const KEY_BACKSPACE = 8;
 const KEY_LEFT = 37;
@@ -14,10 +19,11 @@ class Editor {
    * @param {Object} options
    * @param {DOMElement|String} options.el - The DOM Element itself or a string selector.
    * @param {Boolean} options.debug - Set debug mode.
+   * @param {String} options.focusClass - Which class to use to identify focus.
    * 
    * @constructor
    */
-  constructor({ el, debug = false }) {
+  constructor({ el, debug = false, focusClass = 'isFocused' }) {
     const Element = MathJax.HTML.Element;
 
     const $el = mustFindElement(el);
@@ -33,17 +39,21 @@ class Editor {
 
     $input.addEventListener('keydown', this.handleInputEvent.bind(this));
     $input.addEventListener('keyup', this.handleInputEvent.bind(this));
+    $input.addEventListener('blur', this.blur.bind(this));
+    $display.addEventListener('click', this.focus.bind(this));
+
+    $display.style.opacity = 0;
+    $debug.style.display = debug ? 'block' : 'none';
 
     MathJax.Hub.Queue(
       ['Typeset', MathJax.Hub, $display], () => {
         this.jaxElement = MathJax.Hub.getAllJax($display)[0];
       }, () => {
+        $display.style.opacity = 1;
         $display.style.minHeight = `${$display.offsetHeight}px`;
-        this.updateCursorElement();
+        this.updateCursorElement({ hidden: true });
       }
     );
-
-    $debug.style.display = debug ? 'block' : 'none';
 
     this.$container = $container;
     this.$debug = $debug;
@@ -51,6 +61,7 @@ class Editor {
     this.$input = $input;
     this.cursor = 0;
     this.debug = debug;
+    this.focusClass = focusClass;
     this.value = '';
   }
 
@@ -145,13 +156,26 @@ class Editor {
     this.update();
   }
 
-  updateCursorElement() {
+  /**
+   * Update the cursor element.
+   * 
+   * @param {Object} options
+   * @param {Boolean} options.hidden
+   * 
+   * @return {Void}
+   */
+  updateCursorElement(options = {}) {
+    const hidden = options.hidden || false;
+    
     MathJax.Hub.Queue(() => {
       const $cursor = this.$display.querySelector('.mjx-cursor');
       if (!$cursor) {
         return;
       }
-      $cursor.style.marginLeft = `-${$cursor.offsetWidth}px`;   
+      if (!$cursor.style.marginLeft) {
+        $cursor.style.marginLeft = `-${$cursor.offsetWidth}px`;
+      }
+      $cursor.style.display = hidden ? 'none' : 'inline-block';
     });
   }
 
@@ -259,7 +283,7 @@ class Editor {
         return;
     }
 
-    if (which && debug) {
+    if (which && this.debug) {
       console.warn(`The key ${which} was pressed.`);
     }
 
@@ -268,6 +292,28 @@ class Editor {
     }
 
     this.insert(char);
+  }
+
+  /**
+   * Focus the editor.
+   * 
+   * @return {Void}
+   */
+  focus() {
+    this.$input.focus();
+    this.updateCursorElement({ hidden: false });
+    addClass(this.$display, this.focusClass);
+  }
+
+  /**
+   * Blur the editor.
+   * 
+   * @return {Void}
+   */
+  blur() {
+    this.$input.blur();
+    this.updateCursorElement({ hidden: true });
+    removeClass(this.$display, this.focusClass);
   }
 
   /**
