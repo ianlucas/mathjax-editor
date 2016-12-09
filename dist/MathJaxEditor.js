@@ -97,25 +97,63 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _classCallCheck(this, MathJaxEditor);
 
 	    var editor = new _Editor2.default(options);
+
 	    this.editor = editor;
+	    this.version = '1.0.1';
 	  }
 
 	  /**
-	   * This inserts a command into the editor.
-	   * 
-	   * @param {String} command
-	   * @param {Number} blocks
+	   * Blur the editor.
 	   * 
 	   * @return {Void}
 	   */
 
 
 	  _createClass(MathJaxEditor, [{
+	    key: 'blur',
+	    value: function blur() {
+	      this.editor.blur();
+	    }
+
+	    /**
+	     * Focus the editor.
+	     * 
+	     * @return {Void}
+	     */
+
+	  }, {
+	    key: 'focus',
+	    value: function focus() {
+	      this.editor.focus();
+	    }
+
+	    /**
+	     * This inserts a command into the editor.
+	     * 
+	     * @param {String} command
+	     * @param {Number} blockCount
+	     * 
+	     * @return {Void}
+	     */
+
+	  }, {
 	    key: 'insertCommand',
 	    value: function insertCommand(command) {
-	      var blocks = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+	      var blockCount = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
 
-	      this.editor.insertCommand(command, blocks);
+	      this.editor.insertCommand(command, blockCount);
+	    }
+
+	    /**
+	     * Get editor's jax.
+	     * 
+	     * @return {String}
+	     */
+
+	  }, {
+	    key: 'getJax',
+	    value: function getJax() {
+	      return this.editor.value;
 	    }
 	  }]);
 
@@ -153,13 +191,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * 
 	   * @param {Object} options
 	   * @param {DOMElement|String} options.el - The DOM Element itself or a string selector.
+	   * @param {Boolean} options.debug - Set debug mode.
+	   * @param {String} options.focusClass - Which class to use to identify focus.
 	   * 
 	   * @constructor
 	   */
 	  function Editor(_ref) {
 	    var _this = this;
 
-	    var el = _ref.el;
+	    var el = _ref.el,
+	        _ref$debug = _ref.debug,
+	        debug = _ref$debug === undefined ? false : _ref$debug,
+	        _ref$focusClass = _ref.focusClass,
+	        focusClass = _ref$focusClass === undefined ? 'isFocused' : _ref$focusClass;
 
 	    _classCallCheck(this, Editor);
 
@@ -169,7 +213,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var $container = Element('div', { className: 'mj-ed-container' });
 	    var $input = Element('input', { className: 'mj-ed-input' });
 	    var $display = Element('div', { className: 'mj-ed-display' }, ['\\(\\cursor\\)']);
-	    var $debug = Element('pre', {}, ['|']);
+	    var $debug = Element('pre', { className: 'mj-ed-debug' }, ['|']);
 
 	    $el.parentNode.replaceChild($container, $el);
 	    $container.appendChild($input);
@@ -178,11 +222,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    $input.addEventListener('keydown', this.handleInputEvent.bind(this));
 	    $input.addEventListener('keyup', this.handleInputEvent.bind(this));
+	    $input.addEventListener('blur', this.blur.bind(this));
+	    $display.addEventListener('click', this.focus.bind(this));
+
+	    $display.style.opacity = 0;
+	    $debug.style.display = debug ? 'block' : 'none';
 
 	    MathJax.Hub.Queue(['Typeset', MathJax.Hub, $display], function () {
 	      _this.jaxElement = MathJax.Hub.getAllJax($display)[0];
 	    }, function () {
+	      $display.style.opacity = 1;
 	      $display.style.minHeight = $display.offsetHeight + 'px';
+	      _this.updateCursorElement({ hidden: true });
 	    });
 
 	    this.$container = $container;
@@ -190,13 +241,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.$display = $display;
 	    this.$input = $input;
 	    this.cursor = 0;
+	    this.debug = debug;
+	    this.focusClass = focusClass;
 	    this.value = '';
 	  }
 
 	  /**
-	   * This will update `this.$debug` inner HTML so that we can see
-	   * the raw Jax written by the user input.
-	   * (At the moment it updates the JaxElement, too)
+	   * This will update `this.$display`'s jax. Also will update `this.$debug`
+	   * inner HTML if the options.debug is enabled.
 	   * 
 	   * @param {String} value - Jax to be used. It defaults to the editor's value.
 	   * 
@@ -205,14 +257,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  _createClass(Editor, [{
-	    key: 'updateDebug',
-	    value: function updateDebug() {
+	    key: 'update',
+	    value: function update() {
 	      var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.value;
 
-	      var before = value.slice(0, this.cursor);
-	      var after = value.slice(this.cursor);
-	      this.$debug.innerHTML = before + '|' + after;
-	      this.updateJaxElement(before + '{\\cursor}' + after, this.updateCursorElement.bind(this));
+	      var cursor = this.cursor;
+
+	      if (this.debug) {
+	        this.$debug.innerHTML = (0, _utils.insertBetween)(value, cursor, '|');
+	      }
+
+	      this.updateJaxElement((0, _utils.insertBetween)(value, cursor, '{\\cursor}'), this.updateCursorElement.bind(this));
 	    }
 
 	    /**
@@ -256,7 +311,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      // Moving to the left.
 	      if (amount < 0) {
-	        if (value[next] === '{') {
+	        if (value[next] === '{' && value[next - 1] !== '}') {
 	          var i = next;
 	          while (i--) {
 	            if (value[i] === '\\') {
@@ -264,6 +319,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	          }
 	          next = i;
+	        }
+
+	        if (value[next - 1] === '}') {
+	          next -= 1;
 	        }
 	      }
 
@@ -285,19 +344,36 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      this.cursor = next;
-	      this.updateDebug();
+	      this.update();
 	    }
+
+	    /**
+	     * Update the cursor element.
+	     * 
+	     * @param {Object} options
+	     * @param {Boolean} options.hidden
+	     * 
+	     * @return {Void}
+	     */
+
 	  }, {
 	    key: 'updateCursorElement',
 	    value: function updateCursorElement() {
 	      var _this2 = this;
+
+	      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+	      var hidden = options.hidden || false;
 
 	      MathJax.Hub.Queue(function () {
 	        var $cursor = _this2.$display.querySelector('.mjx-cursor');
 	        if (!$cursor) {
 	          return;
 	        }
-	        $cursor.style.marginLeft = '-' + $cursor.offsetWidth + 'px';
+	        if (!$cursor.style.marginLeft) {
+	          $cursor.style.marginLeft = '-' + $cursor.offsetWidth + 'px';
+	        }
+	        $cursor.style.display = hidden ? 'none' : 'inline-block';
 	      });
 	    }
 
@@ -415,7 +491,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          return;
 	      }
 
-	      if (which) {
+	      if (which && this.debug) {
 	        console.warn('The key ' + which + ' was pressed.');
 	      }
 
@@ -424,6 +500,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      this.insert(char);
+	    }
+
+	    /**
+	     * Focus the editor.
+	     * 
+	     * @return {Void}
+	     */
+
+	  }, {
+	    key: 'focus',
+	    value: function focus() {
+	      this.$input.focus();
+	      this.updateCursorElement({ hidden: false });
+	      (0, _utils.addClass)(this.$display, this.focusClass);
+	    }
+
+	    /**
+	     * Blur the editor.
+	     * 
+	     * @return {Void}
+	     */
+
+	  }, {
+	    key: 'blur',
+	    value: function blur() {
+	      this.$input.blur();
+	      this.updateCursorElement({ hidden: true });
+	      (0, _utils.removeClass)(this.$display, this.focusClass);
 	    }
 
 	    /**
@@ -443,16 +547,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (cursor === -1) {
 	        this.value = value + current;
 	        this.cursor += value.length;
-	        this.updateDebug();
+	        return this.update();
 	      }
 
 	      this.cursor += value.length;
+	      this.value = (0, _utils.insertBetween)(current, cursor, value);
 
-	      var before = current.slice(0, cursor);
-	      var after = current.slice(cursor);
-	      this.value = before + value + after;
-
-	      this.updateDebug();
+	      this.update();
 	    }
 
 	    /**
@@ -461,7 +562,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * The cursor will moved to the first "block" ({}).
 	     * 
 	     * @param {String} command - The command.
-	     * @param {Number} blocks - The quantity of blocks it requires.
+	     * @param {Number} blockCount - The quantity of blocks it requires.
 	     * 
 	     * @return {Void}
 	     */
@@ -469,18 +570,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'insertCommand',
 	    value: function insertCommand(command) {
-	      var blocks = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+	      var blockCount = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
 
-	      // e.q. \sqrt
 	      command = command + '{';
 	      this.insert(command);
 
 	      var value = this.value;
-	      var before = value.slice(0, this.cursor);
-	      var after = value.slice(this.cursor);
-	      this.value = before + '}' + '{}'.repeat(blocks - 1) + after;
+	      var cursor = this.cursor;
+	      var blocks = '}' + '{}'.repeat(blockCount - 1);
+
+	      this.value = (0, _utils.insertBetween)(value, cursor, blocks);
 	      this.$input.focus();
-	      this.updateDebug();
+
+	      this.update();
 	    }
 
 	    /**
@@ -509,7 +611,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      this.value = before + after;
 	      this.cursor = before.length;
-	      this.updateDebug();
+
+	      this.update();
 	    }
 	  }]);
 
@@ -528,6 +631,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 	exports.mustFindElement = mustFindElement;
+	exports.insertBetween = insertBetween;
+	exports.removeClass = removeClass;
+	exports.addClass = addClass;
 	/**
 	 * Tries to find the specified element. If it fails, an error is thrown.
 	 * 
@@ -552,6 +658,78 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  // Yeah, we just assume an element was given...
 	  return el;
+	}
+
+	/**
+	 * Insert a text in the middle of the given string.
+	 * 
+	 * @param {String} string
+	 * @param {Number} index
+	 * @param {String} fragment
+	 * 
+	 * @return {String}
+	 */
+	function insertBetween(string, index, fragment) {
+	  var before = string.slice(0, index);
+	  var after = string.slice(index);
+	  return before + fragment + after;
+	}
+
+	/**
+	 * Remove a class of an element.
+	 * 
+	 * @param {DOMElement} $el
+	 * @param {String} className
+	 * 
+	 * @return {Void}
+	 */
+	function removeClass($el, className) {
+	  var classes = $el.className.split(' ');
+	  var finalValue = '';
+
+	  var _iteratorNormalCompletion = true;
+	  var _didIteratorError = false;
+	  var _iteratorError = undefined;
+
+	  try {
+	    for (var _iterator = classes[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	      var c = _step.value;
+
+	      if (c !== className) {
+	        finalValue += ' ' + c;
+	      }
+	    }
+	  } catch (err) {
+	    _didIteratorError = true;
+	    _iteratorError = err;
+	  } finally {
+	    try {
+	      if (!_iteratorNormalCompletion && _iterator.return) {
+	        _iterator.return();
+	      }
+	    } finally {
+	      if (_didIteratorError) {
+	        throw _iteratorError;
+	      }
+	    }
+	  }
+
+	  $el.className = finalValue;
+	}
+
+	/**
+	 * Add a class to an element.
+	 * 
+	 * @param {DOMElement} $el
+	 * @param {String} className
+	 * 
+	 * @return {Void}
+	 */
+	function addClass($el, className) {
+	  var classes = $el.className.split(' ');
+	  if (!~classes.indexOf(className)) {
+	    $el.className += ' ' + className;
+	  }
 	}
 
 /***/ },
@@ -632,7 +810,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	"use strict";
 
-	module.exports = "\n.mjx-cursor {\n  -webkit-animation: 1s mj-ed-blink step-end infinite;\n  -moz-animation: 1s mj-ed-blink step-end infinite;\n  -ms-animation: 1s mj-ed-blink step-end infinite;\n  -o-animation: 1s mj-ed-blink step-end infinite;\n  animation: 1s mj-ed-blink step-end infinite;\n  border-right: 2px solid #000;\n  color: transparent;\n}\n\n@keyframes mj-ed-blink {\n  from, to {\n    border-color: black;\n  }\n  50% {\n    border-color: transparent;\n  }\n}\n\n@-moz-keyframes mj-ed-blink {\n  from, to {\n    border-color: transparent;\n  }\n  50% {\n    border-color: black;\n  }\n}\n\n@-webkit-keyframes mj-ed-blink {\n  from, to {\n    border-color: transparent;\n  }\n  50% {\n    border-color: black;\n  }\n}\n\n@-ms-keyframes mj-ed-blink {\n  from, to {\n    border-color: transparent;\n  }\n  50% {\n    border-color: black;\n  }\n}\n\n@-o-keyframes mj-ed-blink {\n  from, to {\n    border-color: transparent;\n  }\n  50% {\n    border-color: black;\n  }\n}\n";
+	module.exports = "\n.mjx-cursor {\n  -webkit-animation: 1s mj-ed-blink step-end infinite;\n  -moz-animation: 1s mj-ed-blink step-end infinite;\n  -ms-animation: 1s mj-ed-blink step-end infinite;\n  -o-animation: 1s mj-ed-blink step-end infinite;\n  animation: 1s mj-ed-blink step-end infinite;\n  border-right: 2px solid #000;\n  color: transparent;\n}\n\n.mj-ed-input {\n  left: -100%;\n  position: absolute;\n  top: -100%;\n}\n\n.mj-ed-display {\n  box-sizing: border-box;\n}\n\n@keyframes mj-ed-blink {\n  from, to {\n    border-color: black;\n  }\n  50% {\n    border-color: transparent;\n  }\n}\n\n@-moz-keyframes mj-ed-blink {\n  from, to {\n    border-color: transparent;\n  }\n  50% {\n    border-color: black;\n  }\n}\n\n@-webkit-keyframes mj-ed-blink {\n  from, to {\n    border-color: transparent;\n  }\n  50% {\n    border-color: black;\n  }\n}\n\n@-ms-keyframes mj-ed-blink {\n  from, to {\n    border-color: transparent;\n  }\n  50% {\n    border-color: black;\n  }\n}\n\n@-o-keyframes mj-ed-blink {\n  from, to {\n    border-color: transparent;\n  }\n  50% {\n    border-color: black;\n  }\n}\n";
 
 /***/ }
 /******/ ])
