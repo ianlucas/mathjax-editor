@@ -9,7 +9,7 @@
   "author": "Ian Lucas <ianlucas_ferreira@hotmail.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ianlucas/better-migration-api"
+    "url": "https://github.com/ianlucas/mathjax-editor"
   },
   "license": "MIT",
   "devDependencies": {
@@ -18,8 +18,8 @@
     "babel-preset-es2015": "^6.18.0",
     "webpack": "^2.1.0-beta.26"
   },
-  "homepage": "https://github.com/ianlucas/better-migration-api",
+  "homepage": "https://github.com/ianlucas/mathjax-editor",
   "bugs": {
-    "url": "https://github.com/ianlucas/better-migration-api/issues"
+    "url": "https://github.com/ianlucas/mathjax-editor/issues"
   }
 }
