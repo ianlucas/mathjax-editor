@@ -102,7 +102,7 @@ class Editor {
 
     // Moving to the left.
     if (amount < 0) {
-      if (value[next] === '{') {
+      if (value[next] === '{' && value[next - 1] !== '}') {
         let i = next;
         while (i--) {
           if (value[i] === '\\') {
@@ -110,6 +110,10 @@ class Editor {
           }
         }
         next = i;
+      }
+
+      if (value[next - 1] === '}') {
+        next -= 1;
       }
     }
 
