@@ -16,7 +16,27 @@ class MathJaxEditor {
    */
   constructor(options) {
     const editor = new Editor(options);
+
     this.editor = editor;
+    this.version = '1.0.1';
+  }
+
+  /**
+   * Blur the editor.
+   * 
+   * @return {Void}
+   */
+  blur() {
+    this.editor.blur();
+  }
+
+  /**
+   * Focus the editor.
+   * 
+   * @return {Void}
+   */
+  focus() {
+    this.editor.focus();
   }
 
   /**
@@ -29,6 +49,15 @@ class MathJaxEditor {
    */
   insertCommand(command, blockCount = 1) {
     this.editor.insertCommand(command, blockCount);
+  }
+
+  /**
+   * Get editor's jax.
+   * 
+   * @return {String}
+   */
+  getJax() {
+    return this.editor.value;
   }
 }
 
