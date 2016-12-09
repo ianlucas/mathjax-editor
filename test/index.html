@@ -4,6 +4,17 @@
   <meta charset="UTF-8">
   <title>MathJax Mathematics Editor</title>
   <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  <style> 
+    .mj-ed-display {
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      padding: 0.5em 0.8em;
+    }
+    
+    .mj-ed-display.isFocused {
+      border-color: #007fff;
+    }
+  </style>
 </head>
 <body>
   <textarea id="editor"></textarea>
@@ -20,7 +31,7 @@
       
       const editor = new MathJaxEditor({
         el: '#editor',
-        debug: true
+        debug: false
       });
 
       btnSqrt.addEventListener('click', () => {
