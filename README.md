@@ -30,6 +30,18 @@ const editor = new MathJaxEditor({
 
 This inserts a command into the editor. "Blocks" ({}) is the quantity the command requires (e.q. `\sqrt` requires 1, and `\frac` requires 2).
 
+#### `editor.focus()`
+
+Focus the editor.
+
+#### `editor.blur()`
+
+Blur the editor.
+
+#### `editor.getJax()`
+
+Get the editor's value.
+
 ---
 
 **License:** MIT
