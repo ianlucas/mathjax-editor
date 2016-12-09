@@ -13,17 +13,18 @@ class Editor {
    * 
    * @param {Object} options
    * @param {DOMElement|String} options.el - The DOM Element itself or a string selector.
+   * @param {Boolean} options.debug - Set debug mode.
    * 
    * @constructor
    */
-  constructor({ el }) {
+  constructor({ el, debug = false }) {
     const Element = MathJax.HTML.Element;
 
     const $el = mustFindElement(el);
     const $container = Element('div', { className: 'mj-ed-container' });
     const $input = Element('input', { className: 'mj-ed-input' });
     const $display = Element('div', { className: 'mj-ed-display' }, ['\\(\\cursor\\)']);
-    const $debug = Element('pre', {}, ['|']);
+    const $debug = Element('pre', { className: 'mj-ed-debug' }, ['|']);
 
     $el.parentNode.replaceChild($container, $el);
     $container.appendChild($input);
@@ -42,26 +43,32 @@ class Editor {
       }
     );
 
+    $debug.style.display = debug ? 'block' : 'none';
+
     this.$container = $container;
     this.$debug = $debug;
     this.$display = $display;
     this.$input = $input;
     this.cursor = 0;
+    this.debug = debug;
     this.value = '';
   }
 
   /**
-   * This will update `this.$debug` inner HTML so that we can see
-   * the raw Jax written by the user input.
-   * (At the moment it updates the JaxElement, too)
+   * This will update `this.$display`'s jax. Also will update `this.$debug`
+   * inner HTML if the options.debug is enabled.
    * 
    * @param {String} value - Jax to be used. It defaults to the editor's value.
    * 
    * @return {Void}
    */
-  updateDebug(value = this.value) {
+  update(value = this.value) {
     const cursor = this.cursor;
-    this.$debug.innerHTML = insertBetween(value, cursor, '|');
+
+    if (this.debug) {
+      this.$debug.innerHTML = insertBetween(value, cursor, '|');
+    }
+
     this.updateJaxElement(
       insertBetween(value, cursor, '{\\cursor}'),
       this.updateCursorElement.bind(this)
@@ -135,7 +142,7 @@ class Editor {
     }
 
     this.cursor = next;
-    this.updateDebug();
+    this.update();
   }
 
   updateCursorElement() {
@@ -277,13 +284,13 @@ class Editor {
     if (cursor === -1) {
       this.value = value + current;
       this.cursor += value.length;
-      return this.updateDebug();
+      return this.update();
     }
 
     this.cursor += value.length;
     this.value = insertBetween(current, cursor, value);
 
-    this.updateDebug();
+    this.update();
   }
 
   /**
@@ -306,7 +313,8 @@ class Editor {
 
     this.value = insertBetween(value, cursor, blocks);
     this.$input.focus();
-    this.updateDebug();
+
+    this.update();
   }
 
   /**
@@ -333,7 +341,8 @@ class Editor {
 
     this.value = before + after;
     this.cursor = before.length;
-    this.updateDebug();
+
+    this.update();
   }
 }
 

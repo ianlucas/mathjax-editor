@@ -19,7 +19,8 @@
       const btnSqrt = document.getElementById('btnSqrt');
       
       const editor = new MathJaxEditor({
-        el: '#editor'
+        el: '#editor',
+        debug: true
       });
 
       btnSqrt.addEventListener('click', () => {
@@ -27,7 +28,7 @@
       });
 
       btnFrac.addEventListener('click', () => {
-        editor.insertCommand('\\frac', 2);
+        editor.insertCommand('\\dfrac', 2);
       });
     };
   </script>
