@@ -259,7 +259,7 @@ class Editor {
         return;
     }
 
-    if (which) {
+    if (which && debug) {
       console.warn(`The key ${which} was pressed.`);
     }
 
