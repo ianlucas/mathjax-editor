@@ -23,12 +23,12 @@ class MathJaxEditor {
    * This inserts a command into the editor.
    * 
    * @param {String} command
-   * @param {Number} blocks
+   * @param {Number} blockCount
    * 
    * @return {Void}
    */
-  insertCommand(command, blocks = 1) {
-    this.editor.insertCommand(command, blocks);
+  insertCommand(command, blockCount = 1) {
+    this.editor.insertCommand(command, blockCount);
   }
 }
 

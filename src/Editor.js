@@ -288,18 +288,19 @@ class Editor {
    * The cursor will moved to the first "block" ({}).
    * 
    * @param {String} command - The command.
-   * @param {Number} blocks - The quantity of blocks it requires.
+   * @param {Number} blockCount - The quantity of blocks it requires.
    * 
    * @return {Void}
    */
-  insertCommand(command, blocks = 1) {
+  insertCommand(command, blockCount = 1) {
     command = `${command}{`;
     this.insert(command);
 
     const value = this.value;
     const cursor = this.cursor;
+    const blocks = '}' + '{}'.repeat(blockCount - 1);
 
-    this.value = insertBetween(value, cursor, '}' + '{}'.repeat(blocks - 1));
+    this.value = insertBetween(value, cursor, blocks);
     this.$input.focus();
     this.updateDebug();
   }
