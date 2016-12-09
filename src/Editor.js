@@ -119,8 +119,10 @@ class Editor {
     const length = value.length;
 
     // Moving to the left.
+
     if (amount < 0) {
-      if (value[next] === '{' && value[next - 1] !== '}') {
+      if (value[next] === '{'
+            && value[next - 1] !== '}') {
         let i = next;
         while (i--) {
           if (value[i] === '\\') {
@@ -133,18 +135,34 @@ class Editor {
       if (value[next - 1] === '}') {
         next -= 1;
       }
+
+      if (value[next] === ' ') {
+        let i = next;
+        while (i--) {
+          if (value[i] === '\\') {
+            break;
+          }
+        }
+        next = i;
+      }
     }
 
     // Moving to the right.
+
     if (amount > 0) {
       if (value[current] === '\\') {
-        let i = next;
+        let i = current;
         while (i++ < length) {
           if (value[i] === '{') {
             break;
           }
+
+          if (value[i] === ' ') {
+            i += 1;
+            break;
+          }
         }
-        next = i + 1;
+        next = i;
       }
 
       if (value[next] === '{') {
@@ -218,6 +236,11 @@ class Editor {
         coordinates.end = i;
         break;
       }
+
+      if (value[i - 1] === ' ') {
+        coordinates.end = i - 1;
+        break;
+      }
     }
 
     if (coordinates.end === null) {
@@ -250,8 +273,28 @@ class Editor {
       return this.handleInput(which);
     }
 
+    const translate = {
+      '+': '+',
+      '-': '-',
+      '=': '=',
+      '*': '\\cdot ',
+      '/': '\\div '
+    };
+
+    const test = {
+      char: /[\d\w]/
+    };
+
     inputValue.split('')
       .forEach(char => {
+        if (!char.match(test.char) && !translate[char]) {
+          return;
+        }
+
+        if (translate[char]) {
+          char = translate[char];
+        }
+
         this.handleInput(which, char);
       });
   }
@@ -350,16 +393,26 @@ class Editor {
    * @return {Void}
    */
   insertCommand(command, blockCount = 1) {
-    command = `${command}{`;
+    this.focus();
+    
+    if (blockCount > 0) {
+      command += '{';
+    }
+    else {
+      command += ' ';
+    }
+
     this.insert(command);
+
+    if (blockCount < 1) {
+      return;
+    }
 
     const value = this.value;
     const cursor = this.cursor;
     const blocks = '}' + '{}'.repeat(blockCount - 1);
 
     this.value = insertBetween(value, cursor, blocks);
-    this.$input.focus();
-
     this.update();
   }
 
@@ -372,10 +425,11 @@ class Editor {
     const current = this.cursor;
     const previous = this.cursor - 1;
     const value = this.value;
+
     let before;
     let after;
 
-    if (~['{', '}'].indexOf(value[previous])) {
+    if (~['{', '}', ' '].indexOf(value[previous])) {
       const coordinates = this.findCommandAt(current);
       before = value.slice(0, coordinates.start);
       after = value.slice(coordinates.end + 1);
