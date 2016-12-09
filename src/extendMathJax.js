@@ -9,6 +9,10 @@ export default function extendMathJax() {
   const TEX = MathJax.InputJax.TeX;
   const MML = MathJax.ElementJax.mml;
 
+  // This removes the pause (in milliseconds) between input and output 
+  // phases of MathJax's processing. So it looks seamless!
+  MathJax.Hub.processSectionDelay = 0;
+
   MathJax.Hub.Register.StartupHook("TeX Jax Ready", () => {
     TEX.Definitions.Add({
       macros: {

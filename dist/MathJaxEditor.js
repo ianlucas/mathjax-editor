@@ -568,6 +568,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var TEX = MathJax.InputJax.TeX;
 	  var MML = MathJax.ElementJax.mml;
 
+	  // This removes the pause (in milliseconds) between input and output 
+	  // phases of MathJax's processing. So it looks seamless!
+	  MathJax.Hub.processSectionDelay = 0;
+
 	  MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
 	    TEX.Definitions.Add({
 	      macros: {
@@ -615,7 +619,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	"use strict";
 
-	module.exports = "\n.mjx-cursor {\n  -webkit-animation: 1s mj-ed-blink step-end infinite;\n  -moz-animation: 1s mj-ed-blink step-end infinite;\n  -ms-animation: 1s mj-ed-blink step-end infinite;\n  -o-animation: 1s mj-ed-blink step-end infinite;\n  animation: 1s mj-ed-blink step-end infinite;\n}\n\n@keyframes mj-ed-blink {\n  from, to {\n    color: transparent;\n  }\n  50% {\n    color: black;\n  }\n}\n\n@-moz-keyframes mj-ed-blink {\n  from, to {\n    color: transparent;\n  }\n  50% {\n    color: black;\n  }\n}\n\n@-webkit-keyframes mj-ed-blink {\n  from, to {\n    color: transparent;\n  }\n  50% {\n    color: black;\n  }\n}\n\n@-ms-keyframes mj-ed-blink {\n  from, to {\n    color: transparent;\n  }\n  50% {\n    color: black;\n  }\n}\n\n@-o-keyframes mj-ed-blink {\n  from, to {\n    color: transparent;\n  }\n  50% {\n    color: black;\n  }\n}\n";
+	module.exports = "\n.mjx-cursor {\n  -webkit-animation: 1s mj-ed-blink step-end infinite;\n  -moz-animation: 1s mj-ed-blink step-end infinite;\n  -ms-animation: 1s mj-ed-blink step-end infinite;\n  -o-animation: 1s mj-ed-blink step-end infinite;\n  animation: 1s mj-ed-blink step-end infinite;\n}\n\n@keyframes mj-ed-blink {\n  from, to {\n    color: black;\n  }\n  50% {\n    color: transparent;\n  }\n}\n\n@-moz-keyframes mj-ed-blink {\n  from, to {\n    color: transparent;\n  }\n  50% {\n    color: black;\n  }\n}\n\n@-webkit-keyframes mj-ed-blink {\n  from, to {\n    color: transparent;\n  }\n  50% {\n    color: black;\n  }\n}\n\n@-ms-keyframes mj-ed-blink {\n  from, to {\n    color: transparent;\n  }\n  50% {\n    color: black;\n  }\n}\n\n@-o-keyframes mj-ed-blink {\n  from, to {\n    color: transparent;\n  }\n  50% {\n    color: black;\n  }\n}\n";
 
 /***/ }
 /******/ ])

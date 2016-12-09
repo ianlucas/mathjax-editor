@@ -9,10 +9,10 @@ module.exports = `
 
 @keyframes mj-ed-blink {
   from, to {
-    color: transparent;
+    color: black;
   }
   50% {
-    color: black;
+    color: transparent;
   }
 }
 
