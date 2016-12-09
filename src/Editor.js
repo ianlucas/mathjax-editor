@@ -6,6 +6,7 @@ import {
 } from './utils';
 
 const KEY_BACKSPACE = 8;
+const KEY_ENTER = 13;
 const KEY_LEFT = 37;
 const KEY_RIGHT = 39;
 
@@ -136,6 +137,11 @@ class Editor {
         next -= 1;
       }
 
+      if (value[next] === '\\'
+            && value[next - 1] === '\\') {
+        next -= 1;
+      }
+
       if (value[next] === ' ') {
         let i = next;
         while (i--) {
@@ -150,7 +156,7 @@ class Editor {
     // Moving to the right.
 
     if (amount > 0) {
-      if (value[current] === '\\') {
+      if (value[current] === '\\' && value[next] !== '\\') {
         let i = current;
         while (i++ < length) {
           if (value[i] === '{') {
@@ -166,6 +172,11 @@ class Editor {
       }
 
       if (value[next] === '{') {
+        next += 1;
+      }
+
+      if (value[current] === '\\'
+            && value[next] === '\\') {
         next += 1;
       }
     }
@@ -324,6 +335,10 @@ class Editor {
       case KEY_BACKSPACE:
         this.erase();
         return;
+
+      case KEY_ENTER:
+        this.insert('\\\\');
+        return;
     }
 
     if (which && this.debug) {
@@ -394,7 +409,7 @@ class Editor {
    */
   insertCommand(command, blockCount = 1) {
     this.focus();
-    
+
     if (blockCount > 0) {
       command += '{';
     }
@@ -429,13 +444,22 @@ class Editor {
     let before;
     let after;
 
+    // Check if we are erasing a command.
     if (~['{', '}', ' '].indexOf(value[previous])) {
       const coordinates = this.findCommandAt(current);
       before = value.slice(0, coordinates.start);
       after = value.slice(coordinates.end + 1);
     }
     else {
-      before = value.slice(0, current - 1);
+      let beforeIndex = current - 1;
+
+      // Check if we are erasing a new line.
+      if (value[previous] === '\\' 
+            && value[previous - 1] === '\\') {
+        beforeIndex -= 1;
+      }
+
+      before = value.slice(0, beforeIndex);
       after = value.slice(current);
     }
 
