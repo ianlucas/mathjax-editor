@@ -23,3 +23,18 @@ export function mustFindElement(el) {
   // Yeah, we just assume an element was given...
   return el;
 }
+
+/**
+ * Insert a text in the middle of the given string.
+ * 
+ * @param {String} string
+ * @param {Number} index
+ * @param {String} fragment
+ * 
+ * @return {String}
+ */
+export function insertBetween(string, index, fragment) {
+  const before = string.slice(0, index);
+  const after = string.slice(index);
+  return before + fragment + after;
+}

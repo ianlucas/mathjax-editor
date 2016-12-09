@@ -1,4 +1,4 @@
-import { mustFindElement } from './utils';
+import { mustFindElement, insertBetween } from './utils';
 
 const KEY_BACKSPACE = 8;
 const KEY_LEFT = 37;
@@ -38,6 +38,7 @@ class Editor {
         this.jaxElement = MathJax.Hub.getAllJax($display)[0];
       }, () => {
         $display.style.minHeight = `${$display.offsetHeight}px`;
+        this.updateCursorElement();
       }
     );
 
@@ -59,10 +60,12 @@ class Editor {
    * @return {Void}
    */
   updateDebug(value = this.value) {
-    const before = value.slice(0, this.cursor);
-    const after = value.slice(this.cursor);
-    this.$debug.innerHTML = before + '|' + after;
-    this.updateJaxElement(before + '{\\cursor}' + after, this.updateCursorElement.bind(this));
+    const cursor = this.cursor;
+    this.$debug.innerHTML = insertBetween(value, cursor, '|');
+    this.updateJaxElement(
+      insertBetween(value, cursor, '{\\cursor}'),
+      this.updateCursorElement.bind(this)
+    );
   }
 
   /**
@@ -270,14 +273,11 @@ class Editor {
     if (cursor === -1) {
       this.value = value + current;
       this.cursor += value.length;
-      this.updateDebug();
+      return this.updateDebug();
     }
 
     this.cursor += value.length;
-
-    const before = current.slice(0, cursor);
-    const after = current.slice(cursor);
-    this.value = before + value + after;
+    this.value = insertBetween(current, cursor, value);
 
     this.updateDebug();
   }
@@ -293,14 +293,13 @@ class Editor {
    * @return {Void}
    */
   insertCommand(command, blocks = 1) {
-    // e.q. \sqrt
     command = `${command}{`;
     this.insert(command);
 
     const value = this.value;
-    const before = value.slice(0, this.cursor);
-    const after = value.slice(this.cursor);
-    this.value = before + '}' + '{}'.repeat(blocks - 1) + after;
+    const cursor = this.cursor;
+
+    this.value = insertBetween(value, cursor, '}' + '{}'.repeat(blocks - 1));
     this.$input.focus();
     this.updateDebug();
   }
