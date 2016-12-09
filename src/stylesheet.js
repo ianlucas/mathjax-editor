@@ -9,6 +9,16 @@ module.exports = `
   color: transparent;
 }
 
+.mj-ed-input {
+  left: -100%;
+  position: absolute;
+  top: -100%;
+}
+
+.mj-ed-display {
+  box-sizing: border-box;
+}
+
 @keyframes mj-ed-blink {
   from, to {
     border-color: black;
