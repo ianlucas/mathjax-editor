@@ -1,3 +1,4 @@
+import Selection from './Selection';
 import { 
   mustFindElement,
   insertBetween,
@@ -64,6 +65,7 @@ class Editor {
     this.cursor = 0;
     this.debug = debug;
     this.focusClass = focusClass;
+    this.selection = new Selection($display);
     this.value = '';
   }
 
@@ -77,14 +79,24 @@ class Editor {
    */
   update(value = this.value) {
     const cursor = this.cursor;
+    const selection = this.selection;
 
     if (this.debug) {
       this.$debug.innerHTML = insertBetween(value, cursor, '|');
     }
 
+    const valueWithCursor = insertBetween(value, cursor, '{\\cursor}');
+    selection.setValue(valueWithCursor);
+    const valueForSelection = selection.getValueForSelection();
+
     this.updateJaxElement(
-      insertBetween(value, cursor, '{\\cursor}'),
-      this.updateCursorElement.bind(this)
+      valueForSelection, () => {
+        this.updateCursorElement();
+        selection.captureElements(cursor => {
+          this.cursor = cursor;
+          this.updateCursor();
+        });
+      }
     );
   }
 

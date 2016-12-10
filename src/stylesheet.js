@@ -19,6 +19,14 @@ module.exports = `
   box-sizing: border-box;
 }
 
+.mj-ed-display * {
+  outline: none;
+}
+
+.mj-ed-selectionButton {
+  cursor: text;
+}
+
 @keyframes mj-ed-blink {
   from, to {
     border-color: black;
