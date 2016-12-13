@@ -57,7 +57,7 @@ export function removeClass($el, className) {
     }
   }
 
-  $el.className = finalValue;
+  $el.className = finalValue.trim();
 }
 
 /**
@@ -73,4 +73,17 @@ export function addClass($el, className) {
   if (!(~classes.indexOf(className))) {
     $el.className += ` ${className}`;
   }
+  $el.className = $el.className.trim();
+}
+
+/**
+ * Converts a DOM node list to array.
+ * 
+ * @param {DOMNodeList}
+ * 
+ * @return {Array}
+ */
+export function toArray(children) {
+  const slice = [].slice;
+  return slice.call(children);
 }
