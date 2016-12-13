@@ -1,3 +1,4 @@
+import Placer from './Placer';
 import { 
   mustFindElement,
   insertBetween,
@@ -43,6 +44,7 @@ class Editor {
     $input.addEventListener('keyup', this.handleInputEvent.bind(this));
     $input.addEventListener('blur', this.blur.bind(this));
     $display.addEventListener('click', this.focus.bind(this));
+    document.body.addEventListener('click', this.handleBodyClick.bind(this));
 
     $display.style.opacity = 0;
     $debug.style.display = debug ? 'block' : 'none';
@@ -62,6 +64,7 @@ class Editor {
     this.$display = $display;
     this.$input = $input;
     this.cursor = 0;
+    this.placer = null;
     this.debug = debug;
     this.focusClass = focusClass;
     this.value = '';
@@ -77,15 +80,25 @@ class Editor {
    */
   update(value = this.value) {
     const cursor = this.cursor;
-    const valueWithCursor = insertBetween(value, cursor, '{\\cursor}');
-
+    const valueWithCursor = insertBetween(value, cursor, '{\\cursor}')
+      .replace(/\d/g, n => `{${n}}`);
+    
     if (this.debug) {
       this.$debug.innerHTML = insertBetween(value, cursor, '|');
     }
 
     this.updateJaxElement(
-      valueWithCursor,
-      this.updateCursorElement.bind(this)
+      valueWithCursor, () => {
+        setTimeout(() => {
+          this.placer = Placer.read(this, cursor => {
+            console.log(`The cursor should be placed at ${cursor}`);
+            this.cursor = cursor;
+            this.update();
+          });
+        });
+
+        this.updateCursorElement();
+      }
     );
   }
 
@@ -357,6 +370,24 @@ class Editor {
 
     this.insert(char);
   }
+  
+  /**
+   * When document.body is clicked, this will check if the
+   * cursor can be moved.
+   * 
+   * @see Placer
+   * 
+   * @param {Event} e
+   * 
+   * @return {Void}
+   */
+  handleBodyClick(e) {
+    if (!this.placer) {
+      return;
+    }
+    
+    this.placer.fireClick(e);
+  }
 
   /**
    * Focus the editor.
@@ -390,12 +421,6 @@ class Editor {
   insert(value) {
     const cursor = this.cursor;
     const current = this.value;
-
-    if (cursor === -1) {
-      this.value = value + current;
-      this.cursor += value.length;
-      return this.update();
-    }
 
     this.cursor += value.length;
     this.value = insertBetween(current, cursor, value);
