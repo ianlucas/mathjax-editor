@@ -8,6 +8,7 @@
     .mj-ed-display {
       border: 1px solid #ccc;
       border-radius: 3px;
+      font-size: 2em;
       padding: 0.5em 0.8em;
     }
     
@@ -22,7 +23,16 @@
   <div>
     <button id="btnSqrt">\(\sqrt{a}\)</button>
     <button id="btnFrac">\(\frac{a}{b}\)</button>
+    <button id="btnAlpha">\(\alpha\)</button>
   </div>
+
+
+  <script type='text/x-mathjax-config'>
+    MathJax.Hub.Config({
+        showMathMenu: false,
+        messageStyle: 'none'
+    });
+  </script>
 
   <script src="../dist/MathJaxEditor.js"></script>
   <script>
@@ -39,7 +49,11 @@
       });
 
       btnFrac.addEventListener('click', () => {
-        editor.insertCommand('\\dfrac', 2);
+        editor.insertCommand('\\frac', 2);
+      });
+
+      btnAlpha.addEventListener('click', () => {
+        editor.insertCommand('\\alpha', 0);
       });
     };
   </script>
