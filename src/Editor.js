@@ -81,8 +81,10 @@ class Editor {
   update(value = this.value) {
     const cursor = this.cursor;
     const valueWithCursor = insertBetween(value, cursor, '{\\cursor}')
-      .replace(/\d/g, n => `{${n}}`);
-    
+      .replace(/\d/g, n => `{${n}}`)
+      .replace(/\{\}/g, '{\\isEmpty}')
+      .replace(/\{\{\\cursor\}\}/g, '{{\\cursor}\\isEmpty}');
+
     if (this.debug) {
       this.$debug.innerHTML = insertBetween(value, cursor, '|');
     }
@@ -95,7 +97,7 @@ class Editor {
             this.cursor = cursor;
             this.update();
           });
-        });
+        }, 20);
 
         this.updateCursorElement();
       }

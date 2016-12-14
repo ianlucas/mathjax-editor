@@ -27,6 +27,10 @@ module.exports = `
   cursor: text;
 }
 
+.mjx-isEmpty {
+  color: #ccc;
+}
+
 @keyframes mj-ed-blink {
   from, to {
     border-color: black;

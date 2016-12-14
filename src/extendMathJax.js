@@ -14,9 +14,18 @@ export default function extendMathJax() {
   MathJax.Hub.processSectionDelay = 0;
 
   MathJax.Hub.Register.StartupHook("TeX Jax Ready", () => {
+    const defaults = {
+      mathvariant: MML.INHERIT,
+      mathsize: MML.INHERIT,
+      mathbackground: MML.INHERIT,
+      mathcolor: MML.INHERIT,
+      dir: MML.INHERIT
+    };
+
     TEX.Definitions.Add({
       macros: {
-        cursor: 'Cursor'
+        cursor: 'Cursor',
+        isEmpty: 'IsEmpty'
       }
     }, null, true);
 
@@ -25,19 +34,26 @@ export default function extendMathJax() {
       isToken: true,
       isSpacelike: () => true,
       texClass: MML.TEXCLASS.ORD,
-      defaults: {
-        mathvariant: MML.INHERIT,
-        mathsize: MML.INHERIT,
-        mathbackground: MML.INHERIT,
-        mathcolor: MML.INHERIT,
-        dir: MML.INHERIT
-      }
+      defaults
+    });
+
+    MML.misEmpty = MML.mbase.Subclass({
+      type: 'isEmpty',
+      isToken: true,
+      isSpacelike: () => true,
+      texClass: MML.TEXCLASS.ORD,
+      defaults
     });
 
     TEX.Parse.Augment({
       Cursor(name) {
         const $cursor = MML.mcursor('0');
         this.Push($cursor);
+      },
+
+      IsEmpty(name) {
+        const $isEmpty = MML.misEmpty('?');
+        this.Push($isEmpty);
       }
     });
   });
