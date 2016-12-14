@@ -59,12 +59,15 @@ class Placer {
    * @param {Number} endX
    * @param {Number} startY
    * @param {Number} endY
+   * @param {Boolean} useAllArea - If the click point is inside this 
+   *                               interval boundings, cursor will be
+   *                               placed at this interval index.
    * 
    * @return {Void}
    */
-  addInterval(index, startX, endX, startY, endY) {
+  addInterval(index, startX, endX, startY, endY, useAllArea = false) {
     this.intervals.push({
-      index, startX, endX, startY, endY
+      index, startX, endX, startY, endY, useAllArea
     });
   }
 
@@ -86,6 +89,10 @@ class Placer {
     this.debug(`Interval X from ${interval.startX} to ${interval.endX} (Middle point x: ${interval.startX + (width / 2)}, width: ${width})`);
     this.debug(`Interval Y from ${interval.startY} to ${interval.endY}`);
 
+    if (interval.useAllArea) {
+      return index;
+    }
+
     if (x > interval.startX + (width / 2)) {
       if (this.intervals[i + 1]) {
         index = this.intervals[i + 1].index;
@@ -94,6 +101,9 @@ class Placer {
         index = this.tex.length;
       }
     }
+    
+    this.debug(`[placeAtInterval] Cursor to be placed at ${index}.`);
+
     return index;
   }
 
@@ -112,6 +122,7 @@ class Placer {
     let index = this.tex.length;
 
     this.debug(`You has clicked at (${x}, ${y}).`);
+    this.debug(this.intervals);
 
     // If there are no intervals, or the point `y` is
     // not in the range of the editor's bounds, we just
@@ -155,13 +166,16 @@ class Placer {
       }
 
       index = this.placeAtInterval(last.interval, x, y, last.i);
+      this.debug(`[fireClick] Not found a bounding, placeing at ${index}.`);
     }
 
     if (x < this.intervals[0].startX) {
+      this.debug(`[fireClick] Out of display boundings. Placing at start.`);
       index = 0;
     }
 
     if (x > this.intervals[this.intervals.length - 1].endX) {
+      this.debug(`[fireClick] Out of display boundings. Placing at the end.`);
       index = this.tex.length;
     }
 
@@ -197,6 +211,25 @@ class Placer {
    */
   findCommand(command, index) {
     const name = command.slice(1, command.length - 1);
+    this.findings[name] = this.findings[name] || 0;
+    const $el = document.querySelectorAll(`.mjx-m${name}`)[this.findings[name]];
+    const bounding = $el.getBoundingClientRect();
+
+    switch (name) {
+      case 'frac':
+        const $numerator = $el.querySelector('.mjx-numerator');
+        const $denominator = $el.querySelector('.mjx-denominator');
+        const numBounding = $numerator.getBoundingClientRect();
+        const denBounding = $denominator.getBoundingClientRect();
+        const boundings = [numBounding, denBounding];
+        const { blocks } = this.parseCommandAt(index);
+
+        boundings.forEach((bounding, i) => {
+          if ((blocks[i].closeIndex - blocks[i].openIndex) === 1) {
+            this.addInterval(blocks[i].openIndex + 1, bounding.left, bounding.right, bounding.top, bounding.bottom, true);
+          }
+        });
+    }
   }
 
   /**
@@ -258,6 +291,33 @@ class Placer {
         }
       }
     }
+  }
+
+  parseCommandAt(i) {
+    const length = this.tex.length;
+    let blocks = [];
+    let openBlocks = 0;
+
+    for (; i < length; i++) {
+      const char = this.tex[i];
+      if (char === '{') {
+        blocks.push({ openIndex: i });
+        openBlocks += 1;
+      }
+      if (char === '}') {
+        openBlocks -= 1;
+        if (openBlocks === 0) {
+          blocks[blocks.length - 1].closeIndex = i;
+        }
+      }
+      if (char === '}' && this.tex[i + 1] !== '{') {
+        break;
+      }
+    }
+
+    return {
+      blocks
+    };
   }
 }
 
