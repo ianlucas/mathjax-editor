@@ -146,6 +146,12 @@ class Editor {
           if (value[i] === '\\') {
             break;
           }
+          if (value[i] === '^') {
+            break;
+          }
+          if (value[i] === '_') {
+            break;
+          }
         }
         next = i;
       }
@@ -153,6 +159,10 @@ class Editor {
       if (value[next - 1] === '}') {
         next -= 1;
       }
+
+      // if (~['^', '_'].indexOf(value[next - 1])) {
+      //   next -= 1;
+      // }
 
       if (value[next] === '\\'
             && value[next - 1] === '\\') {
@@ -173,7 +183,7 @@ class Editor {
     // Moving to the right.
 
     if (amount > 0) {
-      if (value[current] === '\\' && value[next] !== '\\') {
+      if (~['\\', '^', '_'].indexOf(value[current]) && value[next] !== '\\') {
         let i = current;
         while (i++ < length) {
           if (value[i] === '{') {
@@ -251,7 +261,7 @@ class Editor {
     i = next;
 
     while (i--) {
-      if (value[i] === '\\') {
+      if (~['\\', '^', '_'].indexOf(value[i])) {
         coordinates.start = i;
         break;
       }
