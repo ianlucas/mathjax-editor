@@ -1,4 +1,5 @@
 import Placer from './Placer';
+import Iterator from './Iterator';
 import { 
   mustFindElement,
   insertBetween,
@@ -132,80 +133,54 @@ class Editor {
    */
   updateCursor(amount = 0) {
     let next = this.cursor + amount;
-    const current = this.cursor;
-    const value = this.value;
-    const length = value.length;
+    const cursor = this.cursor;
+    const iterator = new Iterator(this.value);
+    const currentChar = iterator.at(cursor);
+    const nextChar = iterator.at(next);
 
     // Moving to the left.
 
     if (amount < 0) {
-      if (value[next] === '{'
-            && value[next - 1] !== '}') {
-        let i = next;
-        while (i--) {
-          if (value[i] === '\\') {
-            break;
-          }
-          if (value[i] === '^') {
-            break;
-          }
-          if (value[i] === '_') {
-            break;
-          }
-        }
-        next = i;
-      }
+      nextChar
+        .when('{')
+        .andPreviousCharacterNotIs('}')
+        .findBackwards('\\', '^', '_')
+          .then(i => next = i);
 
-      if (value[next - 1] === '}') {
-        next -= 1;
-      }
+      nextChar
+        .when('{')
+        .andPreviousCharacterIs('}')
+          .then(() => next -= 1);
 
-      // if (~['^', '_'].indexOf(value[next - 1])) {
-      //   next -= 1;
-      // }
+      nextChar
+        .when('\\')
+        .andPreviousCharacterIs('\\')
+          .then(() => next -= 1);
 
-      if (value[next] === '\\'
-            && value[next - 1] === '\\') {
-        next -= 1;
-      }
-
-      if (value[next] === ' ') {
-        let i = next;
-        while (i--) {
-          if (value[i] === '\\') {
-            break;
-          }
-        }
-        next = i;
-      }
+      nextChar
+        .when(' ')
+        .findBackwards('\\')
+          .then(i => next = i);
     }
 
     // Moving to the right.
 
     if (amount > 0) {
-      if (~['\\', '^', '_'].indexOf(value[current]) && value[next] !== '\\') {
-        let i = current;
-        while (i++ < length) {
-          if (value[i] === '{') {
-            break;
-          }
+      currentChar
+        .when('\\', '^', '_')
+        .andNextCharacterNotIs('\\')
+        .findForwards('{', ' ')
+          .then(i => next = i + 1);
 
-          if (value[i] === ' ') {
-            i += 1;
-            break;
-          }
-        }
-        next = i;
-      }
+      currentChar
+        .when('}')
+        .andNextCharacterIs('{')
+          .then(() => next += 1);
 
-      if (value[next] === '{') {
-        next += 1;
-      }
-
-      if (value[current] === '\\'
-            && value[next] === '\\') {
-        next += 1;
-      }
+      currentChar
+        .when('\\')
+        .andNextCharacterIs('\\')
+          .then(() => next += 1);
     }
 
     this.cursor = next;
