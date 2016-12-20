@@ -26,7 +26,7 @@ const editor = new MathJaxEditor({
 
 ### API
 
-#### `editor.insertCommand(command[, blockCount = 1])`
+#### `editor.insertCommand(command[, blockCount = 1, brackets = false])`
 
 This inserts a command into the editor. `blockCount` is the quantity of blocks (`{}`) the command requires (e.q. `\sqrt` requires 1, and `\frac` requires 2). If it is a character like alpha (`\alpha`), you **must** specify `blockCount` as `0`.
 
