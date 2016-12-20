@@ -44,11 +44,12 @@ class MathJaxEditor {
    * 
    * @param {String} command
    * @param {Number} blockCount
+   * @param {Boolean} brackets
    * 
    * @return {Void}
    */
-  insertCommand(command, blockCount = 1) {
-    this.editor.insertCommand(command, blockCount);
+  insertCommand(command, blockCount = 1, brackets = false) {
+    this.editor.insertCommand(command, blockCount, brackets);
   }
 
   /**

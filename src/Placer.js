@@ -210,6 +210,7 @@ class Placer {
    * @return {Void}
    */
   findCommand(command, index) {
+    command = command.replace(/\[.*\]/, '');
     const name = command.slice(1, command.length - 1);
     this.findings[name] = this.findings[name] || 0;
     const $el = document.querySelectorAll(`.mjx-m${name}`)[this.findings[name]];

@@ -144,7 +144,7 @@ class Editor {
       nextChar
         .when('{')
         .andPreviousCharacterNotIs('}')
-        .findBackwards('\\', '^', '_')
+        .findBackwards('\\', '^', '_', ']')
           .then(i => next = i);
 
       nextChar
@@ -161,6 +161,11 @@ class Editor {
         .when(' ')
         .findBackwards('\\')
           .then(i => next = i);
+
+      nextChar
+        .when('[')
+        .findBackwards('\\')
+          .then(i => next = i);
     }
 
     // Moving to the right.
@@ -169,11 +174,11 @@ class Editor {
       currentChar
         .when('\\', '^', '_')
         .andNextCharacterNotIs('\\')
-        .findForwards('{', ' ')
+        .findForwards('{', ' ', '[')
           .then(i => next = i + 1);
 
       currentChar
-        .when('}')
+        .when('}', ']')
         .andNextCharacterIs('{')
           .then(() => next += 1);
 
@@ -422,11 +427,16 @@ class Editor {
    * 
    * @param {String} command - The command.
    * @param {Number} blockCount - The quantity of blocks it requires.
+   * @param {Boolean} brackets - If brackets should be placed.
    * 
    * @return {Void}
    */
-  insertCommand(command, blockCount = 1) {
+  insertCommand(command, blockCount = 1, brackets = false) {
     this.focus();
+
+    if (brackets) {
+      command += '[]';
+    }
 
     if (blockCount > 0) {
       command += '{';

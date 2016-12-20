@@ -24,6 +24,8 @@
     <button id="btnSqrt">\(\sqrt{a}\)</button>
     <button id="btnFrac">\(\frac{a}{b}\)</button>
     <button id="btnAlpha">\(\alpha\)</button>
+    <button id="btnSuper">\(a^n\)</button>
+    <button id="btnSub">\(a_n\)</button>
   </div>
 
 
@@ -41,11 +43,19 @@
       
       const editor = new MathJaxEditor({
         el: '#editor',
-        debug: false
+        debug: true
       });
 
       btnSqrt.addEventListener('click', () => {
-        editor.insertCommand('\\sqrt');
+        editor.insertCommand('\\sqrt', 1, true);
+      });
+
+      btnSuper.addEventListener('click', () => {
+        editor.insertCommand('^');
+      });
+
+      btnSub.addEventListener('click', () => {
+        editor.insertCommand('_');
       });
 
       btnFrac.addEventListener('click', () => {
