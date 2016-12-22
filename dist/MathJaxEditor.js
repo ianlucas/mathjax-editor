@@ -99,7 +99,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var editor = new _Editor2.default(options);
 
 	    this.editor = editor;
-	    this.version = '1.1.2';
+	    this.version = '1.1.3';
 	  }
 
 	  /**
@@ -307,6 +307,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var cursor = this.cursor;
 	      var valueWithCursor = (0, _utils.insertBetween)(value, cursor, '{\\cursor}').replace(/\d/g, function (n) {
 	        return '{' + n + '}';
+	      }).replace(/\,/g, function (comma) {
+	        return '{' + comma + '}';
 	      }).replace(/\{\}/g, '{\\isEmpty}').replace(/\[\]/g, '[\\isEmpty]').replace(/\{\{\\cursor\}\}/g, '{{\\cursor}\\isEmpty}').replace(/\[\{\\cursor\}\]/g, '[{\\cursor}\\isEmpty]');
 
 	      if (this.debug) {
@@ -538,6 +540,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        '+': '+',
 	        '-': '-',
 	        '=': '=',
+	        ',': ',',
+	        '.': '.',
 	        '*': '\\cdot ',
 	        '/': '\\div '
 	      };
@@ -1022,28 +1026,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // Since we can have now empty startX and endX, we need to
 	      // iterate the intervals.
 
-	      var i = 0;
-	      var length = this.intervals.length;
+	      // let i = 0;
+	      // const length = this.intervals.length;
 
-	      for (; i < length; i++) {
-	        if (this.intervals[i].startX) {
-	          if (x < this.intervals[i].startX) {
-	            this.debug('[fireClick] Out of display boundings. Placing at start.');
-	            index = 0;
-	          }
-	          break;
-	        }
-	      }
+	      // for (; i < length; i++) {
+	      //   if (this.intervals[i].startX) {
+	      //     if (x < this.intervals[i].startX) {
+	      //       this.debug(`[fireClick] Out of display boundings. Placing at start.`);
+	      //       index = 0;
+	      //     }
+	      //     break;
+	      //   }
+	      // }
 
-	      for (i = length - 1; i >= 0; i--) {
-	        if (this.intervals[i].endX) {
-	          if (x > this.intervals[i].endX) {
-	            this.debug('[fireClick] Out of display boundings. Placing at the end.');
-	            index = this.tex.length;
-	          }
-	          break;
-	        }
-	      }
+	      // for (i = length - 1; i >= 0; i--) {
+	      //   if (this.intervals[i].endX) {
+	      //     if (x > this.intervals[i].endX) {
+	      //       this.debug(`[fireClick] Out of display boundings. Placing at the end.`);
+	      //       index = this.tex.length;
+	      //     }
+	      //     break;
+	      //   }
+	      // }
 
 	      this.onRequestPlacement(index);
 	    }
@@ -1159,7 +1163,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var test = {
 	        isNumber: /\d/,
 	        isVariable: /\w/,
-	        isOperator: /[\+\-]/
+	        isOperator: /[\+\-\=\,\.]/
 	      };
 
 	      for (; i < length; i++) {
@@ -1178,6 +1182,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        if (test.isOperator.exec(char)) {
 	          this.find('mo', i, nearClosure);
+	          continue;
+	        }
+
+	        // Newline, so we skip.
+	        if (char === '\\' && tex[i + 1] === '\\') {
+	          i += 1;
 	          continue;
 	        }
 
@@ -1227,7 +1237,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	          brackets.closeIndex = i;
 	        }
 	        if (char === '{') {
-	          blocks.push({ openIndex: i });
+	          if (openBlocks === 0) {
+	            blocks.push({ openIndex: i });
+	          }
 	          openBlocks += 1;
 	        }
 	        if (char === '}') {
