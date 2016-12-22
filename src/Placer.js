@@ -172,28 +172,28 @@ class Placer {
     // Since we can have now empty startX and endX, we need to
     // iterate the intervals.
 
-    let i = 0;
-    const length = this.intervals.length;
+    // let i = 0;
+    // const length = this.intervals.length;
 
-    for (; i < length; i++) {
-      if (this.intervals[i].startX) {
-        if (x < this.intervals[i].startX) {
-          this.debug(`[fireClick] Out of display boundings. Placing at start.`);
-          index = 0;
-        }
-        break;
-      }
-    }
+    // for (; i < length; i++) {
+    //   if (this.intervals[i].startX) {
+    //     if (x < this.intervals[i].startX) {
+    //       this.debug(`[fireClick] Out of display boundings. Placing at start.`);
+    //       index = 0;
+    //     }
+    //     break;
+    //   }
+    // }
 
-    for (i = length - 1; i >= 0; i--) {
-      if (this.intervals[i].endX) {
-        if (x > this.intervals[i].endX) {
-          this.debug(`[fireClick] Out of display boundings. Placing at the end.`);
-          index = this.tex.length;
-        }
-        break;
-      }
-    }
+    // for (i = length - 1; i >= 0; i--) {
+    //   if (this.intervals[i].endX) {
+    //     if (x > this.intervals[i].endX) {
+    //       this.debug(`[fireClick] Out of display boundings. Placing at the end.`);
+    //       index = this.tex.length;
+    //     }
+    //     break;
+    //   }
+    // }
 
     this.onRequestPlacement(index);
   }
@@ -304,7 +304,13 @@ class Placer {
         continue;
       }
 
-      if (char === '\\' && tex[i + 1] !== '\\') {
+      // Newline, so we skip.
+      if (char === '\\' && tex[i + 1] === '\\') {
+        i += 1;
+        continue;
+      }
+
+      if (char === '\\') {
         let j = i;
         let command = '';
         for (; j < length; j++) {
