@@ -24,10 +24,11 @@ class Editor {
    * @param {DOMElement|String} options.el - The DOM Element itself or a string selector.
    * @param {Boolean} options.debug - Set debug mode.
    * @param {String} options.focusClass - Which class to use to identify focus.
+   * @param {Boolean} options.newLine - Allow or disallow newline. (default is false)
    * 
    * @constructor
    */
-  constructor({ el, debug = false, focusClass = 'isFocused' }) {
+  constructor({ el, debug = false, focusClass = 'isFocused', newLine = false }) {
     const Element = MathJax.HTML.Element;
 
     const $el = mustFindElement(el);
@@ -68,6 +69,7 @@ class Editor {
     this.placer = null;
     this.debug = debug;
     this.focusClass = focusClass;
+    this.newLine = newLine;
     this.value = '';
   }
 
@@ -350,7 +352,9 @@ class Editor {
         return;
 
       case KEY_ENTER:
-        this.insert('\\\\');
+        if (this.newLine) {
+          this.insert('\\\\');
+        }
         return;
     }
 
