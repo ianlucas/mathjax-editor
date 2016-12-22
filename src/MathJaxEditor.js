@@ -18,7 +18,7 @@ class MathJaxEditor {
     const editor = new Editor(options);
 
     this.editor = editor;
-    this.version = '1.1.0';
+    this.version = '1.1.1';
   }
 
   /**
@@ -55,9 +55,23 @@ class MathJaxEditor {
   /**
    * Get editor's jax.
    * 
+   * @deprecated
+   * 
    * @return {String}
    */
   getJax() {
+    console.warn('[deprecated] getJax is deprecated, use getValue instead.')
+    return this.editor.value;
+  }
+
+  /**
+   * Get editor's value.
+   * 
+   * @deprecated
+   * 
+   * @return {String}
+   */
+  getValue() {
     return this.editor.value;
   }
 }
