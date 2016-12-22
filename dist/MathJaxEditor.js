@@ -99,7 +99,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var editor = new _Editor2.default(options);
 
 	    this.editor = editor;
-	    this.version = '1.1.1';
+	    this.version = '1.1.2';
 	  }
 
 	  /**
@@ -237,7 +237,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _ref$focusClass = _ref.focusClass,
 	        focusClass = _ref$focusClass === undefined ? 'isFocused' : _ref$focusClass,
 	        _ref$newLine = _ref.newLine,
-	        newLine = _ref$newLine === undefined ? false : _ref$newLine;
+	        newLine = _ref$newLine === undefined ? false : _ref$newLine,
+	        _ref$value = _ref.value,
+	        value = _ref$value === undefined ? '' : _ref$value;
 
 	    _classCallCheck(this, Editor);
 
@@ -246,7 +248,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var $el = (0, _utils.mustFindElement)(el);
 	    var $container = Element('div', { className: 'mj-ed-container' });
 	    var $input = Element('input', { className: 'mj-ed-input' });
-	    var $display = Element('div', { className: 'mj-ed-display' }, ['\\(\\cursor\\)']);
+	    var $display = Element('div', { className: 'mj-ed-display' }, ['\\({\\cursor}' + value + '\\)']);
 	    var $debug = Element('pre', { className: 'mj-ed-debug' }, ['|']);
 
 	    $el.parentNode.replaceChild($container, $el);
@@ -268,7 +270,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, function () {
 	      $display.style.opacity = 1;
 	      $display.style.minHeight = $display.offsetHeight + 'px';
-	      _this.updateCursorElement({ hidden: true });
+	      _this.update(value, { hidden: true });
 	    });
 
 	    this.$container = $container;
@@ -280,7 +282,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.debug = debug;
 	    this.focusClass = focusClass;
 	    this.newLine = newLine;
-	    this.value = '';
+	    this.value = value;
 	  }
 
 	  /**
@@ -288,6 +290,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * inner HTML if the options.debug is enabled.
 	   * 
 	   * @param {String} value - Jax to be used. It defaults to the editor's value.
+	   * @param {Object} cursorOptions - Options to be passed to `updateCursorElement`.
 	   * 
 	   * @return {Void}
 	   */
@@ -299,6 +302,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _this2 = this;
 
 	      var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.value;
+	      var cursorOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 	      var cursor = this.cursor;
 	      var valueWithCursor = (0, _utils.insertBetween)(value, cursor, '{\\cursor}').replace(/\d/g, function (n) {
@@ -318,7 +322,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          });
 	        }, 20);
 
-	        _this2.updateCursorElement();
+	        _this2.updateCursorElement(cursorOptions);
 	      });
 	    }
 
@@ -432,6 +436,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (!$cursor.style.marginLeft) {
 	          $cursor.style.marginLeft = '-' + $cursor.offsetWidth + 'px';
 	        }
+
+	        // Fix #7
+	        if (_this3._cursorRecentlyPlaced) {
+	          clearTimeout(_this3._cursorRecentlyPlaced);
+	        }
+	        (0, _utils.addClass)($cursor, 'wasRecentlyPlaced');
+	        _this3._cursorRecentlyPlaced = setTimeout(function () {
+	          (0, _utils.removeClass)($cursor, 'wasRecentlyPlaced');
+	        }, 600);
+
 	        $cursor.style.display = hidden ? 'none' : 'inline-block';
 	      });
 	    }
@@ -1060,8 +1074,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    /**
 	     * Find a command element.
-	     * 
-	     * TODO: Fix placement bugs.
 	     * 
 	     * @param {String} command
 	     * @param {Number} index
@@ -1774,7 +1786,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	"use strict";
 
-	module.exports = "\n.mjx-cursor {\n  -webkit-animation: 1s mj-ed-blink step-end infinite;\n  -moz-animation: 1s mj-ed-blink step-end infinite;\n  -ms-animation: 1s mj-ed-blink step-end infinite;\n  -o-animation: 1s mj-ed-blink step-end infinite;\n  animation: 1s mj-ed-blink step-end infinite;\n  border-right: 2px solid #000;\n  color: transparent;\n}\n\n.mj-ed-input {\n  left: -100%;\n  position: absolute;\n  top: -100%;\n}\n\n.mj-ed-display {\n  box-sizing: border-box;\n}\n\n.mj-ed-display * {\n  outline: none;\n}\n\n.mj-ed-selectionButton {\n  cursor: text;\n}\n\n.mjx-isEmpty {\n  color: #ccc;\n}\n\n@keyframes mj-ed-blink {\n  from, to {\n    border-color: black;\n  }\n  50% {\n    border-color: transparent;\n  }\n}\n\n@-moz-keyframes mj-ed-blink {\n  from, to {\n    border-color: transparent;\n  }\n  50% {\n    border-color: black;\n  }\n}\n\n@-webkit-keyframes mj-ed-blink {\n  from, to {\n    border-color: transparent;\n  }\n  50% {\n    border-color: black;\n  }\n}\n\n@-ms-keyframes mj-ed-blink {\n  from, to {\n    border-color: transparent;\n  }\n  50% {\n    border-color: black;\n  }\n}\n\n@-o-keyframes mj-ed-blink {\n  from, to {\n    border-color: transparent;\n  }\n  50% {\n    border-color: black;\n  }\n}\n";
+	module.exports = "\n.mjx-cursor {\n  -webkit-animation: 1s mj-ed-blink step-end infinite;\n  -moz-animation: 1s mj-ed-blink step-end infinite;\n  -ms-animation: 1s mj-ed-blink step-end infinite;\n  -o-animation: 1s mj-ed-blink step-end infinite;\n  animation: 1s mj-ed-blink step-end infinite;\n  border-right: 2px solid #000;\n  color: transparent;\n}\n\n.mjx-cursor.wasRecentlyPlaced {\n  border-right-color: black !important;\n}\n\n.mj-ed-input {\n  left: -100%;\n  position: absolute;\n  top: -100%;\n}\n\n.mj-ed-display {\n  box-sizing: border-box;\n}\n\n.mj-ed-display * {\n  outline: none;\n}\n\n.mj-ed-selectionButton {\n  cursor: text;\n}\n\n.mjx-isEmpty {\n  color: #ccc;\n}\n\n@keyframes mj-ed-blink {\n  from, to {\n    border-color: black;\n  }\n  50% {\n    border-color: transparent;\n  }\n}\n\n@-moz-keyframes mj-ed-blink {\n  from, to {\n    border-color: transparent;\n  }\n  50% {\n    border-color: black;\n  }\n}\n\n@-webkit-keyframes mj-ed-blink {\n  from, to {\n    border-color: transparent;\n  }\n  50% {\n    border-color: black;\n  }\n}\n\n@-ms-keyframes mj-ed-blink {\n  from, to {\n    border-color: transparent;\n  }\n  50% {\n    border-color: black;\n  }\n}\n\n@-o-keyframes mj-ed-blink {\n  from, to {\n    border-color: transparent;\n  }\n  50% {\n    border-color: black;\n  }\n}\n";
 
 /***/ }
 /******/ ])
