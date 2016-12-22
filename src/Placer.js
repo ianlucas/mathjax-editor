@@ -147,7 +147,6 @@ class Placer {
     });
 
     // Second strategy: find the nearest element to the clicked point.
-    // TODO: Improve this.
 
     if (!found) {
       let last = { interval: null, distance: null, i: null };
@@ -169,14 +168,31 @@ class Placer {
       this.debug(`[fireClick] Not found a bounding, placeing at ${index}.`);
     }
 
-    if (x < this.intervals[0].startX) {
-      this.debug(`[fireClick] Out of display boundings. Placing at start.`);
-      index = 0;
+    // Check if the clicked point is out of bounds.
+    // Since we can have now empty startX and endX, we need to
+    // iterate the intervals.
+
+    let i = 0;
+    const length = this.intervals.length;
+
+    for (; i < length; i++) {
+      if (this.intervals[i].startX) {
+        if (x < this.intervals[i].startX) {
+          this.debug(`[fireClick] Out of display boundings. Placing at start.`);
+          index = 0;
+        }
+        break;
+      }
     }
 
-    if (x > this.intervals[this.intervals.length - 1].endX) {
-      this.debug(`[fireClick] Out of display boundings. Placing at the end.`);
-      index = this.tex.length;
+    for (i = length - 1; i >= 0; i--) {
+      if (this.intervals[i].endX) {
+        if (x > this.intervals[i].endX) {
+          this.debug(`[fireClick] Out of display boundings. Placing at the end.`);
+          index = this.tex.length;
+        }
+        break;
+      }
     }
 
     this.onRequestPlacement(index);
@@ -188,15 +204,19 @@ class Placer {
    * 
    * @param {String} type
    * @param {Number} index
+   * @param {Boolean} nearClosure
    * 
    * @return {Void}
    */
-  find(type, index) {
+  find(type, index, nearClosure) {
     this.findings[type] = this.findings[type] || 0;
-    const $el = document.querySelectorAll(`.mjx-${type}`)[this.findings[type]];
+    const $el = this.$display.querySelectorAll(`.mjx-${type}`)[this.findings[type]];
     const bounding = $el.getBoundingClientRect();
     this.addInterval(index, bounding.left, bounding.right, bounding.top, bounding.bottom);
     this.findings[type] += 1;
+    if (nearClosure) {
+      this.addInterval(index + 1, 0, 0, 0, 0);
+    }
   }
 
   /**
@@ -210,10 +230,10 @@ class Placer {
    * @return {Void}
    */
   findCommand(command, index) {
-    command = command.replace(/\[.*\]/, '');
-    const name = command.slice(1, command.length - 1);
+    command = command.replace(/[\[\{].*(\]\{.*)?/, '');
+    const name = command.slice(1);
     this.findings[name] = this.findings[name] || 0;
-    const $el = document.querySelectorAll(`.mjx-m${name}`)[this.findings[name]];
+    const $el = this.$display.querySelectorAll(`.mjx-m${name}`)[this.findings[name]];
     const bounding = $el.getBoundingClientRect();
 
     switch (name) {
@@ -223,13 +243,31 @@ class Placer {
         const numBounding = $numerator.getBoundingClientRect();
         const denBounding = $denominator.getBoundingClientRect();
         const boundings = [numBounding, denBounding];
-        const { blocks } = this.parseCommandAt(index);
+        var { blocks } = this.parseCommandAt(index);
 
         boundings.forEach((bounding, i) => {
           if ((blocks[i].closeIndex - blocks[i].openIndex) === 1) {
-            this.addInterval(blocks[i].openIndex + 1, bounding.left, bounding.right, bounding.top, bounding.bottom, true);
+            this.addInterval(blocks[i].closeIndex, bounding.left, bounding.right, bounding.top, bounding.bottom, true);
           }
         });
+
+        break;
+
+      case 'root':
+      case 'sqrt':
+        var { blocks, brackets } = this.parseCommandAt(index);
+
+        if (brackets.closeIndex && (brackets.closeIndex - brackets.openIndex) === 1) {
+          const $root = $el.querySelector('.mjx-root .mjx-char');
+          const { left, right, top, bottom } = $root.getBoundingClientRect();
+          this.addInterval(brackets.closeIndex, left, right, top, bottom, true);
+        }
+        if ((blocks[0].closeIndex - blocks[0].openIndex) === 1) {
+          const $box = $el.querySelector('.mjx-box');
+          const { left, right, top, bottom } = $box.getBoundingClientRect();
+          this.addInterval(blocks[0].closeIndex, left, right, top, bottom, true);
+        }
+        break;
     }
   }
 
@@ -251,19 +289,20 @@ class Placer {
 
     for (; i < length; i++) {
       const char = tex[i];
+      let nearClosure = (!!~['}', ']', '\\'].indexOf(tex[i + 1]));
 
       if (test.isNumber.exec(char)) {
-        this.find('mn', i);
+        this.find('mn', i, nearClosure);
         continue;
       }
 
       if (test.isVariable.exec(char)) {
-        this.find('mi', i);
+        this.find('mi', i, nearClosure);
         continue;
       }
 
       if (test.isOperator.exec(char)) {
-        this.find('mo', i);
+        this.find('mo', i, nearClosure);
         continue;
       }
 
@@ -272,8 +311,9 @@ class Placer {
         let command = '';
         for (; j < length; j++) {
           const subchar = tex[j];
+          nearClosure = (!!~['}', ']', '\\'].indexOf(tex[j + 1]))
           command += subchar;
-          if (subchar === ' ' || subchar === '{') {
+          if (~[' ', '{', '['].indexOf(subchar)) {
             const list = {
               '\\cdot': 'mo',
               '\\div': 'mo'
@@ -281,9 +321,12 @@ class Placer {
             const trimmed = command.trim();
             const type = list[trimmed] ? list[trimmed] : 'mi';
             if (subchar === ' ') {
-              this.find(type, i);
+              this.find(type, i, nearClosure);
             }
             else {
+              if (command.match(/\\sqrt\[/)) {
+                command = command.replace('sqrt', 'root');
+              }
               this.findCommand(command, i);
             }
             i = j;
@@ -297,10 +340,17 @@ class Placer {
   parseCommandAt(i) {
     const length = this.tex.length;
     let blocks = [];
+    let brackets = { openIndex: null, closeIndex: null };
     let openBlocks = 0;
 
     for (; i < length; i++) {
       const char = this.tex[i];
+      if (char === '[') {
+        brackets.openIndex = i;
+      }
+      if (char === ']') {
+        brackets.closeIndex = i;
+      }
       if (char === '{') {
         blocks.push({ openIndex: i });
         openBlocks += 1;
@@ -317,7 +367,8 @@ class Placer {
     }
 
     return {
-      blocks
+      blocks,
+      brackets
     };
   }
 }
