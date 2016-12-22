@@ -207,6 +207,7 @@ class Editor {
    */
   updateCursorElement(options = {}) {
     const hidden = options.hidden || false;
+
     
     MathJax.Hub.Queue(() => {
       const $cursor = this.$display.querySelector('.mjx-cursor');
@@ -216,6 +217,16 @@ class Editor {
       if (!$cursor.style.marginLeft) {
         $cursor.style.marginLeft = `-${$cursor.offsetWidth}px`;
       }
+
+      // Fix #7
+      if (this._cursorRecentlyPlaced) {
+        clearTimeout(this._cursorRecentlyPlaced);
+      }
+      addClass($cursor, 'wasRecentlyPlaced');
+      this._cursorRecentlyPlaced = setTimeout(() => {
+        removeClass($cursor, 'wasRecentlyPlaced');
+      }, 600);
+
       $cursor.style.display = hidden ? 'none' : 'inline-block';
     });
   }

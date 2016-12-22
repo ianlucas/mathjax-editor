@@ -9,6 +9,10 @@ module.exports = `
   color: transparent;
 }
 
+.mjx-cursor.wasRecentlyPlaced {
+  border-right-color: black !important;
+}
+
 .mj-ed-input {
   left: -100%;
   position: absolute;
