@@ -24,6 +24,20 @@ const editor = new MathJaxEditor({
 });
 ```
 
+### `MathJaxEditor(options)`
+
+#### `options.el`
+
+The target element. It can be a selector string or a DOM Element.
+
+#### `options.debug`
+
+Enable the debug mode. Default is **`false`**.
+
+#### `options.newLine`
+
+Enable new line insertion. Default is **`false`**.
+
 ### API
 
 #### `editor.insertCommand(command[, blockCount = 1, brackets = false])`
@@ -38,7 +52,7 @@ Focus the editor.
 
 Blur the editor.
 
-#### `editor.getJax()`
+#### `editor.getValue()`
 
 Get the editor's value.
 
