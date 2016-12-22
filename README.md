@@ -38,6 +38,10 @@ Enable the debug mode. Default is **`false`**.
 
 Enable new line insertion. Default is **`false`**.
 
+#### `options.value`
+
+Define the default editor value.
+
 ### API
 
 #### `editor.insertCommand(command[, blockCount = 1, brackets = false])`

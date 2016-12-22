@@ -28,13 +28,13 @@ class Editor {
    * 
    * @constructor
    */
-  constructor({ el, debug = false, focusClass = 'isFocused', newLine = false }) {
+  constructor({ el, debug = false, focusClass = 'isFocused', newLine = false, value = '' }) {
     const Element = MathJax.HTML.Element;
 
     const $el = mustFindElement(el);
     const $container = Element('div', { className: 'mj-ed-container' });
     const $input = Element('input', { className: 'mj-ed-input' });
-    const $display = Element('div', { className: 'mj-ed-display' }, ['\\(\\cursor\\)']);
+    const $display = Element('div', { className: 'mj-ed-display' }, [`\\({\\cursor}${value}\\)`]);
     const $debug = Element('pre', { className: 'mj-ed-debug' }, ['|']);
 
     $el.parentNode.replaceChild($container, $el);
@@ -57,7 +57,7 @@ class Editor {
       }, () => {
         $display.style.opacity = 1;
         $display.style.minHeight = `${$display.offsetHeight}px`;
-        this.updateCursorElement({ hidden: true });
+        this.update(value, { hidden: true });
       }
     );
 
@@ -70,7 +70,7 @@ class Editor {
     this.debug = debug;
     this.focusClass = focusClass;
     this.newLine = newLine;
-    this.value = '';
+    this.value = value;
   }
 
   /**
@@ -78,10 +78,11 @@ class Editor {
    * inner HTML if the options.debug is enabled.
    * 
    * @param {String} value - Jax to be used. It defaults to the editor's value.
+   * @param {Object} cursorOptions - Options to be passed to `updateCursorElement`.
    * 
    * @return {Void}
    */
-  update(value = this.value) {
+  update(value = this.value, cursorOptions = {}) {
     const cursor = this.cursor;
     const valueWithCursor = insertBetween(value, cursor, '{\\cursor}')
       .replace(/\d/g, n => `{${n}}`)
@@ -104,7 +105,7 @@ class Editor {
           });
         }, 20);
 
-        this.updateCursorElement();
+        this.updateCursorElement(cursorOptions);
       }
     );
   }
