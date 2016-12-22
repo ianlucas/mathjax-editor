@@ -222,8 +222,6 @@ class Placer {
   /**
    * Find a command element.
    * 
-   * TODO: Fix placement bugs.
-   * 
    * @param {String} command
    * @param {Number} index
    * 
@@ -284,7 +282,7 @@ class Placer {
     const test = {
       isNumber: /\d/,
       isVariable: /\w/,
-      isOperator: /[\+\-]/
+      isOperator: /[\+\-\=\,\.]/
     }
 
     for (; i < length; i++) {
@@ -306,7 +304,7 @@ class Placer {
         continue;
       }
 
-      if (char === '\\') {
+      if (char === '\\' && tex[i + 1] !== '\\') {
         let j = i;
         let command = '';
         for (; j < length; j++) {
@@ -352,7 +350,9 @@ class Placer {
         brackets.closeIndex = i;
       }
       if (char === '{') {
-        blocks.push({ openIndex: i });
+        if (openBlocks === 0) {
+          blocks.push({ openIndex: i });
+        }
         openBlocks += 1;
       }
       if (char === '}') {

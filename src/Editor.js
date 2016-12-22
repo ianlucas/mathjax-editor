@@ -86,6 +86,7 @@ class Editor {
     const cursor = this.cursor;
     const valueWithCursor = insertBetween(value, cursor, '{\\cursor}')
       .replace(/\d/g, n => `{${n}}`)
+      .replace(/\,/g, comma => `{${comma}}`)
       .replace(/\{\}/g, '{\\isEmpty}')
       .replace(/\[\]/g, '[\\isEmpty]')
       .replace(/\{\{\\cursor\}\}/g, '{{\\cursor}\\isEmpty}')
@@ -311,6 +312,8 @@ class Editor {
       '+': '+',
       '-': '-',
       '=': '=',
+      ',': ',',
+      '.': '.',
       '*': '\\cdot ',
       '/': '\\div '
     };
