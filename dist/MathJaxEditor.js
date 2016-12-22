@@ -99,7 +99,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var editor = new _Editor2.default(options);
 
 	    this.editor = editor;
-	    this.version = '1.1.0';
+	    this.version = '1.1.1';
 	  }
 
 	  /**
@@ -149,12 +149,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * Get editor's jax.
 	     * 
+	     * @deprecated
+	     * 
 	     * @return {String}
 	     */
 
 	  }, {
 	    key: 'getJax',
 	    value: function getJax() {
+	      console.warn('[deprecated] getJax is deprecated, use getValue instead.');
+	      return this.editor.value;
+	    }
+
+	    /**
+	     * Get editor's value.
+	     * 
+	     * @deprecated
+	     * 
+	     * @return {String}
+	     */
+
+	  }, {
+	    key: 'getValue',
+	    value: function getValue() {
 	      return this.editor.value;
 	    }
 	  }]);
@@ -207,6 +224,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * @param {DOMElement|String} options.el - The DOM Element itself or a string selector.
 	   * @param {Boolean} options.debug - Set debug mode.
 	   * @param {String} options.focusClass - Which class to use to identify focus.
+	   * @param {Boolean} options.newLine - Allow or disallow newline. (default is false)
 	   * 
 	   * @constructor
 	   */
@@ -217,7 +235,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _ref$debug = _ref.debug,
 	        debug = _ref$debug === undefined ? false : _ref$debug,
 	        _ref$focusClass = _ref.focusClass,
-	        focusClass = _ref$focusClass === undefined ? 'isFocused' : _ref$focusClass;
+	        focusClass = _ref$focusClass === undefined ? 'isFocused' : _ref$focusClass,
+	        _ref$newLine = _ref.newLine,
+	        newLine = _ref$newLine === undefined ? false : _ref$newLine;
 
 	    _classCallCheck(this, Editor);
 
@@ -259,6 +279,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.placer = null;
 	    this.debug = debug;
 	    this.focusClass = focusClass;
+	    this.newLine = newLine;
 	    this.value = '';
 	  }
 
@@ -282,7 +303,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var cursor = this.cursor;
 	      var valueWithCursor = (0, _utils.insertBetween)(value, cursor, '{\\cursor}').replace(/\d/g, function (n) {
 	        return '{' + n + '}';
-	      }).replace(/\{\}/g, '{\\isEmpty}').replace(/\{\{\\cursor\}\}/g, '{{\\cursor}\\isEmpty}');
+	      }).replace(/\{\}/g, '{\\isEmpty}').replace(/\[\]/g, '[\\isEmpty]').replace(/\{\{\\cursor\}\}/g, '{{\\cursor}\\isEmpty}').replace(/\[\{\\cursor\}\]/g, '[{\\cursor}\\isEmpty]');
 
 	      if (this.debug) {
 	        this.$debug.innerHTML = (0, _utils.insertBetween)(value, cursor, '|');
@@ -558,7 +579,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	          return;
 
 	        case KEY_ENTER:
-	          this.insert('\\\\');
+	          if (this.newLine) {
+	            this.insert('\\\\');
+	          }
 	          return;
 	      }
 
@@ -954,7 +977,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      });
 
 	      // Second strategy: find the nearest element to the clicked point.
-	      // TODO: Improve this.
 
 	      if (!found) {
 	        var _ret = function () {
@@ -982,14 +1004,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
 	      }
 
-	      if (x < this.intervals[0].startX) {
-	        this.debug('[fireClick] Out of display boundings. Placing at start.');
-	        index = 0;
+	      // Check if the clicked point is out of bounds.
+	      // Since we can have now empty startX and endX, we need to
+	      // iterate the intervals.
+
+	      var i = 0;
+	      var length = this.intervals.length;
+
+	      for (; i < length; i++) {
+	        if (this.intervals[i].startX) {
+	          if (x < this.intervals[i].startX) {
+	            this.debug('[fireClick] Out of display boundings. Placing at start.');
+	            index = 0;
+	          }
+	          break;
+	        }
 	      }
 
-	      if (x > this.intervals[this.intervals.length - 1].endX) {
-	        this.debug('[fireClick] Out of display boundings. Placing at the end.');
-	        index = this.tex.length;
+	      for (i = length - 1; i >= 0; i--) {
+	        if (this.intervals[i].endX) {
+	          if (x > this.intervals[i].endX) {
+	            this.debug('[fireClick] Out of display boundings. Placing at the end.');
+	            index = this.tex.length;
+	          }
+	          break;
+	        }
 	      }
 
 	      this.onRequestPlacement(index);
@@ -1001,18 +1040,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * 
 	     * @param {String} type
 	     * @param {Number} index
+	     * @param {Boolean} nearClosure
 	     * 
 	     * @return {Void}
 	     */
 
 	  }, {
 	    key: 'find',
-	    value: function find(type, index) {
+	    value: function find(type, index, nearClosure) {
 	      this.findings[type] = this.findings[type] || 0;
-	      var $el = document.querySelectorAll('.mjx-' + type)[this.findings[type]];
+	      var $el = this.$display.querySelectorAll('.mjx-' + type)[this.findings[type]];
 	      var bounding = $el.getBoundingClientRect();
 	      this.addInterval(index, bounding.left, bounding.right, bounding.top, bounding.bottom);
 	      this.findings[type] += 1;
+	      if (nearClosure) {
+	        this.addInterval(index + 1, 0, 0, 0, 0);
+	      }
 	    }
 
 	    /**
@@ -1031,31 +1074,61 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function findCommand(command, index) {
 	      var _this2 = this;
 
-	      command = command.replace(/\[.*\]/, '');
-	      var name = command.slice(1, command.length - 1);
+	      command = command.replace(/[\[\{].*(\]\{.*)?/, '');
+	      var name = command.slice(1);
 	      this.findings[name] = this.findings[name] || 0;
-	      var $el = document.querySelectorAll('.mjx-m' + name)[this.findings[name]];
+	      var $el = this.$display.querySelectorAll('.mjx-m' + name)[this.findings[name]];
 	      var bounding = $el.getBoundingClientRect();
 
-	      (function () {
-	        switch (name) {
-	          case 'frac':
-	            var $numerator = $el.querySelector('.mjx-numerator');
-	            var $denominator = $el.querySelector('.mjx-denominator');
-	            var numBounding = $numerator.getBoundingClientRect();
-	            var denBounding = $denominator.getBoundingClientRect();
-	            var boundings = [numBounding, denBounding];
+	      switch (name) {
+	        case 'frac':
+	          var $numerator = $el.querySelector('.mjx-numerator');
+	          var $denominator = $el.querySelector('.mjx-denominator');
+	          var numBounding = $numerator.getBoundingClientRect();
+	          var denBounding = $denominator.getBoundingClientRect();
+	          var boundings = [numBounding, denBounding];
 
-	            var _parseCommandAt = _this2.parseCommandAt(index),
-	                blocks = _parseCommandAt.blocks;
+	          var _parseCommandAt = this.parseCommandAt(index),
+	              blocks = _parseCommandAt.blocks;
 
-	            boundings.forEach(function (bounding, i) {
-	              if (blocks[i].closeIndex - blocks[i].openIndex === 1) {
-	                _this2.addInterval(blocks[i].openIndex + 1, bounding.left, bounding.right, bounding.top, bounding.bottom, true);
-	              }
-	            });
-	        }
-	      })();
+	          boundings.forEach(function (bounding, i) {
+	            if (blocks[i].closeIndex - blocks[i].openIndex === 1) {
+	              _this2.addInterval(blocks[i].closeIndex, bounding.left, bounding.right, bounding.top, bounding.bottom, true);
+	            }
+	          });
+
+	          break;
+
+	        case 'root':
+	        case 'sqrt':
+	          var _parseCommandAt2 = this.parseCommandAt(index),
+	              blocks = _parseCommandAt2.blocks,
+	              brackets = _parseCommandAt2.brackets;
+
+	          if (brackets.closeIndex && brackets.closeIndex - brackets.openIndex === 1) {
+	            var $root = $el.querySelector('.mjx-root .mjx-char');
+
+	            var _$root$getBoundingCli = $root.getBoundingClientRect(),
+	                left = _$root$getBoundingCli.left,
+	                right = _$root$getBoundingCli.right,
+	                top = _$root$getBoundingCli.top,
+	                bottom = _$root$getBoundingCli.bottom;
+
+	            this.addInterval(brackets.closeIndex, left, right, top, bottom, true);
+	          }
+	          if (blocks[0].closeIndex - blocks[0].openIndex === 1) {
+	            var $box = $el.querySelector('.mjx-box');
+
+	            var _$box$getBoundingClie = $box.getBoundingClientRect(),
+	                _left = _$box$getBoundingClie.left,
+	                _right = _$box$getBoundingClie.right,
+	                _top = _$box$getBoundingClie.top,
+	                _bottom = _$box$getBoundingClie.bottom;
+
+	            this.addInterval(blocks[0].closeIndex, _left, _right, _top, _bottom, true);
+	          }
+	          break;
+	      }
 	    }
 
 	    /**
@@ -1079,19 +1152,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      for (; i < length; i++) {
 	        var char = tex[i];
+	        var nearClosure = !!~['}', ']', '\\'].indexOf(tex[i + 1]);
 
 	        if (test.isNumber.exec(char)) {
-	          this.find('mn', i);
+	          this.find('mn', i, nearClosure);
 	          continue;
 	        }
 
 	        if (test.isVariable.exec(char)) {
-	          this.find('mi', i);
+	          this.find('mi', i, nearClosure);
 	          continue;
 	        }
 
 	        if (test.isOperator.exec(char)) {
-	          this.find('mo', i);
+	          this.find('mo', i, nearClosure);
 	          continue;
 	        }
 
@@ -1100,8 +1174,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	          var command = '';
 	          for (; j < length; j++) {
 	            var subchar = tex[j];
+	            nearClosure = !!~['}', ']', '\\'].indexOf(tex[j + 1]);
 	            command += subchar;
-	            if (subchar === ' ' || subchar === '{') {
+	            if (~[' ', '{', '['].indexOf(subchar)) {
 	              var list = {
 	                '\\cdot': 'mo',
 	                '\\div': 'mo'
@@ -1109,8 +1184,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	              var trimmed = command.trim();
 	              var type = list[trimmed] ? list[trimmed] : 'mi';
 	              if (subchar === ' ') {
-	                this.find(type, i);
+	                this.find(type, i, nearClosure);
 	              } else {
+	                if (command.match(/\\sqrt\[/)) {
+	                  command = command.replace('sqrt', 'root');
+	                }
 	                this.findCommand(command, i);
 	              }
 	              i = j;
@@ -1125,10 +1203,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function parseCommandAt(i) {
 	      var length = this.tex.length;
 	      var blocks = [];
+	      var brackets = { openIndex: null, closeIndex: null };
 	      var openBlocks = 0;
 
 	      for (; i < length; i++) {
 	        var char = this.tex[i];
+	        if (char === '[') {
+	          brackets.openIndex = i;
+	        }
+	        if (char === ']') {
+	          brackets.closeIndex = i;
+	        }
 	        if (char === '{') {
 	          blocks.push({ openIndex: i });
 	          openBlocks += 1;
@@ -1145,7 +1230,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      return {
-	        blocks: blocks
+	        blocks: blocks,
+	        brackets: brackets
 	      };
 	    }
 	  }], [{
