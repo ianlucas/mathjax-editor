@@ -99,7 +99,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var editor = new _Editor2.default(options);
 
 	    this.editor = editor;
-	    this.version = '1.1.3';
+	    this.version = '1.1.4';
 	  }
 
 	  /**
@@ -147,6 +147,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    /**
+	     * Insert a piece of text in editor's value.
+	     * 
+	     * @param {String} value
+	     * 
+	     * @return {Void}
+	     */
+
+	  }, {
+	    key: 'insert',
+	    value: function insert(value) {
+	      this.editor.insert(value);
+	    }
+
+	    /**
 	     * Get editor's jax.
 	     * 
 	     * @deprecated
@@ -173,6 +187,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'getValue',
 	    value: function getValue() {
 	      return this.editor.value;
+	    }
+
+	    /**
+	     * Move the cursor to the left.
+	     * 
+	     * @return {Void}
+	     */
+
+	  }, {
+	    key: 'moveCursorLeft',
+	    value: function moveCursorLeft() {
+	      this.editor.moveCursorLeft();
+	    }
+
+	    /**
+	     * Move the cursor to the right.
+	     * 
+	     * @return {Void} 
+	     */
+
+	  }, {
+	    key: 'moveCursorRight',
+	    value: function moveCursorRight() {
+	      this.editor.moveCursorRight();
 	    }
 	  }]);
 
@@ -577,15 +615,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function handleInput(which, char) {
 	      switch (which) {
 	        case KEY_LEFT:
-	          if (this.cursor > 0) {
-	            this.updateCursor(-1);
-	          }
+	          this.moveCursorLeft();
 	          return;
 
 	        case KEY_RIGHT:
-	          if (this.cursor < this.value.length) {
-	            this.updateCursor(1);
-	          }
+	          this.moveCursorRight();
 	          return;
 
 	        case KEY_BACKSPACE:
@@ -612,6 +646,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      this.insert(char);
+	    }
+
+	    /**
+	     * Move the cursor to the left.
+	     * 
+	     * @return {Void}
+	     */
+
+	  }, {
+	    key: 'moveCursorLeft',
+	    value: function moveCursorLeft() {
+	      if (this.cursor > 0) {
+	        this.updateCursor(-1);
+	      }
+	    }
+
+	    /**
+	     * Move the cursor to the right.
+	     * 
+	     * @return {Void}
+	     */
+
+	  }, {
+	    key: 'moveCursorRight',
+	    value: function moveCursorRight() {
+	      if (this.cursor < this.value.length) {
+	        this.updateCursor(1);
+	      }
 	    }
 
 	    /**
