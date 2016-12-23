@@ -7,7 +7,7 @@ https://github.com/ianlucas/mathjax-editor
 
 (c) 2016, Ian Lucas.
 Released under the MIT license
-`
+`;
 
 module.exports = {
   entry: './src/MathJaxEditor',
@@ -25,6 +25,11 @@ module.exports = {
         test: /\.js$/,
         exclude: /node_modules/,
         loader: 'babel-loader'
+      },
+      {
+        test: /\.css$/,
+        exclude: /node_modules/,
+        loader: 'style-loader!css-loader'
       }
     ]
   },

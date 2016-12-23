@@ -1,4 +1,3 @@
-import stylesheet from './stylesheet';
 import { copy } from './utils';
 
 /**
@@ -57,13 +56,4 @@ export default function extendMathJax() {
       }
     });
   });
-
-  /**
-   * Append our editor styles on the DOM.
-   * Maybe an external dependency with real CSS extension instead?
-   */
-
-  const $style = document.createElement('style');
-  $style.innerHTML = stylesheet;
-  document.head.appendChild($style);
 }

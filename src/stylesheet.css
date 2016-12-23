@@ -1,4 +1,3 @@
-module.exports = `
 .mjx-cursor {
   -webkit-animation: 1s mj-ed-blink step-end infinite;
   -moz-animation: 1s mj-ed-blink step-end infinite;
@@ -79,4 +78,3 @@ module.exports = `
     border-color: black;
   }
 }
-`;
