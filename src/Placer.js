@@ -152,6 +152,9 @@ class Placer {
       let last = { interval: null, distance: null, i: null };
 
       this.intervals.forEach((interval, i) => {
+        if (!(interval.startY < y && y < interval.endY)) {
+          return;
+        }
         const distance = Math.min(Math.abs(interval.startX - x), Math.abs(interval.endX - x));
         if (last.distance === null || distance < last.distance) {
           last.interval = interval;
