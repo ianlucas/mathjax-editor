@@ -1,5 +1,3 @@
-import { copy } from './utils';
-
 /**
  * This will extend MathJax so that we can put our simple
  * cursor there.
