@@ -347,15 +347,11 @@ class Editor {
   handleInput(which, char) {
     switch (which) {
       case KEY_LEFT:
-        if (this.cursor > 0) {
-          this.updateCursor(-1);
-        }
+        this.moveCursorLeft();
         return;
 
       case KEY_RIGHT:
-        if (this.cursor < this.value.length) {
-          this.updateCursor(1);
-        }
+        this.moveCursorRight();
         return;
 
       case KEY_BACKSPACE:
@@ -382,6 +378,28 @@ class Editor {
     }
 
     this.insert(char);
+  }
+
+  /**
+   * Move the cursor to the left.
+   * 
+   * @return {Void}
+   */
+  moveCursorLeft() {
+    if (this.cursor > 0) {
+      this.updateCursor(-1);
+    }
+  }
+
+  /**
+   * Move the cursor to the right.
+   * 
+   * @return {Void}
+   */
+  moveCursorRight() {
+    if (this.cursor < this.value.length) {
+      this.updateCursor(1);
+    }
   }
   
   /**

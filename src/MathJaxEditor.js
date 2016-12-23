@@ -53,6 +53,17 @@ class MathJaxEditor {
   }
 
   /**
+   * Insert a piece of text in editor's value.
+   * 
+   * @param {String} value
+   * 
+   * @return {Void}
+   */
+  insert(value) {
+    this.editor.insert(value);
+  }
+
+  /**
    * Get editor's jax.
    * 
    * @deprecated
@@ -73,6 +84,24 @@ class MathJaxEditor {
    */
   getValue() {
     return this.editor.value;
+  }
+
+  /**
+   * Move the cursor to the left.
+   * 
+   * @return {Void}
+   */
+  moveCursorLeft() {
+    this.editor.moveCursorLeft();
+  }
+
+  /**
+   * Move the cursor to the right.
+   * 
+   * @return {Void} 
+   */
+  moveCursorRight() {
+    this.editor.moveCursorRight();
   }
 }
 
