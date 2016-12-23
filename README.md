@@ -48,6 +48,18 @@ Define the default editor value.
 
 This inserts a command into the editor. `blockCount` is the quantity of blocks (`{}`) the command requires (e.q. `\sqrt` requires 1, and `\frac` requires 2). If it is a character like alpha (`\alpha`), you **must** specify `blockCount` as `0`.
 
+### `editor.insert(value)`
+
+This insert a text into the editor. You can use this method to insert numbers (`0-9`), and variables (`a-z`). Also symbols like `+`, `-`.
+
+### `editor.moveCursorLeft()`
+
+This will move the cursor to the left.
+
+### `editor.moveCursorRight()`
+
+This will move the cursor to the right.
+
 #### `editor.focus()`
 
 Focus the editor.
