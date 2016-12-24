@@ -105,6 +105,15 @@ class MathJaxEditor {
   moveCursorRight() {
     this.editor.moveCursorRight();
   }
+
+  /**
+   * Erases the character before the cursor.
+   * 
+   * @return {Void}
+   */
+  erase() {
+    this.editor.erase();
+  }
 }
 
 module.exports = MathJaxEditor;

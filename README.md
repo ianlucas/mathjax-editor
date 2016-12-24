@@ -60,6 +60,10 @@ This will move the cursor to the left.
 
 This will move the cursor to the right.
 
+#### `editor.erase()`
+
+This will erase the character before the cursor.
+
 #### `editor.focus()`
 
 Focus the editor.
