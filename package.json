@@ -1,10 +1,11 @@
 {
   "name": "mathjax-editor",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "A Mathematics editor on top of MathJax.",
   "main": "src/MathJaxEditor.js",
   "scripts": {
-    "dev": "webpack --watch"
+    "dev": "webpack --watch",
+    "build": "webpack && uglifyjs ./dist/MathJaxEditor.js -c -m -o ./dist/MathJaxEditor.min.js "
   },
   "author": "Ian Lucas <ianlucas_ferreira@hotmail.com>",
   "repository": {
@@ -18,6 +19,7 @@
     "babel-preset-es2015": "^6.18.0",
     "css-loader": "^0.26.1",
     "style-loader": "^0.13.1",
+    "uglify-js": "^2.7.5",
     "webpack": "^2.1.0-beta.26"
   },
   "homepage": "https://github.com/ianlucas/mathjax-editor",

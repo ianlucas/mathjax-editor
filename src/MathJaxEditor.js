@@ -20,7 +20,7 @@ class MathJaxEditor {
     const editor = new Editor(options);
 
     this.editor = editor;
-    this.version = '1.1.4';
+    this.version = '1.1.5';
   }
 
   /**
