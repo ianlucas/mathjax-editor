@@ -9,7 +9,6 @@ class EventBus {
 
   trigger(type, ...rest) {
     if (this.registry[type]) {
-      console.log(this.registry);
       this.registry[type].forEach(listener => listener(...rest));
     }
   }
