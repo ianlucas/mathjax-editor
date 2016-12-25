@@ -114,6 +114,18 @@ class MathJaxEditor {
   erase() {
     this.editor.erase();
   }
+
+  /**
+   * Listen to an event to be triggered by the Editor.
+   * 
+   * @param {String} type
+   * @param {Function} listener
+   * 
+   * @return {Void}
+   */
+  on(type, listener) {
+    this.editor.on(type, listener);
+  }
 }
 
 module.exports = MathJaxEditor;

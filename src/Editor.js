@@ -1,3 +1,4 @@
+import EventBus from './EventBus';
 import Placer from './Placer';
 import Iterator from './Iterator';
 import { 
@@ -65,6 +66,7 @@ class Editor {
     this.$debug = $debug;
     this.$display = $display;
     this.$input = $input;
+    this.bus = new EventBus;
     this.cursor = 0;
     this.placer = null;
     this.debug = debug;
@@ -428,6 +430,7 @@ class Editor {
   focus() {
     this.$input.focus();
     this.updateCursorElement({ hidden: false });
+    this.bus.trigger('focus');
     addClass(this.$display, this.focusClass);
   }
 
@@ -439,6 +442,7 @@ class Editor {
   blur() {
     this.$input.blur();
     this.updateCursorElement({ hidden: true });
+    this.bus.trigger('blur');
     removeClass(this.$display, this.focusClass);
   }
 
@@ -574,6 +578,18 @@ class Editor {
     this.cursor = before.length;
 
     this.update();
+  }
+
+  /**
+   * Listen to an event to be triggered by the Editor.
+   * 
+   * @param {String} type
+   * @param {Function} listener
+   * 
+   * @return {Void}
+   */
+  on(type, listener) {
+    this.bus.on(type, listener);
   }
 }
 
