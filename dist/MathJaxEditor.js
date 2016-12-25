@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _Editor2 = _interopRequireDefault(_Editor);
 
-	var _extendMathJax = __webpack_require__(9);
+	var _extendMathJax = __webpack_require__(10);
 
 	var _extendMathJax2 = _interopRequireDefault(_extendMathJax);
 
@@ -101,7 +101,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var editor = new _Editor2.default(options);
 
 	    this.editor = editor;
-	    this.version = '1.1.5';
+	    this.version = '1.1.6';
 	  }
 
 	  /**
@@ -225,6 +225,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'erase',
 	    value: function erase() {
 	      this.editor.erase();
+	    }
+
+	    /**
+	     * Listen to an event to be triggered by the Editor.
+	     * 
+	     * @param {String} type
+	     * @param {Function} listener
+	     * 
+	     * @return {Void}
+	     */
+
+	  }, {
+	    key: 'on',
+	    value: function on(type, listener) {
+	      this.editor.on(type, listener);
 	    }
 	  }]);
 
@@ -593,15 +608,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _Placer = __webpack_require__(6);
+	var _EventBus = __webpack_require__(6);
+
+	var _EventBus2 = _interopRequireDefault(_EventBus);
+
+	var _Placer = __webpack_require__(7);
 
 	var _Placer2 = _interopRequireDefault(_Placer);
 
-	var _Iterator = __webpack_require__(7);
+	var _Iterator = __webpack_require__(8);
 
 	var _Iterator2 = _interopRequireDefault(_Iterator);
 
-	var _utils = __webpack_require__(8);
+	var _utils = __webpack_require__(9);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -677,6 +696,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.$debug = $debug;
 	    this.$display = $display;
 	    this.$input = $input;
+	    this.bus = new _EventBus2.default();
 	    this.cursor = 0;
 	    this.placer = null;
 	    this.debug = debug;
@@ -1070,6 +1090,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function focus() {
 	      this.$input.focus();
 	      this.updateCursorElement({ hidden: false });
+	      this.bus.trigger('focus');
 	      (0, _utils.addClass)(this.$display, this.focusClass);
 	    }
 
@@ -1084,6 +1105,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function blur() {
 	      this.$input.blur();
 	      this.updateCursorElement({ hidden: true });
+	      this.bus.trigger('blur');
 	      (0, _utils.removeClass)(this.$display, this.focusClass);
 	    }
 
@@ -1229,6 +1251,21 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      this.update();
 	    }
+
+	    /**
+	     * Listen to an event to be triggered by the Editor.
+	     * 
+	     * @param {String} type
+	     * @param {Function} listener
+	     * 
+	     * @return {Void}
+	     */
+
+	  }, {
+	    key: 'on',
+	    value: function on(type, listener) {
+	      this.bus.on(type, listener);
+	    }
 	  }]);
 
 	  return Editor;
@@ -1238,6 +1275,53 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 6 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var EventBus = function () {
+	  function EventBus() {
+	    _classCallCheck(this, EventBus);
+
+	    this.registry = {};
+	  }
+
+	  _createClass(EventBus, [{
+	    key: "on",
+	    value: function on(type, listener) {
+	      this.registry[type] = (this.registry[type] || []).concat(listener);
+	    }
+	  }, {
+	    key: "trigger",
+	    value: function trigger(type) {
+	      for (var _len = arguments.length, rest = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+	        rest[_key - 1] = arguments[_key];
+	      }
+
+	      if (this.registry[type]) {
+	        console.log(this.registry);
+	        this.registry[type].forEach(function (listener) {
+	          return listener.apply(undefined, rest);
+	        });
+	      }
+	    }
+	  }]);
+
+	  return EventBus;
+	}();
+
+	exports.default = EventBus;
+
+/***/ },
+/* 7 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1702,7 +1786,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = Placer;
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -2006,7 +2090,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = Iterator;
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -2131,7 +2215,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports) {
 
 	'use strict';
