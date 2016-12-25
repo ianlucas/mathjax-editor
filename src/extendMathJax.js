@@ -1,3 +1,5 @@
+import styles from './styles';
+
 /**
  * This will extend MathJax so that we can put our simple
  * cursor there.
@@ -8,6 +10,7 @@ export default function extendMathJax() {
 
   // This removes the pause (in milliseconds) between input and output 
   // phases of MathJax's processing. So it looks seamless!
+
   MathJax.Hub.processSectionDelay = 0;
 
   MathJax.Hub.Register.StartupHook("TeX Jax Ready", () => {
@@ -54,4 +57,6 @@ export default function extendMathJax() {
       }
     });
   });
+
+  MathJax.Ajax.Styles(styles);
 }

@@ -1,5 +1,3 @@
-import './stylesheet.css';
-
 import Editor from './Editor';
 import extendMathJax from './extendMathJax';
 
