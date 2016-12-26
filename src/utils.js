@@ -87,3 +87,15 @@ export function toArray(children) {
   const slice = [].slice;
   return slice.call(children);
 }
+
+/**
+ * Check if the needle is found in haystack.
+ * 
+ * @param {Mixed} needle
+ * @param {Array} haystack
+ * 
+ * @return {Boolean}
+ */
+export function isAny(needle, haystack) {
+  return !!~haystack.indexOf(needle);
+}
