@@ -99,7 +99,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var core = new _Editor2.default(options);
 
 	    this.core = core;
-	    this.version = '1.2.0';
+	    this.version = '1.2.1';
 	  }
 
 	  /**
@@ -276,9 +276,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _Placer2 = _interopRequireDefault(_Placer);
 
-	var _Iterator = __webpack_require__(4);
+	var _Tex = __webpack_require__(4);
 
-	var _Iterator2 = _interopRequireDefault(_Iterator);
+	var _Tex2 = _interopRequireDefault(_Tex);
 
 	var _utils = __webpack_require__(5);
 
@@ -344,12 +344,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    $display.style.opacity = 0;
 	    $debug.style.display = debug ? 'block' : 'none';
 
-	    MathJax.Hub.Queue(['Typeset', MathJax.Hub, $display], function () {
-	      _this.jaxElement = MathJax.Hub.getAllJax($display)[0];
+	    MathJax.Hub.Queue(function () {
+	      return MathJax.Hub.Typeset($display);
+	    }, function () {
+	      return _this.jaxElement = MathJax.Hub.getAllJax($display)[0];
 	    }, function () {
 	      $display.style.opacity = 1;
 	      $display.style.minHeight = $display.offsetHeight + 'px';
-	      _this.update(value, { hidden: true });
+	      _this.update({ cursorHidden: true });
 	    });
 
 	    this.$container = $container;
@@ -362,7 +364,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.debug = debug;
 	    this.focusClass = focusClass;
 	    this.newLine = newLine;
+	    this.tex = new _Tex2.default(value);
 	    this.value = value;
+	    this.lastValue = value;
 	  }
 
 	  /**
@@ -381,10 +385,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function update() {
 	      var _this2 = this;
 
-	      var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.value;
-	      var cursorOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	      var cursorOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+	      var value = this.value;
+
+	      if (value !== this.lastValue) {
+	        this.tex = new _Tex2.default(value);
+	      }
 
 	      var cursor = this.cursor;
+	      // TODO: Improve this ugh
 	      var valueWithCursor = (0, _utils.insertBetween)(value, cursor, '{\\cursor}').replace(/\d/g, function (n) {
 	        return '{' + n + '}';
 	      }).replace(/\,/g, function (comma) {
@@ -397,13 +407,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      this.updateJaxElement(valueWithCursor, function () {
 	        setTimeout(function () {
-	          _this2.placer = _Placer2.default.read(_this2, function (cursor) {
-	            console.log('The cursor should be placed at ' + cursor);
+	          var placer = new _Placer2.default(_this2);
+	          placer.on('setCursor', function (cursor) {
+	            _this2.debug && console.log('The cursor should be placed at ' + cursor + '.');
 	            _this2.cursor = cursor;
 	            _this2.update();
 	          });
-	        }, 20);
-
+	          _this2.placer = placer;
+	        }, 16);
 	        _this2.updateCursorElement(cursorOptions);
 	      });
 	    }
@@ -420,17 +431,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'updateJaxElement',
 	    value: function updateJaxElement(jax) {
+	      var _this3 = this;
+
 	      var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : Function;
 
-	      MathJax.Hub.Queue(['Text', this.jaxElement, jax], callback);
+	      MathJax.Hub.Queue(function () {
+	        return _this3.jaxElement.Text(jax);
+	      }, callback);
 	    }
 
 	    /**
 	     * This updates the cursor position based on the amount
 	     * of movement is given.
-	     * 
-	     * PS: The meaning of the variable `next` is not the next index,
-	     *     but the next value the cursor will hold.
 	     * 
 	     * @param {Number} amount
 	     * 
@@ -442,53 +454,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function updateCursor() {
 	      var amount = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
-	      var next = this.cursor + amount;
 	      var cursor = this.cursor;
-	      var iterator = new _Iterator2.default(this.value);
-	      var currentChar = iterator.at(cursor);
-	      var nextChar = iterator.at(next);
+	      var points = this.tex.cursorPoints;
+	      var key = points.indexOf(cursor);
 
-	      // Moving to the left.
-
-	      if (amount < 0) {
-	        nextChar.when('{').andPreviousCharacterNotIs('}').findBackwards('\\', '^', '_', ']').then(function (i) {
-	          return next = i;
-	        });
-
-	        nextChar.when('{').andPreviousCharacterIs('}').then(function () {
-	          return next -= 1;
-	        });
-
-	        nextChar.when('\\').andPreviousCharacterIs('\\').then(function () {
-	          return next -= 1;
-	        });
-
-	        nextChar.when(' ').findBackwards('\\').then(function (i) {
-	          return next = i;
-	        });
-
-	        nextChar.when('[').findBackwards('\\').then(function (i) {
-	          return next = i;
-	        });
-	      }
-
-	      // Moving to the right.
+	      var to = cursor;
 
 	      if (amount > 0) {
-	        currentChar.when('\\', '^', '_').andNextCharacterNotIs('\\').findForwards('{', ' ', '[').then(function (i) {
-	          return next = i + 1;
-	        });
-
-	        currentChar.when('}', ']').andNextCharacterIs('{').then(function () {
-	          return next += 1;
-	        });
-
-	        currentChar.when('\\').andNextCharacterIs('\\').then(function () {
-	          return next += 1;
-	        });
+	        to = points[key + 1];
+	      } else if (amount < 0) {
+	        to = points[key - 1];
 	      }
 
-	      this.cursor = next;
+	      this.cursor = to;
 	      this.update();
 	    }
 
@@ -504,14 +482,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'updateCursorElement',
 	    value: function updateCursorElement() {
-	      var _this3 = this;
+	      var _this4 = this;
 
 	      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-	      var hidden = options.hidden || false;
+	      var hidden = options.cursorHidden || false;
 
 	      MathJax.Hub.Queue(function () {
-	        var $cursor = _this3.$display.querySelector('.mjx-cursor');
+	        var $cursor = _this4.$display.querySelector('.mjx-cursor');
 	        if (!$cursor) {
 	          return;
 	        }
@@ -520,11 +498,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        // Fix #7
-	        if (_this3._cursorRecentlyPlaced) {
-	          clearTimeout(_this3._cursorRecentlyPlaced);
+	        if (_this4._cursorRecentlyPlaced) {
+	          clearTimeout(_this4._cursorRecentlyPlaced);
 	        }
 	        (0, _utils.addClass)($cursor, 'wasRecentlyPlaced');
-	        _this3._cursorRecentlyPlaced = setTimeout(function () {
+	        _this4._cursorRecentlyPlaced = setTimeout(function () {
 	          (0, _utils.removeClass)($cursor, 'wasRecentlyPlaced');
 	        }, 600);
 
@@ -600,7 +578,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'handleInputEvent',
 	    value: function handleInputEvent(e) {
-	      var _this4 = this;
+	      var _this5 = this;
 
 	      var $input = this.$input;
 	      var inputValue = $input.value.trim();
@@ -639,7 +617,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          char = translate[char];
 	        }
 
-	        _this4.handleInput(which, char);
+	        _this5.handleInput(which, char);
 	      });
 	    }
 
@@ -736,7 +714,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return;
 	      }
 
-	      this.placer.fireClick(e);
+	      this.placer.trigger('click', e);
 	    }
 
 	    /**
@@ -784,6 +762,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var current = this.value;
 
 	      this.cursor += value.length;
+	      this.lastValue = this.value;
 	      this.value = (0, _utils.insertBetween)(current, cursor, value);
 
 	      this.update();
@@ -829,12 +808,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var cursor = this.cursor;
 	      var blocks = '}' + '{}'.repeat(blockCount - 1);
 
+	      this.lastValue = this.value;
 	      this.value = (0, _utils.insertBetween)(value, cursor, blocks);
 	      this.update();
 	    }
 
 	    /**
 	     * Erases the character before the cursor.
+	     * TODO: REFACTORE THIS
 	     * 
 	     * @return {Void}
 	     */
@@ -874,6 +855,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    /**
 	     * Erases the character before the cursor.
+	     * TODO: REFACTORE THIS
 	     * 
 	     * @return {Void}
 	     */
@@ -913,7 +895,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    /**
-	     * Listen to an event to be triggered by the Editor.
+	     * Listen to an event to be triggered by Editor.
 	     * 
 	     * @param {String} type
 	     * @param {Function} listener
@@ -948,17 +930,42 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var EventBus = function () {
+	  /**
+	   * This is a simple Event Bus to register/trigger events.
+	   * 
+	   * @constructor
+	   */
 	  function EventBus() {
 	    _classCallCheck(this, EventBus);
 
 	    this.registry = {};
 	  }
 
+	  /**
+	   * Listen to an event to be triggered.
+	   * 
+	   * @param {String} type
+	   * @param {Function} listener
+	   * 
+	   * @return {Void}
+	   */
+
+
 	  _createClass(EventBus, [{
 	    key: "on",
 	    value: function on(type, listener) {
 	      this.registry[type] = (this.registry[type] || []).concat(listener);
 	    }
+
+	    /**
+	     * Trigger an event.
+	     * 
+	     * @param {String} type
+	     * @param {Mixed} ...rest
+	     * 
+	     * @return {Void}
+	     */
+
 	  }, {
 	    key: "trigger",
 	    value: function trigger(type) {
@@ -981,7 +988,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 3 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -993,16 +1000,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+	var _EventBus = __webpack_require__(2);
+
+	var _EventBus2 = _interopRequireDefault(_EventBus);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var Placer = function () {
 	  /**
-	   * This is the Placer class.
-	   * 
-	   * It parse the current tex, and calculates the boundings of each
-	   * variable/number/command elements to determinate if a cursor position
-	   * change is possible (when the user clicks on `document.body`), it also
-	   * specify which position the cursor should be moved to.
+	   * This will handle the cursor placement when the user clicks somewhere
+	   * on the editor.
 	   * 
 	   * @param {Editor} editor
 	   * 
@@ -1011,70 +1020,160 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function Placer(editor) {
 	    _classCallCheck(this, Placer);
 
-	    this.intervals = [];
-	    this.onRequestPlacement = Function;
-	    this.tex = editor.value;
-	    this.$display = editor.$display;
-	    this.findings = {};
-	    this.isDebug = editor.debug;
+	    var bus = new _EventBus2.default();
 
-	    this.parse();
+	    bus.on('click', this.handleClick.bind(this));
+
+	    this.$display = editor.$display;
+	    this.bus = bus;
+	    this.intervals = [];
+	    this.elements = editor.tex.elements;
+	    this.findings = {};
+	    this.tex = editor.tex;
+
+	    this.iterate();
 	  }
 
 	  /**
-	   * This will read an editor, and fire `onRequestPlacement` if cursor
-	   * should be moved to another position.
+	   * Listen to an event to be triggered by Placer.
 	   * 
-	   * This will return a new instance of Placer.
+	   * @param {String} type
+	   * @param {Function} listener
 	   * 
-	   * @param {Editor} editor
-	   * @param {Function} onRequestPlacement
-	   * 
-	   * @return {Placer}
+	   * @return {Void}
 	   */
 
 
 	  _createClass(Placer, [{
-	    key: 'debug',
-
+	    key: 'on',
+	    value: function on(type, listener) {
+	      this.bus.on(type, listener);
+	    }
 
 	    /**
-	     * Debug helper function. Works just like console.log.
+	     * Triggers an event inside Placer.
+	     * 
+	     * @param {String} type
+	     * @param {Mixed} ...rest
 	     * 
 	     * @return {Void}
 	     */
-	    value: function debug() {
-	      var _console;
 
-	      if (!this.isDebug) {
-	        return;
+	  }, {
+	    key: 'trigger',
+	    value: function trigger(type) {
+	      var _bus;
+
+	      for (var _len = arguments.length, rest = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+	        rest[_key - 1] = arguments[_key];
 	      }
-	      (_console = console).log.apply(_console, arguments);
+
+	      (_bus = this.bus).trigger.apply(_bus, [type].concat(rest));
+	    }
+
+	    /**
+	     * Checks if the cursor must be moved, and if so,
+	     * it triggers the event 'setCursor' with the position.
+	     * 
+	     * @param {Event} e
+	     * 
+	     * @return {Void}
+	     */
+
+	  }, {
+	    key: 'handleClick',
+	    value: function handleClick(e) {
+	      var _this = this;
+
+	      var _$display$getBounding = this.$display.getBoundingClientRect(),
+	          top = _$display$getBounding.top,
+	          bottom = _$display$getBounding.bottom;
+
+	      var x = e.clientX;
+	      var y = e.clientY;
+	      var intervals = this.intervals;
+	      var index = this.tex.length;
+
+	      if (!intervals.length || y > bottom || y < top) {
+	        return false;
+	      }
+
+	      var found = false;
+
+	      // First strategy: checks if the clicked point is inside a number/
+	      // variable/operator bounding. If it is, place it where is proper.
+
+	      intervals.forEach(function (interval, i) {
+	        if (interval.startX <= x && x < interval.endX) {
+	          if (interval.startY <= y && y < interval.endY) {
+	            found = true;
+	            index = _this.placeAtInterval(interval, i, x, y);
+	          }
+	        }
+	      });
+
+	      // Second strategy: find the nearest element to the clicked point.
+
+	      if (!found) {
+	        var _ret = function () {
+	          var last = { interval: null, distance: null, i: null };
+
+	          intervals.forEach(function (interval, i) {
+	            if (!(interval.startY < y && y < interval.endY)) {
+	              return;
+	            }
+	            var distance = Math.min(Math.abs(interval.startX - x), Math.abs(interval.endX - x));
+	            if (last.distance === null || distance < last.distance) {
+	              last.interval = interval;
+	              last.distance = distance;
+	              last.i = i;
+	            }
+	          });
+
+	          if (!last.interval) {
+	            return {
+	              v: false
+	            };
+	          }
+
+	          index = _this.placeAtInterval(last.interval, last.i, x, y);
+	        }();
+
+	        if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+	      }
+
+	      this.bus.trigger('setCursor', index);
+	    }
+
+	    /**
+	     * Get the next key for a type.
+	     * 
+	     * @param {String} type
+	     * 
+	     * @return {Number}
+	     */
+
+	  }, {
+	    key: 'getNextKeyFor',
+	    value: function getNextKeyFor(type) {
+	      this.findings[type] = this.findings[type] || 0;
+	      var key = this.findings[type];
+	      this.findings[type] += 1;
+	      return key;
 	    }
 
 	    /**
 	     * Add an interval to intervals list.
 	     * 
-	     * @param {Number} index
-	     * @param {Number} startX
-	     * @param {Number} endX
-	     * @param {Number} startY
-	     * @param {Number} endY
-	     * @param {Boolean} useAllArea - If the click point is inside this 
-	     *                               interval boundings, cursor will be
-	     *                               placed at this interval index.
+	     * @param {Object} data
 	     * 
 	     * @return {Void}
 	     */
 
 	  }, {
 	    key: 'addInterval',
-	    value: function addInterval(index, startX, endX, startY, endY) {
-	      var useAllArea = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : false;
-
-	      this.intervals.push({
-	        index: index, startX: startX, endX: endX, startY: startY, endY: endY, useAllArea: useAllArea
-	      });
+	    value: function addInterval(data) {
+	      this.intervals.push(data);
 	    }
 
 	    /**
@@ -1091,182 +1190,128 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  }, {
 	    key: 'placeAtInterval',
-	    value: function placeAtInterval(interval, x, y, i) {
+	    value: function placeAtInterval(interval, i, x, y) {
+	      var intervals = this.intervals;
 	      var width = interval.endX - interval.startX;
+	      var nextInterval = i + 1;
+
 	      var index = interval.index;
 
-	      this.debug('Interval X from ' + interval.startX + ' to ' + interval.endX + ' (Middle point x: ' + (interval.startX + width / 2) + ', width: ' + width + ')');
-	      this.debug('Interval Y from ' + interval.startY + ' to ' + interval.endY);
-
-	      if (interval.useAllArea) {
+	      if (interval.box) {
 	        return index;
 	      }
 
 	      if (x > interval.startX + width / 2) {
-	        if (this.intervals[i + 1]) {
-	          index = this.intervals[i + 1].index;
+	        if (intervals[nextInterval]) {
+	          index = intervals[nextInterval].index;
 	        } else {
 	          index = this.tex.length;
 	        }
 	      }
 
-	      this.debug('[placeAtInterval] Cursor to be placed at ' + index + '.');
-
 	      return index;
 	    }
 
 	    /**
-	     * Checks if the cursor must be moved, and if so,
-	     * it fires `this.onRequestPlacement` with the position.
-	     * 
-	     * @param {Event} e
+	     * Iterates over the elements created by Tex to find
+	     * the elements in the DOM and compute them.
 	     * 
 	     * @return {Void}
 	     */
 
 	  }, {
-	    key: 'fireClick',
-	    value: function fireClick(e) {
-	      var _this = this;
+	    key: 'iterate',
+	    value: function iterate() {
+	      var _this2 = this;
 
-	      var _$display$getBounding = this.$display.getBoundingClientRect(),
-	          bottom = _$display$getBounding.bottom;
+	      this.elements.forEach(function (element) {
+	        switch (element.is) {
+	          case 'command':
+	            _this2.findCommand(element);
+	            break;
 
-	      var x = e.clientX;
-	      var y = e.clientY;
-	      var index = this.tex.length;
-
-	      this.debug('You has clicked at (' + x + ', ' + y + ').');
-	      this.debug(this.intervals);
-
-	      // If there are no intervals, or the point `y` is
-	      // not in the range of the editor's bounds, we just
-	      // ignore the event. TODO: Check for y top.
-
-	      if (!this.intervals.length || y > bottom) {
-	        return;
-	      }
-
-	      var found = false;
-
-	      // First strategy: checks if the clicked point is inside a number/
-	      // variable/operator bounding. If it is, place it where is proper. 
-
-	      this.intervals.forEach(function (interval, i) {
-	        if (interval.startX <= x && x < interval.endX) {
-	          if (interval.startY <= y && y < interval.endY) {
-	            found = true;
-	            index = _this.placeAtInterval(interval, x, y, i);
-	          }
+	          default:
+	            _this2.find(element);
 	        }
 	      });
-
-	      // Second strategy: find the nearest element to the clicked point.
-
-	      if (!found) {
-	        var _ret = function () {
-	          var last = { interval: null, distance: null, i: null };
-
-	          _this.intervals.forEach(function (interval, i) {
-	            if (!(interval.startY < y && y < interval.endY)) {
-	              return;
-	            }
-	            var distance = Math.min(Math.abs(interval.startX - x), Math.abs(interval.endX - x));
-	            if (last.distance === null || distance < last.distance) {
-	              last.interval = interval;
-	              last.distance = distance;
-	              last.i = i;
-	            }
-	          });
-
-	          if (!last.interval) {
-	            return {
-	              v: void 0
-	            };
-	          }
-
-	          index = _this.placeAtInterval(last.interval, x, y, last.i);
-	          _this.debug('[fireClick] Not found a bounding, placeing at ' + index + '.');
-	        }();
-
-	        if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
-	      }
-
-	      // Check if the clicked point is out of bounds.
-	      // Since we can have now empty startX and endX, we need to
-	      // iterate the intervals.
-
-	      // let i = 0;
-	      // const length = this.intervals.length;
-
-	      // for (; i < length; i++) {
-	      //   if (this.intervals[i].startX) {
-	      //     if (x < this.intervals[i].startX) {
-	      //       this.debug(`[fireClick] Out of display boundings. Placing at start.`);
-	      //       index = 0;
-	      //     }
-	      //     break;
-	      //   }
-	      // }
-
-	      // for (i = length - 1; i >= 0; i--) {
-	      //   if (this.intervals[i].endX) {
-	      //     if (x > this.intervals[i].endX) {
-	      //       this.debug(`[fireClick] Out of display boundings. Placing at the end.`);
-	      //       index = this.tex.length;
-	      //     }
-	      //     break;
-	      //   }
-	      // }
-
-	      this.onRequestPlacement(index);
 	    }
 
 	    /**
 	     * Find an element of the given type and add its interval data 
 	     * to `this.intervals`.
 	     * 
-	     * @param {String} type
-	     * @param {Number} index
-	     * @param {Boolean} nearClosure
+	     * @param {Object} data
+	     * @param {String} data.type
+	     * @param {Number} data.index
+	     * @param {Boolean} data.nearClosure
 	     * 
 	     * @return {Void}
 	     */
 
 	  }, {
 	    key: 'find',
-	    value: function find(type, index, nearClosure) {
-	      this.findings[type] = this.findings[type] || 0;
-	      var $el = this.$display.querySelectorAll('.mjx-' + type)[this.findings[type]];
-	      var bounding = $el.getBoundingClientRect();
-	      this.addInterval(index, bounding.left, bounding.right, bounding.top, bounding.bottom);
-	      this.findings[type] += 1;
+	    value: function find(_ref) {
+	      var type = _ref.type,
+	          index = _ref.index,
+	          nearClosure = _ref.nearClosure;
+
+	      var key = this.getNextKeyFor(type);
+	      var $el = this.$display.querySelectorAll('.mjx-' + type)[key];
+	      if (!$el) {
+	        return console.log('COULD NOT FIND THIS ELEMENT', $el);
+	      }
+
+	      var _$el$getBoundingClien = $el.getBoundingClientRect(),
+	          left = _$el$getBoundingClien.left,
+	          right = _$el$getBoundingClien.right,
+	          top = _$el$getBoundingClien.top,
+	          bottom = _$el$getBoundingClien.bottom;
+
+	      this.addInterval({
+	        startX: left,
+	        endX: right,
+	        startY: top,
+	        endY: bottom,
+	        index: index
+	      });
 	      if (nearClosure) {
-	        this.addInterval(index + 1, 0, 0, 0, 0);
+	        this.addInterval({
+	          index: index + 1,
+	          top: 0,
+	          bottom: 0,
+	          left: 0,
+	          right: 0
+	        });
 	      }
 	    }
 
 	    /**
 	     * Find a command element.
 	     * 
-	     * @param {String} command
-	     * @param {Number} index
+	     * @param {Object} data
+	     * @param {String} data.type
+	     * @param {Number} data.index
+	     * @param {Object} data.props
 	     * 
 	     * @return {Void}
 	     */
 
 	  }, {
 	    key: 'findCommand',
-	    value: function findCommand(command, index) {
-	      var _this2 = this;
+	    value: function findCommand(_ref2) {
+	      var _this3 = this;
 
-	      command = command.replace(/[\[\{].*(\]\{.*)?/, '');
-	      var name = command.slice(1);
-	      this.findings[name] = this.findings[name] || 0;
-	      var $el = this.$display.querySelectorAll('.mjx-m' + name)[this.findings[name]];
-	      var bounding = $el.getBoundingClientRect();
+	      var type = _ref2.type,
+	          index = _ref2.index,
+	          props = _ref2.props;
 
-	      switch (name) {
+	      var key = this.getNextKeyFor(type);
+	      var $el = this.$display.querySelectorAll('.mjx-m' + type)[key];
+	      var brackets = props.brackets,
+	          blocks = props.blocks;
+
+
+	      switch (type) {
 	        case 'frac':
 	          var $numerator = $el.querySelector('.mjx-numerator');
 	          var $denominator = $el.querySelector('.mjx-denominator');
@@ -1274,12 +1319,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	          var denBounding = $denominator.getBoundingClientRect();
 	          var boundings = [numBounding, denBounding];
 
-	          var _parseCommandAt = this.parseCommandAt(index),
-	              blocks = _parseCommandAt.blocks;
+	          boundings.forEach(function (_ref3, i) {
+	            var left = _ref3.left,
+	                right = _ref3.right,
+	                top = _ref3.top,
+	                bottom = _ref3.bottom;
 
-	          boundings.forEach(function (bounding, i) {
 	            if (blocks[i].closeIndex - blocks[i].openIndex === 1) {
-	              _this2.addInterval(blocks[i].closeIndex, bounding.left, bounding.right, bounding.top, bounding.bottom, true);
+	              _this3.addInterval({
+	                index: blocks[i].closeIndex,
+	                startX: left,
+	                endX: right,
+	                startY: top,
+	                endY: bottom,
+	                box: true
+	              });
 	            }
 	          });
 
@@ -1287,11 +1341,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        case 'root':
 	        case 'sqrt':
-	          var _parseCommandAt2 = this.parseCommandAt(index),
-	              blocks = _parseCommandAt2.blocks,
-	              brackets = _parseCommandAt2.brackets;
-
-	          if (brackets.closeIndex && brackets.closeIndex - brackets.openIndex === 1) {
+	          if (brackets && brackets.closeIndex - brackets.openIndex === 1) {
 	            var $root = $el.querySelector('.mjx-root .mjx-char');
 
 	            var _$root$getBoundingCli = $root.getBoundingClientRect(),
@@ -1300,7 +1350,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	                top = _$root$getBoundingCli.top,
 	                bottom = _$root$getBoundingCli.bottom;
 
-	            this.addInterval(brackets.closeIndex, left, right, top, bottom, true);
+	            this.addInterval({
+	              index: brackets.closeIndex,
+	              startX: left,
+	              endX: right,
+	              startY: top,
+	              endY: bottom,
+	              box: true
+	            });
 	          }
 	          if (blocks[0].closeIndex - blocks[0].openIndex === 1) {
 	            var $box = $el.querySelector('.mjx-box');
@@ -1311,172 +1368,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	                _top = _$box$getBoundingClie.top,
 	                _bottom = _$box$getBoundingClie.bottom;
 
-	            this.addInterval(blocks[0].closeIndex, _left, _right, _top, _bottom, true);
+	            this.addInterval({
+	              index: blocks[0].closeIndex,
+	              startX: _left,
+	              endX: _right,
+	              startY: _top,
+	              endY: _bottom,
+	              box: true
+	            });
 	          }
 	          break;
 	      }
-	    }
-
-	    /**
-	     * Parse the editor's tex.
-	     * 
-	     * @return {Void}
-	     */
-
-	  }, {
-	    key: 'parse',
-	    value: function parse() {
-	      var tex = this.tex;
-	      var length = tex.length;
-	      var i = 0;
-
-	      var test = {
-	        isNumber: /\d/,
-	        isVariable: /\w/,
-	        isOperator: /[\+\-\=\,\.]/,
-	        isEscapedOperator: /[\[\]\{\}]/
-	      };
-
-	      for (; i < length; i++) {
-	        var char = tex[i];
-	        var nearClosure = !!~['}', ']', '\\'].indexOf(tex[i + 1]);
-
-	        if (test.isNumber.exec(char)) {
-	          this.find('mn', i, nearClosure);
-	          continue;
-	        }
-
-	        if (test.isVariable.exec(char)) {
-	          this.find('mi', i, nearClosure);
-	          continue;
-	        }
-
-	        if (test.isOperator.exec(char)) {
-	          this.find('mo', i, nearClosure);
-	          continue;
-	        }
-
-	        // Newline, so we skip.
-	        if (char === '\\' && tex[i + 1] === '\\') {
-	          i += 1;
-	          continue;
-	        }
-
-	        if (char === '\\') {
-	          var j = i;
-	          var command = '';
-	          for (; j < length; j++) {
-	            var subchar = tex[j];
-	            nearClosure = !!~['}', ']', '\\'].indexOf(tex[j + 1]);
-	            command += subchar;
-	            if (~[' ', '{', '['].indexOf(subchar)) {
-	              var list = {
-	                '\\alpha': 'mi',
-	                '\\beta': 'mi',
-	                '\\gamma': 'mi',
-	                '\\Gamma': 'mi',
-	                '\\delta': 'mi',
-	                '\\Delta': 'mi',
-	                '\\epsilon': 'mi',
-	                '\\varepsilon': 'mi',
-	                '\\zeta': 'mi',
-	                '\\eta': 'mi',
-	                '\\theta': 'mi',
-	                '\\vartheta': 'mi',
-	                '\\Theta': 'mi',
-	                '\\iota': 'mi',
-	                '\\kappa': 'mi',
-	                '\\lambda': 'mi',
-	                '\\mu': 'mi',
-	                '\\nu': 'mi',
-	                '\\xi': 'mi',
-	                '\\Xi': 'mi',
-	                '\\pi': 'mi',
-	                '\\Pi': 'mi',
-	                '\\rho': 'mi',
-	                '\\varrho': 'mi',
-	                '\\sigma': 'mi',
-	                '\\Sigma': 'mi',
-	                '\\tau': 'mi',
-	                '\\upsilon': 'mi',
-	                '\\Upsilon': 'mi',
-	                '\\phi': 'mi',
-	                '\\varphi': 'mi',
-	                '\\Phi': 'mi',
-	                '\\chi': 'mi',
-	                '\\psi': 'mi',
-	                '\\Psi': 'mi',
-	                '\\omega': 'mi',
-	                '\\Omega': 'mi',
-	                '\\%': 'mi'
-	              };
-	              var trimmed = command.trim();
-	              var type = list[trimmed] ? list[trimmed] : 'mo';
-	              if (subchar === ' ') {
-	                this.find(type, i, nearClosure);
-	              } else {
-	                if (command.match(/\\sqrt\[/)) {
-	                  command = command.replace('sqrt', 'root');
-	                }
-	                this.findCommand(command, i);
-	              }
-	              i = j;
-	              break;
-	            }
-	          }
-	        }
-
-	        if (test.isEscapedOperator.exec(char)) {
-	          this.find('mo', i);
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'parseCommandAt',
-	    value: function parseCommandAt(i) {
-	      var length = this.tex.length;
-	      var blocks = [];
-	      var brackets = { openIndex: null, closeIndex: null };
-	      var openBlocks = 0;
-
-	      for (; i < length; i++) {
-	        var char = this.tex[i];
-	        if (char === '[') {
-	          brackets.openIndex = i;
-	        }
-	        if (char === ']') {
-	          brackets.closeIndex = i;
-	        }
-	        if (char === '{') {
-	          if (openBlocks === 0) {
-	            blocks.push({ openIndex: i });
-	          }
-	          openBlocks += 1;
-	        }
-	        if (char === '}') {
-	          openBlocks -= 1;
-	          if (openBlocks === 0) {
-	            blocks[blocks.length - 1].closeIndex = i;
-	          }
-	        }
-	        if (char === '}' && this.tex[i + 1] !== '{') {
-	          break;
-	        }
-	      }
-
-	      return {
-	        blocks: blocks,
-	        brackets: brackets
-	      };
-	    }
-	  }], [{
-	    key: 'read',
-	    value: function read(editor) {
-	      var onRequestPlacement = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : Function;
-
-	      var placer = new Placer(editor);
-	      placer.onRequestPlacement = onRequestPlacement;
-	      return placer;
 	    }
 	  }]);
 
@@ -1487,9 +1389,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 4 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -1497,297 +1399,305 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+	var _utils = __webpack_require__(5);
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	/**
-	 * This class helps to iterate over a string.
-	 */
-	var Iterator = function () {
+	var NEAR_CLOSURE_HAYSTACK = ['}', ']', '\\'];
+
+	var test = {
+	  isNumber: /[0-9]/,
+	  isVariable: /[a-z]/,
+	  isOperator: /[\+\-\=\,\.\[\]]/,
+	  isEscapedOperator: /[\{\}]/
+	};
+
+	var Tex = function () {
 	  /**
+	   * This class will parse the given tex and produce `cursorPoints` (indexes)
+	   * where cursor can be placed, and `elements` (that are passed to Placer).
+	   * 
 	   * @param {String} tex
+	   * 
 	   * @constructor
 	   */
-	  function Iterator(tex) {
-	    _classCallCheck(this, Iterator);
+	  function Tex(tex) {
+	    _classCallCheck(this, Tex);
 
 	    this.tex = tex;
+	    this.cursorPoints = [];
+	    this.elements = [];
+	    this.length = tex.length;
+
+	    this.parse();
 	  }
 
 	  /**
-	   * Get character at given index.
+	   * Parse the given tex.
 	   * 
-	   * @param {Number} index
-	   * 
-	   * @return IteratorCharacter
+	   * @return {Void}
 	   */
 
 
-	  _createClass(Iterator, [{
-	    key: "at",
-	    value: function at(index) {
-	      return new IteratorCharacter(this.tex, index);
-	    }
-	  }]);
-
-	  return Iterator;
-	}();
-
-	/**
-	 * This class represents a text character.
-	 */
-
-
-	var IteratorCharacter = function () {
-	  /**
-	   * @param {String} tex - Text it came from.
-	   * @param {Number} index - Its index in that text.
-	   *
-	   * @constructor
-	   */
-	  function IteratorCharacter(tex, index) {
-	    _classCallCheck(this, IteratorCharacter);
-
-	    this.tex = tex;
-	    this.index = index;
-	    this.value = tex[index];
-	  }
-
-	  /**
-	   * Check if this character is equals to any of given arguments.
-	   * 
-	   * @param {String} ...chars
-	   * 
-	   * @return {Boolean}
-	   */
-
-
-	  _createClass(IteratorCharacter, [{
-	    key: "is",
-	    value: function is() {
-	      for (var _len = arguments.length, chars = Array(_len), _key = 0; _key < _len; _key++) {
-	        chars[_key] = arguments[_key];
-	      }
-
-	      return !!~chars.indexOf(this.value);
-	    }
-
-	    /**
-	     * If the char is equals to any of given arguments,
-	     * returns a logic constructor.
-	     * 
-	     * @param {String} ...char
-	     * 
-	     * @return {IteratorFlow}
-	     */
-
-	  }, {
-	    key: "when",
-	    value: function when() {
-	      return new IteratorFlow(this, this.is.apply(this, arguments));
-	    }
-
-	    /**
-	     * Get the character previous to this character.
-	     * 
-	     * @return {IteratorCharacter}
-	     */
-
-	  }, {
-	    key: "previousCharacter",
-	    value: function previousCharacter() {
-	      return new IteratorCharacter(this.tex, this.index - 1);
-	    }
-
-	    /**
-	     * Get the character next to this character.
-	     * 
-	     * @return {IteratorCharacter}
-	     */
-
-	  }, {
-	    key: "nextCharacter",
-	    value: function nextCharacter() {
-	      return new IteratorCharacter(this.tex, this.index + 1);
-	    }
-	  }]);
-
-	  return IteratorCharacter;
-	}();
-
-	var IteratorFlow = function () {
-	  /**
-	   * @param {IteratorCharacter} char
-	   * @param {Boolean} assertion
-	   * 
-	   * @constructor
-	   */
-	  function IteratorFlow(char, assertion) {
-	    _classCallCheck(this, IteratorFlow);
-
-	    this.assertion = assertion;
-	    this.char = char;
-	    this.tex = char.tex;
-	    this.iterator = char.index;
-	  }
-
-	  /**
-	   * @param {Boolean} expression
-	   */
-
-
-	  _createClass(IteratorFlow, [{
-	    key: "and",
-	    value: function and(expression) {
-	      if (this.assertion) {
-	        this.assertion = !!expression;
-	      }
-	    }
-
-	    /**
-	     * Check if next character is equals to the expected.
-	     * 
-	     * @param {String} expected
-	     * 
-	     * @return {IteratorFlow} this
-	     */
-
-	  }, {
-	    key: "andNextCharacterIs",
-	    value: function andNextCharacterIs(expected) {
-	      this.and(this.char.nextCharacter().is(expected));
-	      return this;
-	    }
-
-	    /**
-	     * Check if next character is not equals to the expected.
-	     * 
-	     * @param {String} expected
-	     * 
-	     * @return {IteratorFlow} this
-	     */
-
-	  }, {
-	    key: "andNextCharacterNotIs",
-	    value: function andNextCharacterNotIs(expected) {
-	      this.and(!this.char.nextCharacter().is(expected));
-	      return this;
-	    }
-
-	    /**
-	     * Check if previous character is equals to the expected.
-	     * 
-	     * @param {String} expected
-	     * 
-	     * @return {IteratorFlow} this
-	     */
-
-	  }, {
-	    key: "andPreviousCharacterIs",
-	    value: function andPreviousCharacterIs(expected) {
-	      this.and(this.char.previousCharacter().is(expected));
-	      return this;
-	    }
-
-	    /**
-	     * Check if previous character is not equals to the expected.
-	     * 
-	     * @param {String} expected
-	     * 
-	     * @return {IteratorFlow} this
-	     */
-
-	  }, {
-	    key: "andPreviousCharacterNotIs",
-	    value: function andPreviousCharacterNotIs(expected) {
-	      this.and(!this.char.previousCharacter().is(expected));
-	      return this;
-	    }
-
-	    /**
-	     * Find backwards any of the given chars.
-	     * 
-	     * This will change `this.iterator` which is passed 
-	     * to `this.then` callback.
-	     * 
-	     * @param {String} ...chars
-	     * 
-	     * @return {IteratorFlow} this
-	     */
-
-	  }, {
-	    key: "findBackwards",
-	    value: function findBackwards() {
+	  _createClass(Tex, [{
+	    key: 'parse',
+	    value: function parse() {
+	      var cursorPoints = [];
 	      var tex = this.tex;
-	      var i = this.iterator;
+	      var length = this.tex.length;
+	      var i = 0;
 
-	      for (var _len2 = arguments.length, chars = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-	        chars[_key2] = arguments[_key2];
+	      for (; i < length; i++) {
+	        var index = i;
+	        var char = tex[index];
+	        var nextChar = tex[index + 1];
+	        var lastChar = tex[index - 1];
+	        var nearClosure = (0, _utils.isAny)(nextChar, NEAR_CLOSURE_HAYSTACK);
+
+	        // Check if character is a number.
+	        if (test.isNumber.exec(char)) {
+	          this.elements.push({
+	            is: 'number',
+	            type: 'mn',
+	            index: index,
+	            nearClosure: nearClosure
+	          });
+	        }
+
+	        // Check if character is a variable.
+	        if (test.isVariable.exec(char)) {
+	          this.elements.push({
+	            is: 'variable',
+	            type: 'mi',
+	            index: index,
+	            nearClosure: nearClosure
+	          });
+	        }
+
+	        // Check if character is an operator.
+	        if (test.isOperator.exec(char)) {
+	          this.elements.push({
+	            is: 'operator',
+	            type: 'mo',
+	            index: index,
+	            nearClosure: nearClosure
+	          });
+	        }
+
+	        if (test.isEscapedOperator.exec(char) && lastChar === '\\') {
+	          this.elements.push({
+	            is: 'operator',
+	            type: 'mo',
+	            index: index,
+	            nearClosure: nearClosure
+	          });
+	        }
+
+	        // Newline up ahead.
+	        if (char === '\\' && nextChar === '\\') {
+	          i += 1;
+	        }
+
+	        // A command.
+	        if (char === '\\' && test.isVariable.exec(nextChar)) {
+	          i = this.parseCommand(i);
+	        }
+
+	        // Sup and sub commands.
+	        if ((0, _utils.isAny)(char, ['^', '_'])) {
+	          i = this.parseCommand(i);
+	        }
+
+	        // Closing a command block.
+	        if (char === '}' && lastChar !== '\\') {}
+	        //
+
+
+	        // Opening a command block.
+	        if (char === '{') {
+	          continue;
+	        }
+
+	        cursorPoints.push(index);
 	      }
 
-	      while (i--) {
-	        if (~chars.indexOf(tex[i])) {
+	      // Cursor can always be placed at the end.
+	      cursorPoints.push(length);
+
+	      this.cursorPoints = cursorPoints;
+	    }
+
+	    /**
+	     * Parse a command that start at the given index.
+	     * 
+	     * @param {Number} i
+	     * 
+	     * @return {Number}
+	     */
+
+	  }, {
+	    key: 'parseCommand',
+	    value: function parseCommand(i) {
+	      var iterator = i;
+	      var tex = this.tex;
+	      var length = this.tex.length;
+	      var opening = null; // the first place the cursor can be placed inside this command
+	      var blocks = [];
+	      var brackets = null;
+	      var openBlocks = 0;
+	      var type = '';
+	      var is = 'command'; // we assume it is a command but it can be operator or variable
+	      var start = iterator; // index command starts
+	      var end = null; // index command ends
+	      var nearClosure = false;
+
+	      for (i = iterator; i < length; i++) {
+	        var char = tex[i];
+	        var nextChar = tex[i + 1];
+
+	        if (opening === null && test.isVariable.exec(char)) {
+	          type += char;
+	        }
+
+	        // Bracket found!
+	        if (char === '[') {
+	          brackets = { openIndex: i };
+	          if (opening === null) {
+	            opening = i;
+	          }
+	        }
+
+	        // Closing brackets!
+	        if (char === ']') {
+	          brackets.closeIndex = i;
+	        }
+
+	        // Find a block being openned.
+	        if (char === '{') {
+	          // If it is this command block...
+	          if (openBlocks === 0) {
+	            blocks.push({ openIndex: i });
+	          }
+	          openBlocks += 1;
+	          if (opening === null) {
+	            opening = i;
+	          }
+	        }
+
+	        // Find a block being closed.
+	        if (char === '}') {
+	          openBlocks -= 1;
+	          // If it is this command block...
+	          if (openBlocks === 0) {
+	            blocks[blocks.length - 1].closeIndex = i;
+	          }
+	        }
+
+	        if (char === ' ') {
+	          type = this.decideType(type);
+	          is = type === 'mo' ? 'operator' : 'variable';
+	          end = i;
+	          opening = i;
+	          if ((0, _utils.isAny)(nextChar, NEAR_CLOSURE_HAYSTACK)) {
+	            nearClosure = true;
+	          }
+	          break;
+	        }
+
+	        if (char === '}' && nextChar !== '{') {
+	          end = i;
 	          break;
 	        }
 	      }
 
-	      this.iterator = i;
-	      return this;
-	    }
-
-	    /**
-	     * Find forwards any of the given chars.
-	     * 
-	     * This will change `this.iterator` which is passed 
-	     * to `this.then` callback.
-	     * 
-	     * @param {String} ...chars
-	     * 
-	     * @return {IteratorFlow} this
-	     */
-
-	  }, {
-	    key: "findForwards",
-	    value: function findForwards() {
-	      var tex = this.tex;
-	      var length = tex.length;
-	      var i = this.iterator;
-
-	      for (var _len3 = arguments.length, chars = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-	        chars[_key3] = arguments[_key3];
+	      if (type === 'sqrt' && brackets !== null) {
+	        type = 'root';
 	      }
 
-	      while (i++ < length) {
-	        if (~chars.indexOf(tex[i])) {
-	          break;
+	      if (opening === null) {
+	        throw new SyntaxError('Looks like this TeX is invalid. Now have a hard time finding where, lul.');
+	      }
+
+	      this.elements.push({
+	        is: is,
+	        type: type,
+	        nearClosure: nearClosure,
+	        props: {
+	          start: start,
+	          end: end,
+	          opening: opening,
+	          blocks: blocks,
+	          brackets: brackets
 	        }
-	      }
+	      });
 
-	      this.iterator = i;
-	      return this;
+	      return opening;
 	    }
 
 	    /**
-	     * If the assertion is truthy, call the given callback.
+	     * Decide the type based on the given type (lul).
+	     *     \{type}
+	     *     \alpha ---> mi
+	     *     \geq   ---> mo
+	     *     \sqrt  ---> msqrt
 	     * 
-	     * @param {Function} callback
+	     * @param {String} type
 	     * 
-	     * @return {Void}
+	     * @return {String}
 	     */
 
 	  }, {
-	    key: "then",
-	    value: function then(callback) {
-	      if (!this.assertion) {
-	        return;
-	      }
-	      callback(this.iterator);
+	    key: 'decideType',
+	    value: function decideType(type) {
+	      var list = {
+	        'alpha': 'mi',
+	        'beta': 'mi',
+	        'gamma': 'mi',
+	        'Gamma': 'mi',
+	        'delta': 'mi',
+	        'Delta': 'mi',
+	        'epsilon': 'mi',
+	        'varepsilon': 'mi',
+	        'zeta': 'mi',
+	        'eta': 'mi',
+	        'theta': 'mi',
+	        'vartheta': 'mi',
+	        'Theta': 'mi',
+	        'iota': 'mi',
+	        'kappa': 'mi',
+	        'lambda': 'mi',
+	        'mu': 'mi',
+	        'nu': 'mi',
+	        'xi': 'mi',
+	        'Xi': 'mi',
+	        'pi': 'mi',
+	        'Pi': 'mi',
+	        'rho': 'mi',
+	        'varrho': 'mi',
+	        'sigma': 'mi',
+	        'Sigma': 'mi',
+	        'tau': 'mi',
+	        'upsilon': 'mi',
+	        'Upsilon': 'mi',
+	        'phi': 'mi',
+	        'varphi': 'mi',
+	        'Phi': 'mi',
+	        'chi': 'mi',
+	        'psi': 'mi',
+	        'Psi': 'mi',
+	        'omega': 'mi',
+	        'Omega': 'mi',
+	        '%': 'mi'
+	      };
+
+	      return list.hasOwnProperty(type) ? list[type] : 'mo';
 	    }
 	  }]);
 
-	  return IteratorFlow;
+	  return Tex;
 	}();
 
-	exports.default = Iterator;
+	exports.default = Tex;
 
 /***/ },
 /* 5 */
@@ -1803,6 +1713,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.removeClass = removeClass;
 	exports.addClass = addClass;
 	exports.toArray = toArray;
+	exports.isAny = isAny;
 	/**
 	 * Tries to find the specified element. If it fails, an error is thrown.
 	 * 
@@ -1912,6 +1823,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	function toArray(children) {
 	  var slice = [].slice;
 	  return slice.call(children);
+	}
+
+	/**
+	 * Check if the needle is found in haystack.
+	 * 
+	 * @param {Mixed} needle
+	 * @param {Array} haystack
+	 * 
+	 * @return {Boolean}
+	 */
+	function isAny(needle, haystack) {
+	  return !!~haystack.indexOf(needle);
 	}
 
 /***/ },
