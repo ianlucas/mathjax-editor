@@ -15,9 +15,9 @@ class MathJaxEditor {
    * @constructor
    */
   constructor(options) {
-    const editor = new Editor(options);
+    const core = new Editor(options);
 
-    this.editor = editor;
+    this.core = core;
     this.version = '1.1.7';
   }
 
@@ -27,7 +27,7 @@ class MathJaxEditor {
    * @return {Void}
    */
   blur() {
-    this.editor.blur();
+    this.core.blur();
   }
 
   /**
@@ -36,7 +36,7 @@ class MathJaxEditor {
    * @return {Void}
    */
   focus() {
-    this.editor.focus();
+    this.core.focus();
   }
 
   /**
@@ -49,7 +49,7 @@ class MathJaxEditor {
    * @return {Void}
    */
   insertCommand(command, blockCount = 1, brackets = false) {
-    this.editor.insertCommand(command, blockCount, brackets);
+    this.core.insertCommand(command, blockCount, brackets);
   }
 
   /**
@@ -60,7 +60,7 @@ class MathJaxEditor {
    * @return {Void}
    */
   insert(value) {
-    this.editor.insert(value);
+    this.core.insert(value);
   }
 
   /**
@@ -72,7 +72,7 @@ class MathJaxEditor {
    */
   getJax() {
     console.warn('[deprecated] getJax is deprecated, use getValue instead.')
-    return this.editor.value;
+    return this.core.value;
   }
 
   /**
@@ -83,7 +83,7 @@ class MathJaxEditor {
    * @return {String}
    */
   getValue() {
-    return this.editor.value;
+    return this.core.value;
   }
 
   /**
@@ -92,7 +92,7 @@ class MathJaxEditor {
    * @return {Void}
    */
   moveCursorLeft() {
-    this.editor.moveCursorLeft();
+    this.core.moveCursorLeft();
   }
 
   /**
@@ -101,7 +101,7 @@ class MathJaxEditor {
    * @return {Void} 
    */
   moveCursorRight() {
-    this.editor.moveCursorRight();
+    this.core.moveCursorRight();
   }
 
   /**
@@ -110,7 +110,7 @@ class MathJaxEditor {
    * @return {Void}
    */
   erase() {
-    this.editor.erase();
+    this.core.erase();
   }
 
   /**
@@ -122,7 +122,7 @@ class MathJaxEditor {
    * @return {Void}
    */
   on(type, listener) {
-    this.editor.on(type, listener);
+    this.core.on(type, listener);
   }
 }
 
