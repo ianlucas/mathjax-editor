@@ -291,6 +291,7 @@ class Placer {
 
     for (; i < length; i++) {
       const char = tex[i];
+      const lastChar = tex[i - 1];
       let nearClosure = (!!~['}', ']', '\\'].indexOf(tex[i + 1]));
 
       if (test.isNumber.exec(char)) {
@@ -379,7 +380,7 @@ class Placer {
         }
       }
 
-      if (test.isEscapedOperator.exec(char)) {
+      if (test.isEscapedOperator.exec(char) && lastChar === '\\') {
         this.find('mo', i);
       }
     }
