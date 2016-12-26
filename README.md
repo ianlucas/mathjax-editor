@@ -44,13 +44,17 @@ Define the default editor value.
 
 ### API
 
-#### `editor.insertCommand(command[, blockCount = 1, brackets = false])`
+#### `editor.insertCommand(command[, blockCount = 0, brackets = false])`
 
-This inserts a command into the editor. `blockCount` is the quantity of blocks (`{}`) the command requires (e.q. `\sqrt` requires 1, and `\frac` requires 2). If it is a character like alpha (`\alpha`), you **must** specify `blockCount` as `0`.
+This inserts a command into the editor. `blockCount` is the quantity of blocks (`{}`) the command requires (e.q. `\sqrt` requires 1, and `\frac` requires 2). Tested commands: Greek symbols, `\sqrt, \frac, \geq, \leq`.
 
-#### `editor.insert(value)`
+#### `editor.insert(char)`
 
-This insert a text into the editor. You can use this method to insert numbers (`0-9`), and variables (`a-z`). Also symbols like `+`, `-`.
+This insert a character at cursor position. The allowed characters are numbers (`0` to `9`), and variables (`a` to `z`).
+
+#### `editor.insertSymbol(symbol)`
+
+This insert a symbol at cursor position. Currently supported symbols:  `'+', '-', '/', '=', '<', '>', ',', '.', ':', ';', '?', '(', ')', '[', ']', '%'`.
 
 #### `editor.moveCursorLeft()`
 
