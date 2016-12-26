@@ -474,7 +474,7 @@ class Editor {
    * 
    * @return {Void}
    */
-  insertCommand(command, blockCount = 1, brackets = false) {
+  insertCommand(command, blockCount = 0, brackets = false) {
     this.focus();
 
     if (brackets) {

@@ -48,38 +48,53 @@ class MathJaxEditor {
    * 
    * @return {Void}
    */
-  insertCommand(command, blockCount = 1, brackets = false) {
+  insertCommand(command, blockCount = 0, brackets = false) {
     this.core.insertCommand(command, blockCount, brackets);
   }
 
   /**
-   * Insert a piece of text in editor's value.
+   * Insert a character at cursor position.
+   * Allowed characters: 0-9 (numbers), a-z (variables).
    * 
-   * @param {String} value
+   * @param {String} insert
    * 
    * @return {Void}
    */
-  insert(value) {
-    this.core.insert(value);
+  insert(char) {
+    if (!char.match(/[0-9]/) && !char.match(/[a-z]/)) {
+      throw new RangeError(`Only numbers and variables are allowed in insert, not "${char}".`);
+    }
+    this.core.insert(char);
   }
 
   /**
-   * Get editor's jax.
+   * Insert a symbol at cursor position.
    * 
-   * @deprecated
-   * 
-   * @return {String}
+   * @param {String} symbol
    */
-  getJax() {
-    console.warn('[deprecated] getJax is deprecated, use getValue instead.')
-    return this.core.value;
+  insertSymbol(symbol) {
+    const symbols = [
+      '+', '-', '/', '=', '<', '>', ',', '.', 
+      ':', ';', '?', '(', ')', '[', ']', '%'
+    ];
+    const escape = [
+      '%'
+    ];
+
+    if (!~symbols.indexOf(symbol)) {
+      throw new RangeError(`"${symbol}" is not a valid symbol.`);
+    }
+
+    if (!~escape.indexOf(symbol)) {
+      return this.core.insert(symbol);
+    }
+
+    this.core.insertCommand(`\\${symbol}`);
   }
 
   /**
    * Get editor's value.
-   * 
-   * @deprecated
-   * 
+   *  
    * @return {String}
    */
   getValue() {
