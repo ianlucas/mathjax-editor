@@ -1,6 +1,6 @@
 import EventBus from './EventBus';
 import Placer from './Placer';
-import Iterator from './Iterator';
+import Tex from './Tex';
 import { 
   mustFindElement,
   insertBetween,
@@ -53,12 +53,12 @@ class Editor {
     $debug.style.display = debug ? 'block' : 'none';
 
     MathJax.Hub.Queue(
-      ['Typeset', MathJax.Hub, $display], () => {
-        this.jaxElement = MathJax.Hub.getAllJax($display)[0];
-      }, () => {
+      () => MathJax.Hub.Typeset($display),
+      () => this.jaxElement = MathJax.Hub.getAllJax($display)[0], 
+      () => {
         $display.style.opacity = 1;
         $display.style.minHeight = `${$display.offsetHeight}px`;
-        this.update(value, { hidden: true });
+        this.update({ cursorHidden: true });
       }
     );
 
@@ -72,7 +72,9 @@ class Editor {
     this.debug = debug;
     this.focusClass = focusClass;
     this.newLine = newLine;
+    this.tex = new Tex(value);
     this.value = value;
+    this.lastValue = value;
   }
 
   /**
@@ -84,8 +86,15 @@ class Editor {
    * 
    * @return {Void}
    */
-  update(value = this.value, cursorOptions = {}) {
+  update(cursorOptions = {}) {
+    const value = this.value;
+
+    if (value !== this.lastValue) {
+      this.tex = new Tex(value);
+    }
+
     const cursor = this.cursor;
+    // TODO: Improve this ugh
     const valueWithCursor = insertBetween(value, cursor, '{\\cursor}')
       .replace(/\d/g, n => `{${n}}`)
       .replace(/\,/g, comma => `{${comma}}`)
@@ -99,15 +108,17 @@ class Editor {
     }
 
     this.updateJaxElement(
-      valueWithCursor, () => {
+      valueWithCursor,
+      () => {
         setTimeout(() => {
-          this.placer = Placer.read(this, cursor => {
-            console.log(`The cursor should be placed at ${cursor}`);
+          const placer = new Placer(this);
+          placer.on('setCursor', cursor => {
+            this.debug && console.log(`The cursor should be placed at ${cursor}.`);
             this.cursor = cursor;
             this.update();
           });
-        }, 20);
-
+          this.placer = placer;
+        }, 16);
         this.updateCursorElement(cursorOptions);
       }
     );
@@ -123,7 +134,7 @@ class Editor {
    */
   updateJaxElement(jax, callback = Function) {
     MathJax.Hub.Queue(
-      ['Text', this.jaxElement, jax],
+      () => this.jaxElement.Text(jax),
       callback
     );
   }
@@ -132,71 +143,25 @@ class Editor {
    * This updates the cursor position based on the amount
    * of movement is given.
    * 
-   * PS: The meaning of the variable `next` is not the next index,
-   *     but the next value the cursor will hold.
-   * 
    * @param {Number} amount
    * 
    * @return {Void}
    */
   updateCursor(amount = 0) {
-    let next = this.cursor + amount;
     const cursor = this.cursor;
-    const iterator = new Iterator(this.value);
-    const currentChar = iterator.at(cursor);
-    const nextChar = iterator.at(next);
+    const points = this.tex.cursorPoints;
+    const key = points.indexOf(cursor)
 
-    // Moving to the left.
-
-    if (amount < 0) {
-      nextChar
-        .when('{')
-        .andPreviousCharacterNotIs('}')
-        .findBackwards('\\', '^', '_', ']')
-          .then(i => next = i);
-
-      nextChar
-        .when('{')
-        .andPreviousCharacterIs('}')
-          .then(() => next -= 1);
-
-      nextChar
-        .when('\\')
-        .andPreviousCharacterIs('\\')
-          .then(() => next -= 1);
-
-      nextChar
-        .when(' ')
-        .findBackwards('\\')
-          .then(i => next = i);
-
-      nextChar
-        .when('[')
-        .findBackwards('\\')
-          .then(i => next = i);
-    }
-
-    // Moving to the right.
+    let to = cursor;
 
     if (amount > 0) {
-      currentChar
-        .when('\\', '^', '_')
-        .andNextCharacterNotIs('\\')
-        .findForwards('{', ' ', '[')
-          .then(i => next = i + 1);
-
-      currentChar
-        .when('}', ']')
-        .andNextCharacterIs('{')
-          .then(() => next += 1);
-
-      currentChar
-        .when('\\')
-        .andNextCharacterIs('\\')
-          .then(() => next += 1);
+      to = points[key + 1];
+    }
+    else if (amount < 0) {
+      to = points[key - 1];
     }
 
-    this.cursor = next;
+    this.cursor = to;
     this.update();
   }
 
@@ -209,9 +174,8 @@ class Editor {
    * @return {Void}
    */
   updateCursorElement(options = {}) {
-    const hidden = options.hidden || false;
+    const hidden = options.cursorHidden || false;
 
-    
     MathJax.Hub.Queue(() => {
       const $cursor = this.$display.querySelector('.mjx-cursor');
       if (!$cursor) {
@@ -419,7 +383,7 @@ class Editor {
       return;
     }
     
-    this.placer.fireClick(e);
+    this.placer.trigger('click', e);
   }
 
   /**
@@ -458,6 +422,7 @@ class Editor {
     const current = this.value;
 
     this.cursor += value.length;
+    this.lastValue = this.value;
     this.value = insertBetween(current, cursor, value);
 
     this.update();
@@ -498,12 +463,14 @@ class Editor {
     const cursor = this.cursor;
     const blocks = '}' + '{}'.repeat(blockCount - 1);
 
+    this.lastValue = this.value;
     this.value = insertBetween(value, cursor, blocks);
     this.update();
   }
 
   /**
    * Erases the character before the cursor.
+   * TODO: REFACTORE THIS
    * 
    * @return {Void}
    */
@@ -542,6 +509,7 @@ class Editor {
 
   /**
    * Erases the character before the cursor.
+   * TODO: REFACTORE THIS
    * 
    * @return {Void}
    */
@@ -581,7 +549,7 @@ class Editor {
   }
 
   /**
-   * Listen to an event to be triggered by the Editor.
+   * Listen to an event to be triggered by Editor.
    * 
    * @param {String} type
    * @param {Function} listener
