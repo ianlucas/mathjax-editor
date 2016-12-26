@@ -285,7 +285,8 @@ class Placer {
     const test = {
       isNumber: /\d/,
       isVariable: /\w/,
-      isOperator: /[\+\-\=\,\.]/
+      isOperator: /[\+\-\=\,\.]/,
+      isEscapedOperator: /[\[\]\{\}]/
     }
 
     for (; i < length; i++) {
@@ -322,11 +323,47 @@ class Placer {
           command += subchar;
           if (~[' ', '{', '['].indexOf(subchar)) {
             const list = {
-              '\\cdot': 'mo',
-              '\\div': 'mo'
+              '\\alpha': 'mi',
+              '\\beta': 'mi',
+              '\\gamma': 'mi',
+              '\\Gamma': 'mi',
+              '\\delta': 'mi',
+              '\\Delta': 'mi',
+              '\\epsilon': 'mi',
+              '\\varepsilon': 'mi',
+              '\\zeta': 'mi',
+              '\\eta': 'mi',
+              '\\theta': 'mi',
+              '\\vartheta': 'mi',
+              '\\Theta': 'mi',
+              '\\iota': 'mi',
+              '\\kappa': 'mi',
+              '\\lambda': 'mi',
+              '\\mu': 'mi',
+              '\\nu': 'mi',
+              '\\xi': 'mi',
+              '\\Xi': 'mi',
+              '\\pi': 'mi',
+              '\\Pi': 'mi',
+              '\\rho': 'mi',
+              '\\varrho': 'mi',
+              '\\sigma': 'mi',
+              '\\Sigma': 'mi',
+              '\\tau': 'mi',
+              '\\upsilon': 'mi',
+              '\\Upsilon': 'mi',
+              '\\phi': 'mi',
+              '\\varphi': 'mi',
+              '\\Phi': 'mi',
+              '\\chi': 'mi',
+              '\\psi': 'mi',
+              '\\Psi': 'mi',
+              '\\omega': 'mi',
+              '\\Omega': 'mi',
+              '\\%': 'mi'
             };
             const trimmed = command.trim();
-            const type = list[trimmed] ? list[trimmed] : 'mi';
+            const type = list[trimmed] ? list[trimmed] : 'mo';
             if (subchar === ' ') {
               this.find(type, i, nearClosure);
             }
@@ -340,6 +377,10 @@ class Placer {
             break;
           }
         }
+      }
+
+      if (test.isEscapedOperator.exec(char)) {
+        this.find('mo', i);
       }
     }
   }
