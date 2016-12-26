@@ -1,74 +1,136 @@
+import EventBus from './EventBus';
+
 class Placer {
   /**
-   * This is the Placer class.
-   * 
-   * It parse the current tex, and calculates the boundings of each
-   * variable/number/command elements to determinate if a cursor position
-   * change is possible (when the user clicks on `document.body`), it also
-   * specify which position the cursor should be moved to.
+   * This will handle the cursor placement when the user clicks somewhere
+   * on the editor.
    * 
    * @param {Editor} editor
    * 
    * @constructor
    */
   constructor(editor) {
-    this.intervals = [];
-    this.onRequestPlacement = Function;
-    this.tex = editor.value;
+    const bus = new EventBus;
+
+    bus.on('click', this.handleClick.bind(this));
+
     this.$display = editor.$display;
+    this.bus = bus;
+    this.intervals = [];
+    this.elements = editor.tex.elements;
     this.findings = {};
-    this.isDebug = editor.debug;
+    this.tex = editor.tex;
 
-    this.parse();
+    this.iterate();
   }
 
   /**
-   * This will read an editor, and fire `onRequestPlacement` if cursor
-   * should be moved to another position.
+   * Listen to an event to be triggered by Placer.
    * 
-   * This will return a new instance of Placer.
-   * 
-   * @param {Editor} editor
-   * @param {Function} onRequestPlacement
-   * 
-   * @return {Placer}
-   */
-  static read(editor, onRequestPlacement = Function) {
-    const placer = new Placer(editor);
-    placer.onRequestPlacement = onRequestPlacement;
-    return placer;
-  }
-
-  /**
-   * Debug helper function. Works just like console.log.
+   * @param {String} type
+   * @param {Function} listener
    * 
    * @return {Void}
    */
-  debug(...args) {
-    if (!this.isDebug) {
-      return;
+  on(type, listener) {
+    this.bus.on(type, listener);
+  }
+
+  /**
+   * Triggers an event inside Placer.
+   * 
+   * @param {String} type
+   * @param {Mixed} ...rest
+   * 
+   * @return {Void}
+   */
+  trigger(type, ...rest) {
+    this.bus.trigger(type, ...rest);
+  }
+
+  /**
+   * Checks if the cursor must be moved, and if so,
+   * it triggers the event 'setCursor' with the position.
+   * 
+   * @param {Event} e
+   * 
+   * @return {Void}
+   */
+  handleClick(e) {
+    const { top, bottom } = this.$display.getBoundingClientRect();
+    const x = e.clientX;
+    const y = e.clientY;
+    const intervals = this.intervals;
+    let index = this.tex.length;
+
+    if (!intervals.length || y > bottom || y < top) {
+      return false;
     }
-    console.log(...args);
+
+    let found = false;
+
+    // First strategy: checks if the clicked point is inside a number/
+    // variable/operator bounding. If it is, place it where is proper.
+
+    intervals.forEach((interval, i) => {
+      if (interval.startX <= x && x < interval.endX) {
+        if (interval.startY <= y && y < interval.endY) {
+          found = true;
+          index = this.placeAtInterval(interval, i, x, y);
+        }
+      }
+    });
+
+    // Second strategy: find the nearest element to the clicked point.
+
+    if (!found) {
+      let last = { interval: null, distance: null, i: null };
+
+      intervals.forEach((interval, i) => {
+        if (!(interval.startY < y && y < interval.endY)) {
+          return;
+        }
+        const distance = Math.min(Math.abs(interval.startX - x), Math.abs(interval.endX - x));
+        if (last.distance === null || distance < last.distance) {
+          last.interval = interval;
+          last.distance = distance;
+          last.i = i;
+        }
+      });
+
+      if (!last.interval) {
+        return false;
+      }
+
+      index = this.placeAtInterval(last.interval, last.i, x, y);
+    }
+
+    this.bus.trigger('setCursor', index);
+  }
+
+  /**
+   * Get the next key for a type.
+   * 
+   * @param {String} type
+   * 
+   * @return {Number}
+   */
+  getNextKeyFor(type) {
+    this.findings[type] = this.findings[type] || 0;
+    const key = this.findings[type];
+    this.findings[type] += 1;
+    return key;
   }
 
   /**
    * Add an interval to intervals list.
    * 
-   * @param {Number} index
-   * @param {Number} startX
-   * @param {Number} endX
-   * @param {Number} startY
-   * @param {Number} endY
-   * @param {Boolean} useAllArea - If the click point is inside this 
-   *                               interval boundings, cursor will be
-   *                               placed at this interval index.
+   * @param {Object} data
    * 
    * @return {Void}
    */
-  addInterval(index, startX, endX, startY, endY, useAllArea = false) {
-    this.intervals.push({
-      index, startX, endX, startY, endY, useAllArea
-    });
+  addInterval(data) {
+    this.intervals.push(data);
   }
 
   /**
@@ -82,173 +144,117 @@ class Placer {
    * 
    * @return {Number}
    */
-  placeAtInterval(interval, x, y, i) {
+  placeAtInterval(interval, i, x, y) {
+    const intervals = this.intervals;
     const width = interval.endX - interval.startX;
+    const nextInterval = i + 1;
+
     let index = interval.index;
 
-    this.debug(`Interval X from ${interval.startX} to ${interval.endX} (Middle point x: ${interval.startX + (width / 2)}, width: ${width})`);
-    this.debug(`Interval Y from ${interval.startY} to ${interval.endY}`);
-
-    if (interval.useAllArea) {
+    if (interval.box) {
       return index;
     }
 
     if (x > interval.startX + (width / 2)) {
-      if (this.intervals[i + 1]) {
-        index = this.intervals[i + 1].index;
+      if (intervals[nextInterval]) {
+        index = intervals[nextInterval].index;
       }
       else {
         index = this.tex.length;
       }
     }
-    
-    this.debug(`[placeAtInterval] Cursor to be placed at ${index}.`);
 
     return index;
   }
 
   /**
-   * Checks if the cursor must be moved, and if so,
-   * it fires `this.onRequestPlacement` with the position.
-   * 
-   * @param {Event} e
+   * Iterates over the elements created by Tex to find
+   * the elements in the DOM and compute them.
    * 
    * @return {Void}
    */
-  fireClick(e) {
-    const { bottom } = this.$display.getBoundingClientRect();
-    const x = e.clientX;
-    const y = e.clientY;
-    let index = this.tex.length;
+  iterate() {
+    this.elements.forEach(element => {
+      switch (element.is) {
+        case 'command':
+          this.findCommand(element);
+          break;
 
-    this.debug(`You has clicked at (${x}, ${y}).`);
-    this.debug(this.intervals);
-
-    // If there are no intervals, or the point `y` is
-    // not in the range of the editor's bounds, we just
-    // ignore the event. TODO: Check for y top.
-
-    if (!this.intervals.length || y > bottom) {
-      return;
-    }
-    
-    let found = false;
-
-    // First strategy: checks if the clicked point is inside a number/
-    // variable/operator bounding. If it is, place it where is proper. 
-
-    this.intervals.forEach((interval, i) => {
-      if (interval.startX <= x && x < interval.endX) {
-        if (interval.startY <= y && y < interval.endY) {
-          found = true;
-          index = this.placeAtInterval(interval, x, y, i);
-        }
+        default:
+          this.find(element);
       }
     });
-
-    // Second strategy: find the nearest element to the clicked point.
-
-    if (!found) {
-      let last = { interval: null, distance: null, i: null };
-
-      this.intervals.forEach((interval, i) => {
-        if (!(interval.startY < y && y < interval.endY)) {
-          return;
-        }
-        const distance = Math.min(Math.abs(interval.startX - x), Math.abs(interval.endX - x));
-        if (last.distance === null || distance < last.distance) {
-          last.interval = interval;
-          last.distance = distance;
-          last.i = i;
-        }
-      });
-
-      if (!last.interval) {
-        return;
-      }
-
-      index = this.placeAtInterval(last.interval, x, y, last.i);
-      this.debug(`[fireClick] Not found a bounding, placeing at ${index}.`);
-    }
-
-    // Check if the clicked point is out of bounds.
-    // Since we can have now empty startX and endX, we need to
-    // iterate the intervals.
-
-    // let i = 0;
-    // const length = this.intervals.length;
-
-    // for (; i < length; i++) {
-    //   if (this.intervals[i].startX) {
-    //     if (x < this.intervals[i].startX) {
-    //       this.debug(`[fireClick] Out of display boundings. Placing at start.`);
-    //       index = 0;
-    //     }
-    //     break;
-    //   }
-    // }
-
-    // for (i = length - 1; i >= 0; i--) {
-    //   if (this.intervals[i].endX) {
-    //     if (x > this.intervals[i].endX) {
-    //       this.debug(`[fireClick] Out of display boundings. Placing at the end.`);
-    //       index = this.tex.length;
-    //     }
-    //     break;
-    //   }
-    // }
-
-    this.onRequestPlacement(index);
   }
 
   /**
    * Find an element of the given type and add its interval data 
    * to `this.intervals`.
    * 
-   * @param {String} type
-   * @param {Number} index
-   * @param {Boolean} nearClosure
+   * @param {Object} data
+   * @param {String} data.type
+   * @param {Number} data.index
+   * @param {Boolean} data.nearClosure
    * 
    * @return {Void}
    */
-  find(type, index, nearClosure) {
-    this.findings[type] = this.findings[type] || 0;
-    const $el = this.$display.querySelectorAll(`.mjx-${type}`)[this.findings[type]];
-    const bounding = $el.getBoundingClientRect();
-    this.addInterval(index, bounding.left, bounding.right, bounding.top, bounding.bottom);
-    this.findings[type] += 1;
+  find({ type, index, nearClosure }) {
+    const key = this.getNextKeyFor(type);
+    const $el = this.$display.querySelectorAll(`.mjx-${type}`)[key];
+    if (!$el) {
+      return console.log('COULD NOT FIND THIS ELEMENT', $el);
+    }
+    const { left, right, top, bottom } = $el.getBoundingClientRect();
+    this.addInterval({
+      startX: left,
+      endX: right,
+      startY: top,
+      endY: bottom,
+      index
+    });
     if (nearClosure) {
-      this.addInterval(index + 1, 0, 0, 0, 0);
+      this.addInterval({
+        index: index + 1,
+        top: 0,
+        bottom: 0, 
+        left: 0, 
+        right: 0
+      });
     }
   }
 
   /**
    * Find a command element.
    * 
-   * @param {String} command
-   * @param {Number} index
+   * @param {Object} data
+   * @param {String} data.type
+   * @param {Number} data.index
+   * @param {Object} data.props
    * 
    * @return {Void}
    */
-  findCommand(command, index) {
-    command = command.replace(/[\[\{].*(\]\{.*)?/, '');
-    const name = command.slice(1);
-    this.findings[name] = this.findings[name] || 0;
-    const $el = this.$display.querySelectorAll(`.mjx-m${name}`)[this.findings[name]];
-    const bounding = $el.getBoundingClientRect();
+  findCommand({ type, index, props }) {
+    const key = this.getNextKeyFor(type);
+    const $el = this.$display.querySelectorAll(`.mjx-m${type}`)[key];
+    const { brackets, blocks } = props;
 
-    switch (name) {
+    switch (type) {
       case 'frac':
         const $numerator = $el.querySelector('.mjx-numerator');
         const $denominator = $el.querySelector('.mjx-denominator');
         const numBounding = $numerator.getBoundingClientRect();
         const denBounding = $denominator.getBoundingClientRect();
         const boundings = [numBounding, denBounding];
-        var { blocks } = this.parseCommandAt(index);
 
-        boundings.forEach((bounding, i) => {
+        boundings.forEach(({ left, right, top, bottom }, i) => {
           if ((blocks[i].closeIndex - blocks[i].openIndex) === 1) {
-            this.addInterval(blocks[i].closeIndex, bounding.left, bounding.right, bounding.top, bounding.bottom, true);
+            this.addInterval({
+              index: blocks[i].closeIndex, 
+              startX: left,
+              endX: right,
+              startY: top,
+              endY: bottom,
+              box: true
+            });
           }
         });
 
@@ -256,171 +262,32 @@ class Placer {
 
       case 'root':
       case 'sqrt':
-        var { blocks, brackets } = this.parseCommandAt(index);
-
-        if (brackets.closeIndex && (brackets.closeIndex - brackets.openIndex) === 1) {
-          const $root = $el.querySelector('.mjx-root .mjx-char');
+        if (brackets && (brackets.closeIndex - brackets.openIndex) === 1) {
+          const $root = $el.querySelector('.mjx-root .mjx-char');  
           const { left, right, top, bottom } = $root.getBoundingClientRect();
-          this.addInterval(brackets.closeIndex, left, right, top, bottom, true);
+          this.addInterval({
+            index: brackets.closeIndex,
+            startX: left,
+            endX: right,
+            startY: top,
+            endY: bottom,
+            box: true
+          });
         }
         if ((blocks[0].closeIndex - blocks[0].openIndex) === 1) {
           const $box = $el.querySelector('.mjx-box');
           const { left, right, top, bottom } = $box.getBoundingClientRect();
-          this.addInterval(blocks[0].closeIndex, left, right, top, bottom, true);
+          this.addInterval({
+            index: blocks[0].closeIndex,
+            startX: left,
+            endX: right,
+            startY: top,
+            endY: bottom,
+            box: true
+          });
         }
         break;
     }
-  }
-
-  /**
-   * Parse the editor's tex.
-   * 
-   * @return {Void}
-   */
-  parse() {
-    const tex = this.tex;
-    const length = tex.length;
-    let i = 0;
-
-    const test = {
-      isNumber: /\d/,
-      isVariable: /\w/,
-      isOperator: /[\+\-\=\,\.]/,
-      isEscapedOperator: /[\[\]\{\}]/
-    }
-
-    for (; i < length; i++) {
-      const char = tex[i];
-      const lastChar = tex[i - 1];
-      let nearClosure = (!!~['}', ']', '\\'].indexOf(tex[i + 1]));
-
-      if (test.isNumber.exec(char)) {
-        this.find('mn', i, nearClosure);
-        continue;
-      }
-
-      if (test.isVariable.exec(char)) {
-        this.find('mi', i, nearClosure);
-        continue;
-      }
-
-      if (test.isOperator.exec(char)) {
-        this.find('mo', i, nearClosure);
-        continue;
-      }
-
-      // Newline, so we skip.
-      if (char === '\\' && tex[i + 1] === '\\') {
-        i += 1;
-        continue;
-      }
-
-      if (char === '\\') {
-        let j = i;
-        let command = '';
-        for (; j < length; j++) {
-          const subchar = tex[j];
-          nearClosure = (!!~['}', ']', '\\'].indexOf(tex[j + 1]))
-          command += subchar;
-          if (~[' ', '{', '['].indexOf(subchar)) {
-            const list = {
-              '\\alpha': 'mi',
-              '\\beta': 'mi',
-              '\\gamma': 'mi',
-              '\\Gamma': 'mi',
-              '\\delta': 'mi',
-              '\\Delta': 'mi',
-              '\\epsilon': 'mi',
-              '\\varepsilon': 'mi',
-              '\\zeta': 'mi',
-              '\\eta': 'mi',
-              '\\theta': 'mi',
-              '\\vartheta': 'mi',
-              '\\Theta': 'mi',
-              '\\iota': 'mi',
-              '\\kappa': 'mi',
-              '\\lambda': 'mi',
-              '\\mu': 'mi',
-              '\\nu': 'mi',
-              '\\xi': 'mi',
-              '\\Xi': 'mi',
-              '\\pi': 'mi',
-              '\\Pi': 'mi',
-              '\\rho': 'mi',
-              '\\varrho': 'mi',
-              '\\sigma': 'mi',
-              '\\Sigma': 'mi',
-              '\\tau': 'mi',
-              '\\upsilon': 'mi',
-              '\\Upsilon': 'mi',
-              '\\phi': 'mi',
-              '\\varphi': 'mi',
-              '\\Phi': 'mi',
-              '\\chi': 'mi',
-              '\\psi': 'mi',
-              '\\Psi': 'mi',
-              '\\omega': 'mi',
-              '\\Omega': 'mi',
-              '\\%': 'mi'
-            };
-            const trimmed = command.trim();
-            const type = list[trimmed] ? list[trimmed] : 'mo';
-            if (subchar === ' ') {
-              this.find(type, i, nearClosure);
-            }
-            else {
-              if (command.match(/\\sqrt\[/)) {
-                command = command.replace('sqrt', 'root');
-              }
-              this.findCommand(command, i);
-            }
-            i = j;
-            break;
-          }
-        }
-      }
-
-      if (test.isEscapedOperator.exec(char) && lastChar === '\\') {
-        this.find('mo', i);
-      }
-    }
-  }
-
-  parseCommandAt(i) {
-    const length = this.tex.length;
-    let blocks = [];
-    let brackets = { openIndex: null, closeIndex: null };
-    let openBlocks = 0;
-
-    for (; i < length; i++) {
-      const char = this.tex[i];
-      if (char === '[') {
-        brackets.openIndex = i;
-      }
-      if (char === ']') {
-        brackets.closeIndex = i;
-      }
-      if (char === '{') {
-        if (openBlocks === 0) {
-          blocks.push({ openIndex: i });
-        }
-        openBlocks += 1;
-      }
-      if (char === '}') {
-        openBlocks -= 1;
-        if (openBlocks === 0) {
-          blocks[blocks.length - 1].closeIndex = i;
-        }
-      }
-      if (char === '}' && this.tex[i + 1] !== '{') {
-        break;
-      }
-    }
-
-    return {
-      blocks,
-      brackets
-    };
   }
 }
 
