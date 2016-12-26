@@ -96,10 +96,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function MathJaxEditor(options) {
 	    _classCallCheck(this, MathJaxEditor);
 
-	    var editor = new _Editor2.default(options);
+	    var core = new _Editor2.default(options);
 
-	    this.editor = editor;
-	    this.version = '1.1.7';
+	    this.core = core;
+	    this.version = '1.2.0';
 	  }
 
 	  /**
@@ -112,7 +112,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _createClass(MathJaxEditor, [{
 	    key: 'blur',
 	    value: function blur() {
-	      this.editor.blur();
+	      this.core.blur();
 	    }
 
 	    /**
@@ -124,7 +124,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'focus',
 	    value: function focus() {
-	      this.editor.focus();
+	      this.core.focus();
 	    }
 
 	    /**
@@ -140,53 +140,63 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'insertCommand',
 	    value: function insertCommand(command) {
-	      var blockCount = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+	      var blockCount = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 	      var brackets = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
-	      this.editor.insertCommand(command, blockCount, brackets);
+	      this.core.insertCommand(command, blockCount, brackets);
 	    }
 
 	    /**
-	     * Insert a piece of text in editor's value.
+	     * Insert a character at cursor position.
+	     * Allowed characters: 0-9 (numbers), a-z (variables).
 	     * 
-	     * @param {String} value
+	     * @param {String} insert
 	     * 
 	     * @return {Void}
 	     */
 
 	  }, {
 	    key: 'insert',
-	    value: function insert(value) {
-	      this.editor.insert(value);
+	    value: function insert(char) {
+	      if (!char.match(/[0-9]/) && !char.match(/[a-z]/)) {
+	        throw new RangeError('Only numbers and variables are allowed in insert, not "' + char + '".');
+	      }
+	      this.core.insert(char);
 	    }
 
 	    /**
-	     * Get editor's jax.
+	     * Insert a symbol at cursor position.
 	     * 
-	     * @deprecated
-	     * 
-	     * @return {String}
+	     * @param {String} symbol
 	     */
 
 	  }, {
-	    key: 'getJax',
-	    value: function getJax() {
-	      console.warn('[deprecated] getJax is deprecated, use getValue instead.');
-	      return this.editor.value;
+	    key: 'insertSymbol',
+	    value: function insertSymbol(symbol) {
+	      var symbols = ['+', '-', '/', '=', '<', '>', ',', '.', ':', ';', '?', '(', ')', '[', ']', '%'];
+	      var escape = ['%'];
+
+	      if (!~symbols.indexOf(symbol)) {
+	        throw new RangeError('"' + symbol + '" is not a valid symbol.');
+	      }
+
+	      if (!~escape.indexOf(symbol)) {
+	        return this.core.insert(symbol);
+	      }
+
+	      this.core.insertCommand('\\' + symbol);
 	    }
 
 	    /**
 	     * Get editor's value.
-	     * 
-	     * @deprecated
-	     * 
+	     *  
 	     * @return {String}
 	     */
 
 	  }, {
 	    key: 'getValue',
 	    value: function getValue() {
-	      return this.editor.value;
+	      return this.core.value;
 	    }
 
 	    /**
@@ -198,7 +208,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'moveCursorLeft',
 	    value: function moveCursorLeft() {
-	      this.editor.moveCursorLeft();
+	      this.core.moveCursorLeft();
 	    }
 
 	    /**
@@ -210,7 +220,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'moveCursorRight',
 	    value: function moveCursorRight() {
-	      this.editor.moveCursorRight();
+	      this.core.moveCursorRight();
 	    }
 
 	    /**
@@ -222,7 +232,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'erase',
 	    value: function erase() {
-	      this.editor.erase();
+	      this.core.erase();
 	    }
 
 	    /**
@@ -237,7 +247,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'on',
 	    value: function on(type, listener) {
-	      this.editor.on(type, listener);
+	      this.core.on(type, listener);
 	    }
 	  }]);
 
@@ -794,7 +804,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'insertCommand',
 	    value: function insertCommand(command) {
-	      var blockCount = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+	      var blockCount = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 	      var brackets = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
 	      this.focus();
@@ -1323,7 +1333,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var test = {
 	        isNumber: /\d/,
 	        isVariable: /\w/,
-	        isOperator: /[\+\-\=\,\.]/
+	        isOperator: /[\+\-\=\,\.]/,
+	        isEscapedOperator: /[\[\]\{\}]/
 	      };
 
 	      for (; i < length; i++) {
@@ -1360,11 +1371,47 @@ return /******/ (function(modules) { // webpackBootstrap
 	            command += subchar;
 	            if (~[' ', '{', '['].indexOf(subchar)) {
 	              var list = {
-	                '\\cdot': 'mo',
-	                '\\div': 'mo'
+	                '\\alpha': 'mi',
+	                '\\beta': 'mi',
+	                '\\gamma': 'mi',
+	                '\\Gamma': 'mi',
+	                '\\delta': 'mi',
+	                '\\Delta': 'mi',
+	                '\\epsilon': 'mi',
+	                '\\varepsilon': 'mi',
+	                '\\zeta': 'mi',
+	                '\\eta': 'mi',
+	                '\\theta': 'mi',
+	                '\\vartheta': 'mi',
+	                '\\Theta': 'mi',
+	                '\\iota': 'mi',
+	                '\\kappa': 'mi',
+	                '\\lambda': 'mi',
+	                '\\mu': 'mi',
+	                '\\nu': 'mi',
+	                '\\xi': 'mi',
+	                '\\Xi': 'mi',
+	                '\\pi': 'mi',
+	                '\\Pi': 'mi',
+	                '\\rho': 'mi',
+	                '\\varrho': 'mi',
+	                '\\sigma': 'mi',
+	                '\\Sigma': 'mi',
+	                '\\tau': 'mi',
+	                '\\upsilon': 'mi',
+	                '\\Upsilon': 'mi',
+	                '\\phi': 'mi',
+	                '\\varphi': 'mi',
+	                '\\Phi': 'mi',
+	                '\\chi': 'mi',
+	                '\\psi': 'mi',
+	                '\\Psi': 'mi',
+	                '\\omega': 'mi',
+	                '\\Omega': 'mi',
+	                '\\%': 'mi'
 	              };
 	              var trimmed = command.trim();
-	              var type = list[trimmed] ? list[trimmed] : 'mi';
+	              var type = list[trimmed] ? list[trimmed] : 'mo';
 	              if (subchar === ' ') {
 	                this.find(type, i, nearClosure);
 	              } else {
@@ -1377,6 +1424,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	              break;
 	            }
 	          }
+	        }
+
+	        if (test.isEscapedOperator.exec(char)) {
+	          this.find('mo', i);
 	        }
 	      }
 	    }
