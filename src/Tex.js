@@ -119,6 +119,7 @@ class Tex {
         const newLine = { start: i, end: i + 1};
         this.newLines[i] = newLine;
         this.newLines[i + 1] = newLine;
+        this.displayTex += '\\';
         i += 1;
       }
 
