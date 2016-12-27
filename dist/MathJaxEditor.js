@@ -75,6 +75,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _extendMathJax2 = _interopRequireDefault(_extendMathJax);
 
+	var _utils = __webpack_require__(5);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -99,7 +101,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var core = new _Editor2.default(options);
 
 	    this.core = core;
-	    this.version = '1.2.2';
+	    this.version = '1.2.3';
 	  }
 
 	  /**
@@ -173,14 +175,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'insertSymbol',
 	    value: function insertSymbol(symbol) {
-	      var symbols = ['+', '-', '/', '=', '<', '>', ',', '.', ':', ';', '?', '(', ')', '[', ']', '%'];
+	      var symbols = ['+', '-', '=', '<', '>', ',', '.', ':', ';', '?', '(', ')', '[', ']', '%'];
 	      var escape = ['%'];
 
-	      if (!~symbols.indexOf(symbol)) {
+	      if (!(0, _utils.inArray)(symbol, symbols)) {
 	        throw new RangeError('"' + symbol + '" is not a valid symbol.');
 	      }
 
-	      if (!~escape.indexOf(symbol)) {
+	      if (!(0, _utils.inArray)(symbol, escape)) {
 	        return this.core.insert(symbol);
 	      }
 
@@ -359,7 +361,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.$display = $display;
 	    this.$input = $input;
 	    this.bus = new _EventBus2.default();
-	    this.cursor = 0;
+	    this.cursorIndex = 0;
 	    this.placer = null;
 	    this.debug = debug;
 	    this.focusClass = focusClass;
@@ -386,26 +388,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _this2 = this;
 
 	      var cursorOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-	      var cursor = this.cursor,
+	      var cursorIndex = this.cursorIndex,
 	          value = this.value;
 
 	      var tex = this.tex;
 
 	      if (value !== this.lastValue) {
-	        tex = new _Tex2.default(value, cursor);
+	        tex = new _Tex2.default(value, cursorIndex);
 	        this.tex = tex;
 	      }
 
 	      if (this.debug) {
-	        this.$debug.innerHTML = (0, _utils.insertBetween)(value, cursor, '|');
+	        this.$debug.innerHTML = (0, _utils.insertBetween)(value, cursorIndex, '|');
 	      }
 
 	      this.updateJaxElement(tex.displayTex, function () {
 	        setTimeout(function () {
 	          var placer = new _Placer2.default(_this2);
-	          placer.on('setCursor', function (cursor) {
-	            _this2.debug && console.log('The cursor should be placed at ' + cursor + '.');
-	            _this2.cursor = cursor;
+	          placer.on('setCursor', function (index) {
+	            _this2.debug && console.log('The cursor should be placed at ' + index + '.');
+	            _this2.cursorIndex = index;
 	            _this2.update();
 	          });
 	          _this2.placer = placer;
@@ -449,11 +451,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function updateCursor() {
 	      var amount = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
-	      var cursor = this.cursor;
+	      var cursorIndex = this.cursorIndex;
 	      var points = this.tex.cursorPoints;
-	      var key = points.indexOf(cursor);
+	      var key = points.indexOf(cursorIndex);
 
-	      var to = cursor;
+	      var to = cursorIndex;
 
 	      if (amount > 0) {
 	        to = points[key + 1];
@@ -461,7 +463,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        to = points[key - 1];
 	      }
 
-	      this.cursor = to;
+	      this.cursorIndex = to;
 	      this.update();
 	    }
 
@@ -526,6 +528,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _this5 = this;
 
 	      var $input = this.$input;
+
 	      var inputValue = $input.value.trim();
 	      var which = e.keyCode;
 
@@ -622,7 +625,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'moveCursorLeft',
 	    value: function moveCursorLeft() {
-	      if (this.cursor > 0) {
+	      if (this.cursorIndex > 0) {
 	        this.updateCursor(-1);
 	      }
 	    }
@@ -636,7 +639,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'moveCursorRight',
 	    value: function moveCursorRight() {
-	      if (this.cursor < this.value.length) {
+	      if (this.cursorIndex < this.value.length) {
 	        this.updateCursor(1);
 	      }
 	    }
@@ -703,12 +706,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'insert',
 	    value: function insert(chars) {
-	      var cursor = this.cursor;
-	      var current = this.value;
+	      var cursorIndex = this.cursorIndex,
+	          value = this.value;
 
-	      this.cursor += chars.length;
 
-	      this.setValue((0, _utils.insertBetween)(current, cursor, chars));
+	      this.cursorIndex += chars.length;
+
+	      this.setValue((0, _utils.insertBetween)(value, cursorIndex, chars));
 	      this.update();
 	    }
 
@@ -748,11 +752,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return;
 	      }
 
-	      var value = this.value;
-	      var cursor = this.cursor;
+	      var value = this.value,
+	          cursorIndex = this.cursorIndex;
+
 	      var blocks = '}' + (0, _utils.repeat)('{}', blockCount - 1);
 
-	      this.setValue((0, _utils.insertBetween)(value, cursor, blocks));
+	      this.setValue((0, _utils.insertBetween)(value, cursorIndex, blocks));
 	      this.update();
 	    }
 
@@ -767,9 +772,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'applyDeletion',
 	    value: function applyDeletion(method) {
-	      var cursor = this.cursor;
-	      var prevIndex = cursor - 1;
-	      var tex = this.tex;
+	      var cursorIndex = this.cursorIndex,
+	          tex = this.tex;
+
+	      var prevIndex = cursorIndex - 1;
 	      var elements = tex.elements;
 
 	      var deletionStart = null;
@@ -782,25 +788,25 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      switch (method) {
 	        case 'erase':
-	          if (cursor === 0) {
+	          if (cursorIndex === 0) {
 	            return;
 	          }
 	          comparator = prevIndex;
 	          startOrEnd = 'end';
 	          openOrClose = 'openIndex';
 	          numVarDeletionStart = prevIndex;
-	          numVarDeletionEnd = cursor;
+	          numVarDeletionEnd = cursorIndex;
 	          break;
 
 	        case 'delete':
-	          if (cursor === tex.length) {
+	          if (cursorIndex === tex.length) {
 	            return;
 	          }
-	          comparator = cursor;
+	          comparator = cursorIndex;
 	          startOrEnd = 'start';
 	          openOrClose = 'closeIndex';
-	          numVarDeletionStart = cursor;
-	          numVarDeletionEnd = cursor + 1;
+	          numVarDeletionStart = cursorIndex;
+	          numVarDeletionEnd = cursorIndex + 1;
 	          break;
 
 	        default:
@@ -826,8 +832,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            // Command deletion.
 
 	            if (props) {
-	              // If is erasing at the start/end of the command.
-	              if (props[startOrEnd] === comparator) {
+	              var brackets = props.brackets;
+
+	              // If is erasing at the start/end of the command/ or is erasing brackets of the command.
+	              if (props[startOrEnd] === comparator || brackets && brackets[openOrClose] === comparator) {
 	                deletionStart = props.start;
 	                deletionEnd = props.end + 1;
 	                break;
@@ -885,7 +893,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	      }
 
-	      this.cursor = deletionStart;
+	      this.cursorIndex = deletionStart;
 	      this.setValue((0, _utils.removeFragment)(this.value, deletionStart, deletionEnd));
 	      this.update();
 	    }
@@ -1028,6 +1036,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+	var $paints = [];
+
 	var Placer = function () {
 	  /**
 	   * This will handle the cursor placement when the user clicks somewhere
@@ -1119,15 +1129,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      var found = false;
+	      var proceedSearch = false;
 
 	      // First strategy: checks if the clicked point is inside a number/
 	      // variable/operator bounding. If it is, place it where is proper.
 
 	      intervals.forEach(function (interval, i) {
-	        if (interval.startX <= x && x < interval.endX) {
+	        if (interval.startX <= x && x < interval.endX && proceedSearch) {
 	          if (interval.startY <= y && y < interval.endY) {
 	            found = true;
 	            index = _this.placeAtInterval(interval, i, x, y);
+	            if (interval.box) {
+	              proceedSearch = false;
+	            }
 	          }
 	        }
 	      });
@@ -1183,6 +1197,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    /**
+	     * Add an interval at the given index in intervals list.
+	     *
+	     * @param {Number} key
+	     * @param {Object} data
+	     * 
+	     * @return {Void}
+	     */
+
+	  }, {
+	    key: 'addIntervalAt',
+	    value: function addIntervalAt(key, data) {
+	      this.intervals.splice(key, 0, data);
+	    }
+
+	    /**
 	     * Add an interval to intervals list.
 	     * 
 	     * @param {Object} data
@@ -1193,7 +1222,38 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'addInterval',
 	    value: function addInterval(data) {
+	      if (Number.isNaN(data.index)) {
+	        console.log(this.elements);
+	        console.error('This interval has NaN as index.');
+	      }
 	      this.intervals.push(data);
+	    }
+
+	    /**
+	     * Shortcut for adding an interval.
+	     * 
+	     * @param {Number} index
+	     * @param {Object} bounding
+	     * 
+	     * @return {Void}
+	     */
+
+	  }, {
+	    key: 'addIntervalBox',
+	    value: function addIntervalBox(index, _ref) {
+	      var top = _ref.top,
+	          bottom = _ref.bottom,
+	          left = _ref.left,
+	          right = _ref.right;
+
+	      this.addInterval({
+	        index: index,
+	        startX: left,
+	        endX: right,
+	        startY: top,
+	        endY: bottom,
+	        box: true
+	      });
 	    }
 
 	    /**
@@ -1250,6 +1310,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            _this2.findCommand(element);
 	            break;
 
+	          case 'eol':
+	            _this2.findEndOfLine(element);
+	            break;
+
 	          default:
 	            _this2.find(element);
 	        }
@@ -1270,15 +1334,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  }, {
 	    key: 'find',
-	    value: function find(_ref) {
-	      var type = _ref.type,
-	          index = _ref.index,
-	          nearClosure = _ref.nearClosure;
+	    value: function find(data) {
+	      var type = data.type,
+	          index = data.index,
+	          nearClosure = data.nearClosure;
 
 	      var key = this.getNextKeyFor(type);
 	      var $el = this.$display.querySelectorAll('.mjx-' + type)[key];
 	      if (!$el) {
-	        return console.warn('Could not find an element of type ' + type + '.', $el);
+	        return console.warn('Could not find an element of type ' + type + '.', index);
 	      }
 
 	      var _$el$getBoundingClien = $el.getBoundingClientRect(),
@@ -1294,6 +1358,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        endY: bottom,
 	        index: index
 	      });
+
 	      if (nearClosure) {
 	        this.addInterval({
 	          index: index + 1,
@@ -1328,7 +1393,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var key = this.getNextKeyFor(type);
 	      var $el = this.$display.querySelectorAll('.mjx-m' + type)[key];
 	      var brackets = props.brackets,
-	          blocks = props.blocks;
+	          blocks = props.blocks,
+	          subType = props.subType;
 
 
 	      switch (type) {
@@ -1338,22 +1404,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	          var numBounding = $numerator.getBoundingClientRect();
 	          var denBounding = $denominator.getBoundingClientRect();
 	          var boundings = [numBounding, denBounding];
-	          console.log(blocks);
-	          boundings.forEach(function (_ref3, i) {
-	            var left = _ref3.left,
-	                right = _ref3.right,
-	                top = _ref3.top,
-	                bottom = _ref3.bottom;
 
-	            if (blocks[i].closeIndex - blocks[i].openIndex === 1) {
-	              _this3.addInterval({
-	                index: blocks[i].closeIndex,
-	                startX: left,
-	                endX: right,
-	                startY: top,
-	                endY: bottom,
-	                box: true
-	              });
+	          boundings.forEach(function (bounding, i) {
+	            if (blocks[i].length === 1) {
+	              _this3.addIntervalBox(blocks[i].closeIndex, bounding);
 	            }
 	          });
 
@@ -1363,42 +1417,140 @@ return /******/ (function(modules) { // webpackBootstrap
 	        case 'sqrt':
 	          if (brackets && brackets.closeIndex - brackets.openIndex === 1) {
 	            var $root = $el.querySelector('.mjx-root .mjx-char');
-
-	            var _$root$getBoundingCli = $root.getBoundingClientRect(),
-	                left = _$root$getBoundingCli.left,
-	                right = _$root$getBoundingCli.right,
-	                top = _$root$getBoundingCli.top,
-	                bottom = _$root$getBoundingCli.bottom;
-
-	            this.addInterval({
-	              index: brackets.closeIndex,
-	              startX: left,
-	              endX: right,
-	              startY: top,
-	              endY: bottom,
-	              box: true
-	            });
+	            var bounding = $root.getBoundingClientRect();
+	            this.addIntervalBox(brackets.closeIndex, bounding);
 	          }
-	          if (blocks[0].closeIndex - blocks[0].openIndex === 1) {
+	          if (blocks[0].length === 1) {
 	            var $box = $el.querySelector('.mjx-box');
+	            var _bounding = $box.getBoundingClientRect();
+	            this.addIntervalBox(blocks[0].closeIndex, _bounding);
+	          }
+	          break;
 
-	            var _$box$getBoundingClie = $box.getBoundingClientRect(),
-	                _left = _$box$getBoundingClie.left,
-	                _right = _$box$getBoundingClie.right,
-	                _top = _$box$getBoundingClie.top,
-	                _bottom = _$box$getBoundingClie.bottom;
-
-	            this.addInterval({
-	              index: blocks[0].closeIndex,
-	              startX: _left,
-	              endX: _right,
-	              startY: _top,
-	              endY: _bottom,
-	              box: true
-	            });
+	        case 'subsup':
+	          if (blocks[0].length === 1) {
+	            var $target = $el.querySelector('.mjx-' + subType);
+	            var _bounding2 = $target.getBoundingClientRect();
+	            this.addIntervalBox(blocks[0].closeIndex, _bounding2);
 	          }
 	          break;
 	      }
+	    }
+
+	    /**
+	     * Find an end of line element.
+	     * 
+	     * @param {Object} data
+	     * @param {String} data.type
+	     * @param {Number} data.index
+	     * 
+	     * @return {Void}
+	     */
+
+	  }, {
+	    key: 'findEndOfLine',
+	    value: function findEndOfLine(_ref3) {
+	      var type = _ref3.type,
+	          index = _ref3.index;
+
+	      var key = this.getNextKeyFor(type);
+	      var $el = this.$display.querySelectorAll('.mjx-' + type)[key];
+	      // If $el was not found, it seems there is only one line.
+	      if (!$el) {
+	        $el = this.$display.querySelector('.mjx-math');
+	      }
+	      var $box = $el.firstChild;
+
+	      var _$box$getBoundingClie = $box.getBoundingClientRect(),
+	          top = _$box$getBoundingClie.top,
+	          left = _$box$getBoundingClie.left,
+	          bottom = _$box$getBoundingClie.bottom,
+	          right = _$box$getBoundingClie.right;
+
+	      var width = 20;
+	      var lineStart = this.findLastStartOfLineIndex();
+
+	      // Insert start of line interval.
+	      this.addIntervalAt(lineStart.intervalKey, {
+	        index: lineStart.start,
+	        startX: left - width,
+	        endX: left,
+	        startY: top,
+	        endY: bottom,
+	        box: true
+	      });
+
+	      // Insert end of line interval.
+	      this.addInterval({
+	        index: index,
+	        startX: right,
+	        endX: right + width,
+	        startY: top,
+	        endY: bottom,
+	        box: true
+	      });
+	    }
+
+	    /**
+	     * Find the last start of line index in the intervals list.
+	     * 
+	     * @return {Number}
+	     */
+
+	  }, {
+	    key: 'findLastStartOfLineIndex',
+	    value: function findLastStartOfLineIndex() {
+	      var intervals = this.intervals.slice().reverse();
+	      var length = intervals.length;
+	      var i = 0;
+	      var start = 0;
+	      var intervalKey = 0;
+
+	      for (; i < length; i++) {
+	        var interval = intervals[i];
+	        if (interval.is === 'eol') {
+	          start = interval.index + 2;
+	          intervalKey = key;
+	          break;
+	        }
+	      }
+
+	      return { start: start, intervalKey: intervalKey };
+	    }
+
+	    // Debug function to draw a interval.
+
+	  }, {
+	    key: 'paint',
+	    value: function paint(interval) {
+	      var $div = document.createElement('div');
+	      $div.style.position = 'absolute';
+	      $div.style.backgroundColor = 'rgba(0, 0, 255, 0.5)';
+	      $div.style.width = interval.endX - interval.startX + 'px';
+	      $div.style.height = interval.endY - interval.startY + 'px';
+	      $div.style.top = interval.startY + 'px';
+	      $div.style.left = interval.startX + 'px';
+	      document.body.appendChild($div);
+	      return $div;
+	    }
+
+	    // Debug function to paint all intervals.
+
+	  }, {
+	    key: 'paintIntervals',
+	    value: function paintIntervals() {
+	      var _this4 = this;
+
+	      $paints.forEach(function ($paint) {
+	        return document.body.removeChild($paint);
+	      });
+	      $paints = [];
+
+	      this.intervals.forEach(function (interval) {
+	        $paints.push(_this4.paint(interval));
+	      });
+
+	      console.log(this.intervals);
 	    }
 	  }]);
 
@@ -1423,14 +1575,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var nearClosureHaystack = ['}', ']', '\\'];
+	var nearClosureHaystack = ['}', ']'];
 	var cursorTex = '{\\cursor}';
 	var emptyTex = '\\isEmpty';
 
 	var test = {
 	  isNumber: /[0-9]/,
 	  isVariable: /[a-z]/,
-	  isOperator: /[\+\-\=\,\.\[\]]/,
+	  isOperator: /[\+\-\=\,\.\[\]\(\);:]/,
 	  isEscapedOperator: /[\{\}]/
 	};
 
@@ -1456,6 +1608,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.length = tex.length;
 	    this.displayTex = '';
 	    this.cursorIndex = cursorIndex;
+	    this.isPartOfCommand = [];
 
 	    this.parse();
 	  }
@@ -1474,8 +1627,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var tex = this.tex;
 	      var length = this.tex.length;
 	      var cursorIndex = this.cursorIndex;
-	      var cursorPlaced = false;
 	      var i = 0;
+
+	      this.cursorPlaced = false;
 
 	      for (; i < length; i++) {
 	        var index = i;
@@ -1490,13 +1644,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var isOperator = test.isOperator.exec(char);
 	        var isEscapedOperator = test.isEscapedOperator.exec(char);
 
-	        if (!cursorPlaced && cursorIndex === index) {
-	          cursorPlaced = true;
+	        if (!this.cursorPlaced && cursorIndex === index) {
+	          this.cursorPlaced = true;
 	          this.displayTex += cursorTex;
 	        }
 
 	        if (isComma || isNumber) {
 	          this.displayTex += '{';
+	        }
+
+	        // Closing a command block, add spacing.
+	        if (char === '}' && lastChar !== '\\') {
+	          this.displayTex += '\\;';
 	        }
 
 	        // Add char to tex that are displayed on editor.
@@ -1527,7 +1686,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        // Check if character is an operator.
-	        if (isOperator) {
+	        if (isOperator && !(0, _utils.inArray)(index, this.isPartOfCommand)) {
 	          this.elements.push({
 	            is: 'operator',
 	            type: 'mo',
@@ -1547,9 +1706,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        // Newline up ahead.
 	        if (char === '\\' && nextChar === '\\') {
-	          var newLine = { start: i, end: i + 1 };
-	          this.newLines[i] = newLine;
-	          this.newLines[i + 1] = newLine;
+	          var newLine = { start: index, end: nextIndex };
+	          this.newLines[index] = newLine;
+	          this.newLines[nextIndex] = newLine;
+	          this.displayTex += '\\';
+	          this.elements.push({
+	            is: 'eol',
+	            type: 'block',
+	            index: index
+	          });
 	          i += 1;
 	        }
 
@@ -1563,30 +1728,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	          i = this.parseCommand(i);
 	        }
 
-	        // Closing a command block.
-	        if (char === '}' && lastChar !== '\\') {}
-	        //
-
-
 	        // Opening a command block.
 	        if (char === '{') {
 	          if (nextChar === '}') {
-	            if (!cursorPlaced && nextIndex === cursorIndex) {
-	              cursorPlaced = true;
+	            if (!this.cursorPlaced && nextIndex === cursorIndex) {
+	              this.cursorPlaced = true;
 	              this.displayTex += cursorTex;
 	            }
 	            this.displayTex += emptyTex;
 	          }
+	          continue;
+	        }
 
+	        if (char === ' ') {
 	          continue;
 	        }
 
 	        cursorPoints.push(index);
 	      }
 
+	      // Last line eol element.
+	      if (length) {
+	        this.elements.push({
+	          is: 'eol',
+	          type: 'block',
+	          index: length
+	        });
+	      }
+
 	      // Add cursor at the end if it was not placed.
-	      if (!cursorPlaced && cursorIndex === length) {
-	        cursorPlaced = true;
+	      if (!this.cursorPlaced && cursorIndex === length) {
+	        this.cursorPlaced = true;
 	        this.displayTex += cursorTex;
 	      }
 
@@ -1610,23 +1782,38 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var iterator = i;
 	      var tex = this.tex;
 	      var length = this.tex.length;
+	      var cursorIndex = this.cursorIndex;
+	      var firstChar = tex[iterator];
 	      var opening = null; // the first place the cursor can be placed inside this command
 	      var blocks = [];
 	      var brackets = null;
 	      var openBlocks = 0;
 	      var type = '';
+	      var subType = null;
 	      var is = 'command'; // we assume it is a command but it can be operator or variable
 	      var start = iterator; // index command starts
 	      var end = null; // index command ends
 	      var nearClosure = false;
 
+	      switch (firstChar) {
+	        case '^':
+	          type = 'subsup';
+	          subType = 'sup';
+	          break;
+	        case '_':
+	          type = 'subsup';
+	          subType = 'sub';
+	          break;
+	      }
+
 	      for (i = iterator; i < length; i++) {
 	        var char = tex[i];
-	        var nextChar = tex[i + 1];
+	        var nextIndex = i + 1;
+	        var nextChar = tex[nextIndex];
 	        var isVariable = test.isVariable.exec(char);
 
 	        if (opening === null) {
-	          this.displayTex += char !== '\\' ? char : '';
+	          this.displayTex += !(0, _utils.isAny)(char, ['\\', '^', '_']) ? char : '';
 	          if (isVariable) {
 	            type += char;
 	          }
@@ -1638,6 +1825,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	          if (opening === null) {
 	            opening = i;
 	          }
+
+	          // Add symbol of empty.
 	          if (nextChar === ']') {
 	            this.displayTex += emptyTex;
 	          }
@@ -1646,6 +1835,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // Closing brackets!
 	        if (char === ']') {
 	          brackets.closeIndex = i;
+	          this.isPartOfCommand.push(i);
 	        }
 
 	        // Find a block being openned.
@@ -1657,6 +1847,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	          openBlocks += 1;
 	          if (opening === null) {
 	            opening = i;
+
+	            // Place the cursor if it is there.
+	            if (!this.cursorPlaced && nextIndex === cursorIndex) {
+	              this.cursorPlaced = true;
+	              this.displayTex += cursorTex;
+	            }
+
+	            if (nextChar === '}') {
+	              this.displayTex += emptyTex;
+	            }
 	          }
 	        }
 
@@ -1665,7 +1865,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	          openBlocks -= 1;
 	          // If it is this command block...
 	          if (openBlocks === 0) {
-	            blocks[blocks.length - 1].closeIndex = i;
+	            var key = blocks.length - 1;
+	            blocks[key].closeIndex = i;
+	            blocks[key].length = i - blocks[key].openIndex;
 	          }
 	        }
 
@@ -1697,8 +1899,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this.elements.push({
 	        is: is,
 	        type: type,
+	        index: iterator,
 	        nearClosure: nearClosure,
 	        props: {
+	          subType: subType,
 	          start: start,
 	          end: end,
 	          opening: opening,
