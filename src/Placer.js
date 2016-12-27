@@ -1,5 +1,7 @@
 import EventBus from './EventBus';
 
+let $paints = [];
+
 class Placer {
   /**
    * This will handle the cursor placement when the user clicks somewhere
@@ -68,15 +70,19 @@ class Placer {
     }
 
     let found = false;
+    let proceedSearch = false;
 
     // First strategy: checks if the clicked point is inside a number/
     // variable/operator bounding. If it is, place it where is proper.
 
     intervals.forEach((interval, i) => {
-      if (interval.startX <= x && x < interval.endX) {
+      if (interval.startX <= x && x < interval.endX && proceedSearch) {
         if (interval.startY <= y && y < interval.endY) {
           found = true;
           index = this.placeAtInterval(interval, i, x, y);
+          if (interval.box) {
+            proceedSearch = false;
+          }
         }
       }
     });
@@ -147,6 +153,25 @@ class Placer {
       console.error('This interval has NaN as index.');
     }
     this.intervals.push(data);
+  }
+
+  /**
+   * Shortcut for adding an interval.
+   * 
+   * @param {Number} index
+   * @param {Object} bounding
+   * 
+   * @return {Void}
+   */
+  addIntervalBox(index, { top, bottom, left, right }) {
+    this.addInterval({
+      index,
+      startX: left,
+      endX: right,
+      startY: top,
+      endY: bottom,
+      box: true
+    });
   }
 
   /**
@@ -258,7 +283,7 @@ class Placer {
   findCommand({ type, index, props }) {
     const key = this.getNextKeyFor(type);
     const $el = this.$display.querySelectorAll(`.mjx-m${type}`)[key];
-    const { brackets, blocks } = props;
+    const { brackets, blocks, subType } = props;
 
     switch (type) {
       case 'frac':
@@ -268,16 +293,9 @@ class Placer {
         const denBounding = $denominator.getBoundingClientRect();
         const boundings = [numBounding, denBounding];
 
-        boundings.forEach(({ left, right, top, bottom }, i) => {
-          if ((blocks[i].closeIndex - blocks[i].openIndex) === 1) {
-            this.addInterval({
-              index: blocks[i].closeIndex, 
-              startX: left,
-              endX: right,
-              startY: top,
-              endY: bottom,
-              box: true
-            });
+        boundings.forEach((bounding, i) => {
+          if (blocks[i].length === 1) {
+            this.addIntervalBox(blocks[i].closeIndex, bounding);
           }
         });
 
@@ -287,27 +305,21 @@ class Placer {
       case 'sqrt':
         if (brackets && (brackets.closeIndex - brackets.openIndex) === 1) {
           const $root = $el.querySelector('.mjx-root .mjx-char');  
-          const { left, right, top, bottom } = $root.getBoundingClientRect();
-          this.addInterval({
-            index: brackets.closeIndex,
-            startX: left,
-            endX: right,
-            startY: top,
-            endY: bottom,
-            box: true
-          });
+          const bounding = $root.getBoundingClientRect();
+          this.addIntervalBox(brackets.closeIndex, bounding);
         }
-        if ((blocks[0].closeIndex - blocks[0].openIndex) === 1) {
+        if (blocks[0].length === 1) {
           const $box = $el.querySelector('.mjx-box');
-          const { left, right, top, bottom } = $box.getBoundingClientRect();
-          this.addInterval({
-            index: blocks[0].closeIndex,
-            startX: left,
-            endX: right,
-            startY: top,
-            endY: bottom,
-            box: true
-          });
+          const bounding = $box.getBoundingClientRect();
+          this.addIntervalBox(blocks[0].closeIndex, bounding);
+        }
+        break;
+
+      case 'subsup':
+        if (blocks[0].length === 1) {
+          const $target = $el.querySelector(`.mjx-${subType}`);
+          const bounding = $target.getBoundingClientRect();
+          this.addIntervalBox(blocks[0].closeIndex, bounding);
         }
         break;
     }
@@ -389,6 +401,19 @@ class Placer {
     $div.style.top = interval.startY + 'px';
     $div.style.left = interval.startX + 'px';
     document.body.appendChild($div);
+    return $div;
+  }
+
+  // Debug function to paint all intervals.
+  paintIntervals() {
+    $paints.forEach($paint => document.body.removeChild($paint));
+    $paints = [];
+
+    this.intervals.forEach(interval => {
+      $paints.push(this.paint(interval));
+    });
+
+    console.log(this.intervals);
   }
 }
 

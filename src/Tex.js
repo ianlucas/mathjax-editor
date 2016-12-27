@@ -197,15 +197,28 @@ class Tex {
     const tex = this.tex;
     const length = this.tex.length;
     const cursorIndex = this.cursorIndex;
+    const firstChar = tex[iterator];
     let opening = null; // the first place the cursor can be placed inside this command
     let blocks = [];
     let brackets = null; 
     let openBlocks = 0;
     let type = '';
+    let subType = null;
     let is = 'command'; // we assume it is a command but it can be operator or variable
     let start = iterator; // index command starts
     let end = null; // index command ends
     let nearClosure = false;
+
+    switch (firstChar) {
+      case '^':
+        type = 'subsup';
+        subType = 'sup';
+        break;
+      case '_':
+        type = 'subsup';
+        subType = 'sub';
+        break;
+    }
 
     for (i = iterator; i < length; i++) {
       const char = tex[i];
@@ -214,7 +227,7 @@ class Tex {
       const isVariable = test.isVariable.exec(char);
 
       if (opening === null) {
-        this.displayTex += (char !== '\\' ? char : '');
+        this.displayTex += (!isAny(char, ['\\', '^', '_']) ? char : '');
         if (isVariable) {
           type += char;
         }
@@ -266,7 +279,9 @@ class Tex {
         openBlocks -= 1;
         // If it is this command block...
         if (openBlocks === 0) {
-          blocks[blocks.length - 1].closeIndex = i;
+          const key = blocks.length - 1;
+          blocks[key].closeIndex = i;
+          blocks[key].length = i - blocks[key].openIndex;
         }
       }
 
@@ -301,6 +316,7 @@ class Tex {
       index: iterator,
       nearClosure,
       props: {
+        subType,
         start,
         end,
         opening,
