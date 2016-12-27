@@ -69,7 +69,7 @@ class Editor {
     this.$display = $display;
     this.$input = $input;
     this.bus = new EventBus;
-    this.cursor = 0;
+    this.cursorIndex = 0;
     this.placer = null;
     this.debug = debug;
     this.focusClass = focusClass;
@@ -89,16 +89,16 @@ class Editor {
    * @return {Void}
    */
   update(cursorOptions = {}) {
-    const { cursor, value } = this;
+    const { cursorIndex, value } = this;
     let tex = this.tex;
 
     if (value !== this.lastValue) {
-      tex = new Tex(value, cursor);
+      tex = new Tex(value, cursorIndex);
       this.tex = tex;
     }
 
     if (this.debug) {
-      this.$debug.innerHTML = insertBetween(value, cursor, '|');
+      this.$debug.innerHTML = insertBetween(value, cursorIndex, '|');
     }
 
     this.updateJaxElement(
@@ -106,9 +106,9 @@ class Editor {
       () => {
         setTimeout(() => {
           const placer = new Placer(this);
-          placer.on('setCursor', cursor => {
-            this.debug && console.log(`The cursor should be placed at ${cursor}.`);
-            this.cursor = cursor;
+          placer.on('setCursor', index => {
+            this.debug && console.log(`The cursor should be placed at ${index}.`);
+            this.cursorIndex = index;
             this.update();
           });
           this.placer = placer;
@@ -142,11 +142,11 @@ class Editor {
    * @return {Void}
    */
   updateCursor(amount = 0) {
-    const cursor = this.cursor;
+    const cursorIndex = this.cursorIndex;
     const points = this.tex.cursorPoints;
-    const key = points.indexOf(cursor)
+    const key = points.indexOf(cursorIndex)
 
-    let to = cursor;
+    let to = cursorIndex;
 
     if (amount > 0) {
       to = points[key + 1];
@@ -155,7 +155,7 @@ class Editor {
       to = points[key - 1];
     }
 
-    this.cursor = to;
+    this.cursorIndex = to;
     this.update();
   }
 
@@ -206,7 +206,7 @@ class Editor {
    * @return {Void}
    */
   handleInputEvent(e) {
-    const $input = this.$input;
+    const { $input } = this;
     const inputValue = $input.value.trim();
     let which = e.keyCode;
 
@@ -298,7 +298,7 @@ class Editor {
    * @return {Void}
    */
   moveCursorLeft() {
-    if (this.cursor > 0) {
+    if (this.cursorIndex > 0) {
       this.updateCursor(-1);
     }
   }
@@ -309,7 +309,7 @@ class Editor {
    * @return {Void}
    */
   moveCursorRight() {
-    if (this.cursor < this.value.length) {
+    if (this.cursorIndex < this.value.length) {
       this.updateCursor(1);
     }
   }
@@ -364,12 +364,11 @@ class Editor {
    * @return {Void}
    */
   insert(chars) {
-    const cursor = this.cursor;
-    const current = this.value;
+    const { cursorIndex, value } = this;
 
-    this.cursor += chars.length;
+    this.cursorIndex += chars.length;
 
-    this.setValue(insertBetween(current, cursor, chars));
+    this.setValue(insertBetween(value, cursorIndex, chars));
     this.update();
   }
 
@@ -404,11 +403,10 @@ class Editor {
       return;
     }
 
-    const value = this.value;
-    const cursor = this.cursor;
+    const { value, cursorIndex } = this;
     const blocks = '}' + repeat('{}', blockCount - 1);
 
-    this.setValue(insertBetween(value, cursor, blocks));
+    this.setValue(insertBetween(value, cursorIndex, blocks));
     this.update();
   }
 
@@ -420,9 +418,8 @@ class Editor {
    * @return {Void}
    */
   applyDeletion(method) {
-    const cursor = this.cursor;
-    const prevIndex = cursor - 1;
-    const tex = this.tex;
+    const { cursorIndex, tex } = this;
+    const prevIndex = cursorIndex - 1;
     const elements = tex.elements;
 
     let deletionStart = null;
@@ -435,25 +432,25 @@ class Editor {
 
     switch (method) {
       case 'erase':
-        if (cursor === 0) {
+        if (cursorIndex === 0) {
           return;
         }
         comparator = prevIndex;
         startOrEnd = 'end';
         openOrClose = 'openIndex';
         numVarDeletionStart = prevIndex;
-        numVarDeletionEnd = cursor;
+        numVarDeletionEnd = cursorIndex;
         break;
 
       case 'delete':
-        if (cursor === tex.length) {
+        if (cursorIndex === tex.length) {
           return;
         }
-        comparator = cursor;
+        comparator = cursorIndex;
         startOrEnd = 'start';
         openOrClose = 'closeIndex';
-        numVarDeletionStart = cursor;
-        numVarDeletionEnd = cursor + 1;
+        numVarDeletionStart = cursorIndex;
+        numVarDeletionEnd = cursorIndex + 1;
         break;
 
       default:
@@ -496,7 +493,7 @@ class Editor {
       }
     }
 
-    this.cursor = deletionStart;
+    this.cursorIndex = deletionStart;
     this.setValue(removeFragment(this.value, deletionStart, deletionEnd));
     this.update();
   }
