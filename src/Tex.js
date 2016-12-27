@@ -7,7 +7,7 @@ const emptyTex = '\\isEmpty';
 const test = {
   isNumber: /[0-9]/,
   isVariable: /[a-z]/,
-  isOperator: /[\+\-\=\,\.\[\]]/,
+  isOperator: /[\+\-\=\,\.\[\]\(\);:]/,
   isEscapedOperator: /[\{\}]/
 };
 
