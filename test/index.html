@@ -15,55 +15,85 @@
     .mj-ed-display.isFocused {
       border-color: #007fff;
     }
+
+    button {
+      align-items: center;
+      background-color: #007fff;
+      border: none;
+      color: #fff;
+      display: flex;
+      float: left;
+      height: 48px;
+      justify-content: center;
+      width: 48px;
+    }
+
+    #buttons {
+      overflow: hidden;
+    }
   </style>
 </head>
 <body>
   <textarea id="editor"></textarea>
 
-  <div>
-    <button id="btnSqrt">\(\sqrt{a}\)</button>
-    <button id="btnFrac">\(\frac{a}{b}\)</button>
-    <button id="btnAlpha">\(\alpha\)</button>
-    <button id="btnSuper">\(a^n\)</button>
-    <button id="btnSub">\(a_n\)</button>
-  </div>
+  <div id="buttons"></div>
 
 
   <script type='text/x-mathjax-config'>
     MathJax.Hub.Config({
-        showMathMenu: false,
-        messageStyle: 'none'
+      showMathMenu: false,
+      messageStyle: 'none'
     });
   </script>
 
   <script src="../dist/MathJaxEditor.js"></script>
   <script>
     window.onload = function () {
-      const btnSqrt = document.getElementById('btnSqrt');
-      
+      var $buttons = document.getElementById('buttons');
+
       const editor = new MathJaxEditor({
         el: '#editor',
-        debug: true
+        debug: true,
+        newLine: true
       });
 
-      btnSqrt.addEventListener('click', () => {
-        editor.insertCommand('\\sqrt', 1, true);
-      });
+      const buttons = {
+        '\\sqrt{a}': function (editor) { editor.insertCommand('\\sqrt', 1) },
+        '\\sqrt[n]{a}': function (editor) { editor.insertCommand('\\sqrt', 1, true) },
+        '\\frac{a}{b}': function (editor) { editor.insertCommand('\\frac', 2) },
+        '\\geq': function (editor) { editor.insertCommand('\\geq') },
+        '\\leq': function (editor) { editor.insertCommand('\\leq') },
+        '\\alpha': function (editor) { editor.insertCommand('\\alpha') },
+        '\\beta': function (editor) { editor.insertCommand('\\beta') },
+        'a^n': function (editor) { editor.insertCommand('^', 1) },
+        'a_n': function (editor) { editor.insertCommand('_', 1) },
+        '◂': function (editor) { editor.moveCursorLeft() },
+        '▸': function (editor) { editor.moveCursorRight() },
+        '[': function (editor) { editor.insertSymbol('[') },
+        ']': function (editor) { editor.insertSymbol(']') },
+        '(': function (editor) { editor.insertSymbol('(') },
+        ')': function (editor) { editor.insertSymbol(')') },
+        ',': function (editor) { editor.insertSymbol(',') },
+        '.': function (editor) { editor.insertSymbol('.') },
+        '+': function (editor) { editor.insertSymbol('+') },
+        '-': function (editor) { editor.insertSymbol('-') },
+        ':': function (editor) { editor.insertSymbol(':') },
+        ';': function (editor) { editor.insertSymbol(';') },
+        '<': function (editor) { editor.insertSymbol('<') },
+        '>': function (editor) { editor.insertSymbol('>') },
+        '\\%': function (editor) { editor.insertSymbol('%') }
+      };
 
-      btnSuper.addEventListener('click', () => {
-        editor.insertCommand('^');
-      });
+      Object.keys(buttons).forEach(function (label) {
+        var $button = document.createElement('button');
+        var fn = buttons[label];
 
-      btnSub.addEventListener('click', () => {
-        editor.insertCommand('_');
-      });
+        $button.innerHTML = '\\(' + label + '\\)';
+        $button.addEventListener('click', function () {
+          fn(editor);  
+        });
 
-      btnFrac.addEventListener('click', () => {
-        editor.insertCommand('\\frac', 2);
-      });
-
-      btnAlpha.addEventListener('click', () => {
-        editor.insertCommand('\\alpha', 0);
+        $buttons.appendChild($button);
       });
     };
   </script>
