@@ -1,5 +1,6 @@
 import Editor from './Editor';
 import extendMathJax from './extendMathJax';
+import { inArray } from './utils';
 
 window.addEventListener('load', extendMathJax);
 
@@ -81,11 +82,11 @@ class MathJaxEditor {
       '%'
     ];
 
-    if (!~symbols.indexOf(symbol)) {
+    if (!inArray(symbol, symbols)) {
       throw new RangeError(`"${symbol}" is not a valid symbol.`);
     }
 
-    if (!~escape.indexOf(symbol)) {
+    if (!inArray(symbol, escape)) {
       return this.core.insert(symbol);
     }
 
