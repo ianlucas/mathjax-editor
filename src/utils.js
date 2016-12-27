@@ -101,6 +101,15 @@ export function isAny(needle, haystack) {
 }
 
 /**
+ * Same as `isAny`. Just better naming.
+ * 
+ * @see isAny
+ */
+export function inArray(needle, haystack) {
+  return isAny(needle, haystack);
+}
+
+/**
  * Repeat a string.
  * 
  * @param {String} str
@@ -123,4 +132,18 @@ export function repeat(str, count) {
   }
 
   return result;
+}
+
+/**
+ * Remove part of a string.
+ * 
+ * >> removeFragment("0123456", 1, 3);
+ * << "03456"
+ * 
+ * So, when start 1 and end 3, "0123456"
+ *                               ^^
+ *                             Removed
+ */
+export function removeFragment(str, start, end) {
+  return str.slice(0, start) +  str.slice(end);
 }
