@@ -1,6 +1,8 @@
-import { isAny } from './utils';
+import { isAny, inArray } from './utils';
 
-const NEAR_CLOSURE_HAYSTACK = ['}', ']', '\\'];
+const nearClosureHaystack = ['}', ']', '\\'];
+const cursorTex = '{\\cursor}';
+const emptyTex = '\\isEmpty';
 
 const test = {
   isNumber: /[0-9]/,
@@ -15,14 +17,18 @@ class Tex {
    * where cursor can be placed, and `elements` (that are passed to Placer).
    * 
    * @param {String} tex
+   * @param {Number} cursorIndex
    * 
    * @constructor
    */
-  constructor(tex) {
+  constructor(tex, cursorIndex = null) {
     this.tex = tex;
     this.cursorPoints = [];
     this.elements = [];
+    this.newLines = {};
     this.length = tex.length;
+    this.displayTex = '';
+    this.cursorIndex = cursorIndex;
 
     this.parse();
   }
@@ -36,17 +42,41 @@ class Tex {
     const cursorPoints = [];
     const tex = this.tex;
     const length = this.tex.length;
+    const cursorIndex = this.cursorIndex;
+    let cursorPlaced = false;
     let i = 0;
     
     for (; i < length; i++) {
       const index = i;
+      const nextIndex = i + 1;
       const char = tex[index];
-      const nextChar = tex[index + 1];
+      const nextChar = tex[nextIndex];
       const lastChar = tex[index - 1];
-      const nearClosure = isAny(nextChar, NEAR_CLOSURE_HAYSTACK);
+      const nearClosure = isAny(nextChar, nearClosureHaystack);
+      const isComma = (char === ',');
+      const isNumber = test.isNumber.exec(char);
+      const isVariable = test.isVariable.exec(char);
+      const isOperator = test.isOperator.exec(char);
+      const isEscapedOperator = test.isEscapedOperator.exec(char);
+
+      if (!cursorPlaced && cursorIndex === index) {
+        cursorPlaced = true;
+        this.displayTex += cursorTex;
+      }
+
+      if (isComma || isNumber) {
+        this.displayTex += '{';
+      }
+
+      // Add char to tex that are displayed on editor.
+      this.displayTex += char;
+
+      if (isComma || isNumber) {
+        this.displayTex += '}';
+      }
 
       // Check if character is a number.
-      if (test.isNumber.exec(char)) {
+      if (isNumber) {
         this.elements.push({
           is: 'number',
           type: 'mn',
@@ -56,7 +86,7 @@ class Tex {
       }
 
       // Check if character is a variable.
-      if (test.isVariable.exec(char)) {
+      if (isVariable) {
         this.elements.push({
           is: 'variable',
           type: 'mi',
@@ -66,7 +96,7 @@ class Tex {
       }
 
       // Check if character is an operator.
-      if (test.isOperator.exec(char)) {
+      if (isOperator) {
         this.elements.push({
           is: 'operator',
           type: 'mo',
@@ -75,7 +105,7 @@ class Tex {
         });
       }
 
-      if (test.isEscapedOperator.exec(char) && lastChar === '\\') {
+      if (isEscapedOperator && lastChar === '\\') {
         this.elements.push({
           is: 'operator',
           type: 'mo',
@@ -86,6 +116,9 @@ class Tex {
 
       // Newline up ahead.
       if (char === '\\' && nextChar === '\\') {
+        const newLine = { start: i, end: i + 1};
+        this.newLines[i] = newLine;
+        this.newLines[i + 1] = newLine;
         i += 1;
       }
 
@@ -106,10 +139,24 @@ class Tex {
 
       // Opening a command block.
       if (char === '{') {
+        if (nextChar === '}') {
+          if (!cursorPlaced && nextIndex === cursorIndex) {
+            cursorPlaced = true;
+            this.displayTex += cursorTex;
+          }
+          this.displayTex += emptyTex;
+        }
+
         continue;
       }
 
       cursorPoints.push(index);
+    }
+
+    // Add cursor at the end if it was not placed.
+    if (!cursorPlaced && cursorIndex === length) {
+      cursorPlaced = true;
+      this.displayTex += cursorTex;
     }
 
     // Cursor can always be placed at the end.
@@ -142,9 +189,13 @@ class Tex {
     for (i = iterator; i < length; i++) {
       const char = tex[i];
       const nextChar = tex[i + 1];
+      const isVariable = test.isVariable.exec(char);
 
-      if (opening === null && test.isVariable.exec(char)) {
-        type += char;
+      if (opening === null) {
+        this.displayTex += (char !== '\\' ? char : '');
+        if (isVariable) {
+          type += char;
+        }
       }
       
       // Bracket found!
@@ -152,6 +203,9 @@ class Tex {
         brackets = { openIndex: i };
         if (opening === null) {
           opening = i;
+        }
+        if (nextChar === ']') {
+          this.displayTex += emptyTex;
         }
       }
 
@@ -186,13 +240,13 @@ class Tex {
         is = type === 'mo' ? 'operator' : 'variable';
         end = i;
         opening = i;
-        if (isAny(nextChar, NEAR_CLOSURE_HAYSTACK)) {
+        if (isAny(nextChar, nearClosureHaystack)) {
           nearClosure = true;
         }
         break;
       }
 
-      if (char === '}' && nextChar !== '{') {
+      if (char === '}' && nextChar !== '{' && openBlocks === 0) {
         end = i;
         break;
       }
