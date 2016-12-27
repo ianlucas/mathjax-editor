@@ -56,7 +56,7 @@ This insert a character at cursor position. The allowed characters are numbers (
 
 #### `editor.insertSymbol(symbol)`
 
-This insert a symbol at cursor position. Currently supported symbols:  `'+', '-', '/', '=', '<', '>', ',', '.', ':', ';', '?', '(', ')', '[', ']', '%'`.
+This insert a symbol at cursor position. Currently supported symbols:  `'+', '-', '=', '<', '>', ',', '.', ':', ';', '?', '(', ')', '[', ']', '%'`.
 
 #### `editor.moveCursorLeft()`
 
