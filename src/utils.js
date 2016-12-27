@@ -99,3 +99,28 @@ export function toArray(children) {
 export function isAny(needle, haystack) {
   return !!~haystack.indexOf(needle);
 }
+
+/**
+ * Repeat a string.
+ * 
+ * @param {String} str
+ * @param {Number} count
+ * 
+ * @return {String}
+ */
+export function repeat(str, count) {
+  let result = '';
+  const double = str + str;
+  const isOdd = (count % 2) !== 0;
+  const length = Math.floor(count / 2);
+  let i = 0;
+  for (; i < length; i++) {
+    result += double;
+  }
+
+  if (isOdd) {
+    result += str;
+  }
+
+  return result;
+}

@@ -1,11 +1,12 @@
 import EventBus from './EventBus';
 import Placer from './Placer';
 import Tex from './Tex';
-import { 
-  mustFindElement,
-  insertBetween,
+import {
   addClass,
-  removeClass
+  insertBetween,
+  mustFindElement,
+  removeClass,
+  repeat
 } from './utils';
 
 const KEY_BACKSPACE = 8;
@@ -461,7 +462,7 @@ class Editor {
 
     const value = this.value;
     const cursor = this.cursor;
-    const blocks = '}' + '{}'.repeat(blockCount - 1);
+    const blocks = '}' + repeat('{}', blockCount - 1);
 
     this.lastValue = this.value;
     this.value = insertBetween(value, cursor, blocks);
