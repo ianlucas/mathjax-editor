@@ -201,7 +201,7 @@ class Placer {
     const key = this.getNextKeyFor(type);
     const $el = this.$display.querySelectorAll(`.mjx-${type}`)[key];
     if (!$el) {
-      return console.log('COULD NOT FIND THIS ELEMENT', $el);
+      return console.warn(`Could not find an element of type ${type}.`, $el);
     }
     const { left, right, top, bottom } = $el.getBoundingClientRect();
     this.addInterval({
@@ -244,7 +244,7 @@ class Placer {
         const numBounding = $numerator.getBoundingClientRect();
         const denBounding = $denominator.getBoundingClientRect();
         const boundings = [numBounding, denBounding];
-
+        console.log(blocks);
         boundings.forEach(({ left, right, top, bottom }, i) => {
           if ((blocks[i].closeIndex - blocks[i].openIndex) === 1) {
             this.addInterval({
