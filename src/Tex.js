@@ -1,6 +1,6 @@
 import { isAny, inArray } from './utils';
 
-const nearClosureHaystack = ['}', ']', '\\'];
+const nearClosureHaystack = ['}', ']'];
 const cursorTex = '{\\cursor}';
 const emptyTex = '\\isEmpty';
 
@@ -29,6 +29,7 @@ class Tex {
     this.length = tex.length;
     this.displayTex = '';
     this.cursorIndex = cursorIndex;
+    this.isPartOfCommand = [];
 
     this.parse();
   }
@@ -43,8 +44,9 @@ class Tex {
     const tex = this.tex;
     const length = this.tex.length;
     const cursorIndex = this.cursorIndex;
-    let cursorPlaced = false;
     let i = 0;
+
+    this.cursorPlaced = false;
     
     for (; i < length; i++) {
       const index = i;
@@ -59,13 +61,18 @@ class Tex {
       const isOperator = test.isOperator.exec(char);
       const isEscapedOperator = test.isEscapedOperator.exec(char);
 
-      if (!cursorPlaced && cursorIndex === index) {
-        cursorPlaced = true;
+      if (!this.cursorPlaced && cursorIndex === index) {
+        this.cursorPlaced = true;
         this.displayTex += cursorTex;
       }
 
       if (isComma || isNumber) {
         this.displayTex += '{';
+      }
+
+      // Closing a command block, add spacing.
+      if (char === '}' && lastChar !== '\\') {
+        this.displayTex += '\\;';
       }
 
       // Add char to tex that are displayed on editor.
@@ -96,7 +103,7 @@ class Tex {
       }
 
       // Check if character is an operator.
-      if (isOperator) {
+      if (isOperator && !inArray(index, this.isPartOfCommand)) {
         this.elements.push({
           is: 'operator',
           type: 'mo',
@@ -116,10 +123,15 @@ class Tex {
 
       // Newline up ahead.
       if (char === '\\' && nextChar === '\\') {
-        const newLine = { start: i, end: i + 1};
-        this.newLines[i] = newLine;
-        this.newLines[i + 1] = newLine;
+        const newLine = { start: index, end: nextIndex};
+        this.newLines[index] = newLine;
+        this.newLines[nextIndex] = newLine;
         this.displayTex += '\\';
+        this.elements.push({
+          is: 'eol',
+          type: 'block',
+          index
+        });
         i += 1;
       }
 
@@ -133,30 +145,37 @@ class Tex {
         i = this.parseCommand(i);
       }
 
-      // Closing a command block.
-      if (char === '}' && lastChar !== '\\') {
-        //
-      }
-
       // Opening a command block.
       if (char === '{') {
         if (nextChar === '}') {
-          if (!cursorPlaced && nextIndex === cursorIndex) {
-            cursorPlaced = true;
+          if (!this.cursorPlaced && nextIndex === cursorIndex) {
+            this.cursorPlaced = true;
             this.displayTex += cursorTex;
           }
           this.displayTex += emptyTex;
         }
+        continue;
+      }
 
+      if (char === ' ') {
         continue;
       }
 
       cursorPoints.push(index);
     }
 
+    // Last line eol element.
+    if (length) {
+      this.elements.push({
+        is: 'eol',
+        type: 'block',
+        index: length
+      });
+    }
+
     // Add cursor at the end if it was not placed.
-    if (!cursorPlaced && cursorIndex === length) {
-      cursorPlaced = true;
+    if (!this.cursorPlaced && cursorIndex === length) {
+      this.cursorPlaced = true;
       this.displayTex += cursorTex;
     }
 
@@ -177,6 +196,7 @@ class Tex {
     const iterator = i;
     const tex = this.tex;
     const length = this.tex.length;
+    const cursorIndex = this.cursorIndex;
     let opening = null; // the first place the cursor can be placed inside this command
     let blocks = [];
     let brackets = null; 
@@ -189,7 +209,8 @@ class Tex {
 
     for (i = iterator; i < length; i++) {
       const char = tex[i];
-      const nextChar = tex[i + 1];
+      const nextIndex = i + 1;
+      const nextChar = tex[nextIndex];
       const isVariable = test.isVariable.exec(char);
 
       if (opening === null) {
@@ -205,6 +226,8 @@ class Tex {
         if (opening === null) {
           opening = i;
         }
+
+        // Add symbol of empty.
         if (nextChar === ']') {
           this.displayTex += emptyTex;
         }
@@ -213,6 +236,7 @@ class Tex {
       // Closing brackets!
       if (char === ']') {
         brackets.closeIndex = i;
+        this.isPartOfCommand.push(i);
       }
 
       // Find a block being openned.
@@ -224,6 +248,16 @@ class Tex {
         openBlocks += 1;
         if (opening === null) {
           opening = i;
+
+          // Place the cursor if it is there.
+          if (!this.cursorPlaced && nextIndex === cursorIndex) {
+            this.cursorPlaced = true;
+            this.displayTex += cursorTex;
+          }
+          
+          if (nextChar === '}') {
+            this.displayTex += emptyTex;
+          }
         }
       }
 
@@ -264,6 +298,7 @@ class Tex {
     this.elements.push({
       is,
       type,
+      index: iterator,
       nearClosure,
       props: {
         start,

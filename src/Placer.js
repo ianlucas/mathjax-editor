@@ -123,6 +123,18 @@ class Placer {
   }
 
   /**
+   * Add an interval at the given index in intervals list.
+   *
+   * @param {Number} key
+   * @param {Object} data
+   * 
+   * @return {Void}
+   */
+  addIntervalAt(key, data) {
+    this.intervals.splice(key, 0, data);
+  }
+
+  /**
    * Add an interval to intervals list.
    * 
    * @param {Object} data
@@ -130,6 +142,10 @@ class Placer {
    * @return {Void}
    */
   addInterval(data) {
+    if (Number.isNaN(data.index)) {
+      console.log(this.elements);
+      console.error('This interval has NaN as index.');
+    }
     this.intervals.push(data);
   }
 
@@ -180,6 +196,10 @@ class Placer {
           this.findCommand(element);
           break;
 
+        case 'eol':
+          this.findEndOfLine(element);
+          break;
+
         default:
           this.find(element);
       }
@@ -197,13 +217,15 @@ class Placer {
    * 
    * @return {Void}
    */
-  find({ type, index, nearClosure }) {
+  find(data) {
+    const { type, index, nearClosure } = data;
     const key = this.getNextKeyFor(type);
     const $el = this.$display.querySelectorAll(`.mjx-${type}`)[key];
     if (!$el) {
-      return console.warn(`Could not find an element of type ${type}.`, $el);
+      return console.warn(`Could not find an element of type ${type}.`, index);
     }
     const { left, right, top, bottom } = $el.getBoundingClientRect();
+
     this.addInterval({
       startX: left,
       endX: right,
@@ -211,6 +233,7 @@ class Placer {
       endY: bottom,
       index
     });
+
     if (nearClosure) {
       this.addInterval({
         index: index + 1,
@@ -244,7 +267,7 @@ class Placer {
         const numBounding = $numerator.getBoundingClientRect();
         const denBounding = $denominator.getBoundingClientRect();
         const boundings = [numBounding, denBounding];
-        console.log(blocks);
+
         boundings.forEach(({ left, right, top, bottom }, i) => {
           if ((blocks[i].closeIndex - blocks[i].openIndex) === 1) {
             this.addInterval({
@@ -288,6 +311,84 @@ class Placer {
         }
         break;
     }
+  }
+  
+  /**
+   * Find an end of line element.
+   * 
+   * @param {Object} data
+   * @param {String} data.type
+   * @param {Number} data.index
+   * 
+   * @return {Void}
+   */
+  findEndOfLine({ type, index }) {
+    const key = this.getNextKeyFor(type);
+    let $el = this.$display.querySelectorAll(`.mjx-${type}`)[key];
+    // If $el was not found, it seems there is only one line.
+    if (!$el) {
+      $el = this.$display.querySelector('.mjx-math');
+    }
+    const $box = $el.firstChild;
+    const { top, left, bottom, right } = $box.getBoundingClientRect();
+    const width = 20;
+    const lineStart = this.findLastStartOfLineIndex();
+
+    // Insert start of line interval.
+    this.addIntervalAt(lineStart.intervalKey, {
+      index: lineStart.start,
+      startX: left - width,
+      endX: left,
+      startY: top,
+      endY: bottom,
+      box: true
+    });
+
+    // Insert end of line interval.
+    this.addInterval({
+      index,
+      startX: right,
+      endX: right + width,
+      startY: top,
+      endY: bottom,
+      box: true
+    });
+  }
+
+  /**
+   * Find the last start of line index in the intervals list.
+   * 
+   * @return {Number}
+   */
+  findLastStartOfLineIndex() {
+    const intervals = this.intervals.slice().reverse();
+    const length = intervals.length;
+    let i = 0;
+    let start = 0;
+    let intervalKey = 0;
+
+    for (; i < length; i++) {
+      const interval = intervals[i];
+      if (interval.is === 'eol') {
+        start = interval.index + 2;
+        intervalKey = key;
+        break;
+      }
+    }
+
+    return { start, intervalKey };
+  }
+
+  // Debug function to draw a interval.
+  paint(interval) {
+    const $div = document.createElement('div');
+    $div.style.position = 'absolute';
+    $div.style.backgroundColor = 'rgba(0, 0, 255, 0.5)';
+    $div.style.width = (interval.endX - interval.startX) + 'px';
+    $div.style.height = (interval.endY - interval.startY) + 'px';
+    $div.style.top = interval.startY + 'px';
+    $div.style.left = interval.startX + 'px';
+    document.body.appendChild($div);
   }
 }
 
