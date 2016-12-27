@@ -469,8 +469,10 @@ class Editor {
 
         // Command deletion.
         if (props) {
-          // If is erasing at the start/end of the command.
-          if (props[startOrEnd] === comparator) {
+          const brackets = props.brackets;
+
+          // If is erasing at the start/end of the command/ or is erasing brackets of the command.
+          if (props[startOrEnd] === comparator || (brackets && brackets[openOrClose] === comparator)) {
             deletionStart = props.start;
             deletionEnd = props.end + 1;
             break;
