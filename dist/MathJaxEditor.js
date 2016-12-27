@@ -99,7 +99,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var core = new _Editor2.default(options);
 
 	    this.core = core;
-	    this.version = '1.2.1';
+	    this.version = '1.2.2';
 	  }
 
 	  /**
@@ -364,7 +364,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.debug = debug;
 	    this.focusClass = focusClass;
 	    this.newLine = newLine;
-	    this.tex = new _Tex2.default(value);
+	    this.tex = new _Tex2.default(value, 0);
 	    this.value = value;
 	    this.lastValue = value;
 	  }
@@ -386,26 +386,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _this2 = this;
 
 	      var cursorOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	      var cursor = this.cursor,
+	          value = this.value;
 
-	      var value = this.value;
+	      var tex = this.tex;
 
 	      if (value !== this.lastValue) {
-	        this.tex = new _Tex2.default(value);
+	        tex = new _Tex2.default(value, cursor);
+	        this.tex = tex;
 	      }
-
-	      var cursor = this.cursor;
-	      // TODO: Improve this ugh
-	      var valueWithCursor = (0, _utils.insertBetween)(value, cursor, '{\\cursor}').replace(/\d/g, function (n) {
-	        return '{' + n + '}';
-	      }).replace(/\,/g, function (comma) {
-	        return '{' + comma + '}';
-	      }).replace(/\{\}/g, '{\\isEmpty}').replace(/\[\]/g, '[\\isEmpty]').replace(/\{\{\\cursor\}\}/g, '{{\\cursor}\\isEmpty}').replace(/\[\{\\cursor\}\]/g, '[{\\cursor}\\isEmpty]');
 
 	      if (this.debug) {
 	        this.$debug.innerHTML = (0, _utils.insertBetween)(value, cursor, '|');
 	      }
 
-	      this.updateJaxElement(valueWithCursor, function () {
+	      this.updateJaxElement(tex.displayTex, function () {
 	        setTimeout(function () {
 	          var placer = new _Placer2.default(_this2);
 	          placer.on('setCursor', function (cursor) {
@@ -509,61 +504,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        $cursor.style.display = hidden ? 'none' : 'inline-block';
 	      });
 	    }
-
-	    /**
-	     * Find a jax command at given position.
-	     * 
-	     * For instance, consider this as the current value of the editor:
-	     * 
-	     *     '\sqrt{2}'
-	     * 
-	     * If the given position is the index of any character of the
-	     * command '\sqrt', it will return the start and the end of the
-	     * command.
-	     * 
-	     * @param {Number} position
-	     * 
-	     * @return {Object}
-	     */
-
 	  }, {
-	    key: 'findCommandAt',
-	    value: function findCommandAt(position) {
-	      var coordinates = { start: null, end: null };
-	      var value = this.value;
-	      var length = value.length;
-	      var previous = position - 1;
-	      var next = position + 1;
-	      var i = void 0;
-
-	      i = next;
-
-	      while (i--) {
-	        if (~['\\', '^', '_'].indexOf(value[i])) {
-	          coordinates.start = i;
-	          break;
-	        }
-	      }
-
-	      i = previous;
-
-	      while (i++ < value.length) {
-	        if (value[i] === '}' && value[i + 1] !== '{') {
-	          coordinates.end = i;
-	          break;
-	        }
-
-	        if (value[i - 1] === ' ') {
-	          coordinates.end = i - 1;
-	          break;
-	        }
-	      }
-
-	      if (coordinates.end === null) {
-	        coordinates.end = i;
-	      }
-
-	      return coordinates;
+	    key: 'setValue',
+	    value: function setValue(value) {
+	      this.lastValue = this.value;
+	      this.value = value;
 	    }
 
 	    /**
@@ -727,7 +672,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'focus',
 	    value: function focus() {
 	      this.$input.focus();
-	      this.updateCursorElement({ hidden: false });
+	      this.updateCursorElement({ cursorHidden: false });
 	      this.bus.trigger('focus');
 	      (0, _utils.addClass)(this.$display, this.focusClass);
 	    }
@@ -742,7 +687,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'blur',
 	    value: function blur() {
 	      this.$input.blur();
-	      this.updateCursorElement({ hidden: true });
+	      this.updateCursorElement({ cursorHidden: true });
 	      this.bus.trigger('blur');
 	      (0, _utils.removeClass)(this.$display, this.focusClass);
 	    }
@@ -750,21 +695,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * Insert a piece of text in editor's value.
 	     * 
-	     * @param {String} value
+	     * @param {String} chars
 	     * 
 	     * @return {Void}
 	     */
 
 	  }, {
 	    key: 'insert',
-	    value: function insert(value) {
+	    value: function insert(chars) {
 	      var cursor = this.cursor;
 	      var current = this.value;
 
-	      this.cursor += value.length;
-	      this.lastValue = this.value;
-	      this.value = (0, _utils.insertBetween)(current, cursor, value);
+	      this.cursor += chars.length;
 
+	      this.setValue((0, _utils.insertBetween)(current, cursor, chars));
 	      this.update();
 	    }
 
@@ -806,16 +750,148 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var value = this.value;
 	      var cursor = this.cursor;
-	      var blocks = '}' + '{}'.repeat(blockCount - 1);
+	      var blocks = '}' + (0, _utils.repeat)('{}', blockCount - 1);
 
-	      this.lastValue = this.value;
-	      this.value = (0, _utils.insertBetween)(value, cursor, blocks);
+	      this.setValue((0, _utils.insertBetween)(value, cursor, blocks));
+	      this.update();
+	    }
+
+	    /**
+	     * Apply a deletion method based on cursor position.
+	     * 
+	     * @param {String} method - Available: "erase" and "delete".
+	     * 
+	     * @return {Void}
+	     */
+
+	  }, {
+	    key: 'applyDeletion',
+	    value: function applyDeletion(method) {
+	      var cursor = this.cursor;
+	      var prevIndex = cursor - 1;
+	      var tex = this.tex;
+	      var elements = tex.elements;
+
+	      var deletionStart = null;
+	      var deletionEnd = null;
+	      var comparator = void 0;
+	      var startOrEnd = void 0;
+	      var openOrClose = void 0;
+	      var numVarDeletionStart = void 0;
+	      var numVarDeletionEnd = void 0;
+
+	      switch (method) {
+	        case 'erase':
+	          if (cursor === 0) {
+	            return;
+	          }
+	          comparator = prevIndex;
+	          startOrEnd = 'end';
+	          openOrClose = 'openIndex';
+	          numVarDeletionStart = prevIndex;
+	          numVarDeletionEnd = cursor;
+	          break;
+
+	        case 'delete':
+	          if (cursor === tex.length) {
+	            return;
+	          }
+	          comparator = cursor;
+	          startOrEnd = 'start';
+	          openOrClose = 'closeIndex';
+	          numVarDeletionStart = cursor;
+	          numVarDeletionEnd = cursor + 1;
+	          break;
+
+	        default:
+	          throw new RangeError('Unknown method "' + method + '".');
+	      }
+
+	      // Deal with new lines deletion.
+	      if (tex.newLines[comparator]) {
+	        var nl = tex.newLines[comparator];
+	        deletionStart = nl.start;
+	        deletionEnd = nl.end + 1;
+	      } else {
+	        var _iteratorNormalCompletion = true;
+	        var _didIteratorError = false;
+	        var _iteratorError = undefined;
+
+	        try {
+	          for (var _iterator = elements[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	            var element = _step.value;
+	            var index = element.index,
+	                props = element.props;
+
+	            // Command deletion.
+
+	            if (props) {
+	              // If is erasing at the start/end of the command.
+	              if (props[startOrEnd] === comparator) {
+	                deletionStart = props.start;
+	                deletionEnd = props.end + 1;
+	                break;
+	              }
+	              // If is erasing one of block opening/closing.
+	              var _iteratorNormalCompletion2 = true;
+	              var _didIteratorError2 = false;
+	              var _iteratorError2 = undefined;
+
+	              try {
+	                for (var _iterator2 = props.blocks[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	                  var block = _step2.value;
+
+	                  if (block[openOrClose] === comparator) {
+	                    deletionStart = props.start;
+	                    deletionEnd = props.end + 1;
+	                    break;
+	                  }
+	                }
+	              } catch (err) {
+	                _didIteratorError2 = true;
+	                _iteratorError2 = err;
+	              } finally {
+	                try {
+	                  if (!_iteratorNormalCompletion2 && _iterator2.return) {
+	                    _iterator2.return();
+	                  }
+	                } finally {
+	                  if (_didIteratorError2) {
+	                    throw _iteratorError2;
+	                  }
+	                }
+	              }
+	            }
+	            // Number/variable deletion.
+	            else if (index === comparator) {
+	                deletionStart = numVarDeletionStart;
+	                deletionEnd = numVarDeletionEnd;
+	                break;
+	              }
+	          }
+	        } catch (err) {
+	          _didIteratorError = true;
+	          _iteratorError = err;
+	        } finally {
+	          try {
+	            if (!_iteratorNormalCompletion && _iterator.return) {
+	              _iterator.return();
+	            }
+	          } finally {
+	            if (_didIteratorError) {
+	              throw _iteratorError;
+	            }
+	          }
+	        }
+	      }
+
+	      this.cursor = deletionStart;
+	      this.setValue((0, _utils.removeFragment)(this.value, deletionStart, deletionEnd));
 	      this.update();
 	    }
 
 	    /**
 	     * Erases the character before the cursor.
-	     * TODO: REFACTORE THIS
 	     * 
 	     * @return {Void}
 	     */
@@ -823,39 +899,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'erase',
 	    value: function erase() {
-	      var current = this.cursor;
-	      var previous = this.cursor - 1;
-	      var value = this.value;
-
-	      var before = void 0;
-	      var after = void 0;
-
-	      // Check if we are erasing a command.
-	      if (~['{', '}', ' '].indexOf(value[previous])) {
-	        var coordinates = this.findCommandAt(current);
-	        before = value.slice(0, coordinates.start);
-	        after = value.slice(coordinates.end + 1);
-	      } else {
-	        var beforeIndex = current - 1;
-
-	        // Check if we are erasing a new line.
-	        if (value[previous] === '\\' && value[previous - 1] === '\\') {
-	          beforeIndex -= 1;
-	        }
-
-	        before = value.slice(0, beforeIndex);
-	        after = value.slice(current);
-	      }
-
-	      this.value = before + after;
-	      this.cursor = before.length;
-
-	      this.update();
+	      this.applyDeletion('erase');
 	    }
 
 	    /**
 	     * Erases the character before the cursor.
-	     * TODO: REFACTORE THIS
 	     * 
 	     * @return {Void}
 	     */
@@ -863,35 +911,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'delete',
 	    value: function _delete() {
-	      var current = this.cursor;
-	      var next = this.cursor + 1;
-	      var value = this.value;
-
-	      var before = void 0;
-	      var after = void 0;
-
-	      // Check if we are erasing a command (and not a new line).
-	      if (value[current] === '\\' && value[next] !== '\\' || value[current] === '}') {
-	        var coordinates = this.findCommandAt(current);
-	        before = value.slice(0, coordinates.start);
-	        after = value.slice(coordinates.end + 1);
-	      } else {
-	        var beforeIndex = current;
-	        var afterIndex = next;
-
-	        // Check if we are erasing a new line.
-	        if (value[current] === '\\' && value[next] === '\\') {
-	          afterIndex += 1;
-	        }
-
-	        before = value.slice(0, beforeIndex);
-	        after = value.slice(afterIndex);
-	      }
-
-	      this.value = before + after;
-	      this.cursor = before.length;
-
-	      this.update();
+	      this.applyDeletion('delete');
 	    }
 
 	    /**
@@ -1258,7 +1278,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var key = this.getNextKeyFor(type);
 	      var $el = this.$display.querySelectorAll('.mjx-' + type)[key];
 	      if (!$el) {
-	        return console.log('COULD NOT FIND THIS ELEMENT', $el);
+	        return console.warn('Could not find an element of type ' + type + '.', $el);
 	      }
 
 	      var _$el$getBoundingClien = $el.getBoundingClientRect(),
@@ -1318,7 +1338,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          var numBounding = $numerator.getBoundingClientRect();
 	          var denBounding = $denominator.getBoundingClientRect();
 	          var boundings = [numBounding, denBounding];
-
+	          console.log(blocks);
 	          boundings.forEach(function (_ref3, i) {
 	            var left = _ref3.left,
 	                right = _ref3.right,
@@ -1403,7 +1423,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var NEAR_CLOSURE_HAYSTACK = ['}', ']', '\\'];
+	var nearClosureHaystack = ['}', ']', '\\'];
+	var cursorTex = '{\\cursor}';
+	var emptyTex = '\\isEmpty';
 
 	var test = {
 	  isNumber: /[0-9]/,
@@ -1418,16 +1440,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * where cursor can be placed, and `elements` (that are passed to Placer).
 	   * 
 	   * @param {String} tex
+	   * @param {Number} cursorIndex
 	   * 
 	   * @constructor
 	   */
 	  function Tex(tex) {
+	    var cursorIndex = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
 	    _classCallCheck(this, Tex);
 
 	    this.tex = tex;
 	    this.cursorPoints = [];
 	    this.elements = [];
+	    this.newLines = {};
 	    this.length = tex.length;
+	    this.displayTex = '';
+	    this.cursorIndex = cursorIndex;
 
 	    this.parse();
 	  }
@@ -1445,17 +1473,41 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var cursorPoints = [];
 	      var tex = this.tex;
 	      var length = this.tex.length;
+	      var cursorIndex = this.cursorIndex;
+	      var cursorPlaced = false;
 	      var i = 0;
 
 	      for (; i < length; i++) {
 	        var index = i;
+	        var nextIndex = i + 1;
 	        var char = tex[index];
-	        var nextChar = tex[index + 1];
+	        var nextChar = tex[nextIndex];
 	        var lastChar = tex[index - 1];
-	        var nearClosure = (0, _utils.isAny)(nextChar, NEAR_CLOSURE_HAYSTACK);
+	        var nearClosure = (0, _utils.isAny)(nextChar, nearClosureHaystack);
+	        var isComma = char === ',';
+	        var isNumber = test.isNumber.exec(char);
+	        var isVariable = test.isVariable.exec(char);
+	        var isOperator = test.isOperator.exec(char);
+	        var isEscapedOperator = test.isEscapedOperator.exec(char);
+
+	        if (!cursorPlaced && cursorIndex === index) {
+	          cursorPlaced = true;
+	          this.displayTex += cursorTex;
+	        }
+
+	        if (isComma || isNumber) {
+	          this.displayTex += '{';
+	        }
+
+	        // Add char to tex that are displayed on editor.
+	        this.displayTex += char;
+
+	        if (isComma || isNumber) {
+	          this.displayTex += '}';
+	        }
 
 	        // Check if character is a number.
-	        if (test.isNumber.exec(char)) {
+	        if (isNumber) {
 	          this.elements.push({
 	            is: 'number',
 	            type: 'mn',
@@ -1465,7 +1517,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        // Check if character is a variable.
-	        if (test.isVariable.exec(char)) {
+	        if (isVariable) {
 	          this.elements.push({
 	            is: 'variable',
 	            type: 'mi',
@@ -1475,7 +1527,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        // Check if character is an operator.
-	        if (test.isOperator.exec(char)) {
+	        if (isOperator) {
 	          this.elements.push({
 	            is: 'operator',
 	            type: 'mo',
@@ -1484,7 +1536,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          });
 	        }
 
-	        if (test.isEscapedOperator.exec(char) && lastChar === '\\') {
+	        if (isEscapedOperator && lastChar === '\\') {
 	          this.elements.push({
 	            is: 'operator',
 	            type: 'mo',
@@ -1495,6 +1547,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        // Newline up ahead.
 	        if (char === '\\' && nextChar === '\\') {
+	          var newLine = { start: i, end: i + 1 };
+	          this.newLines[i] = newLine;
+	          this.newLines[i + 1] = newLine;
 	          i += 1;
 	        }
 
@@ -1515,10 +1570,24 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        // Opening a command block.
 	        if (char === '{') {
+	          if (nextChar === '}') {
+	            if (!cursorPlaced && nextIndex === cursorIndex) {
+	              cursorPlaced = true;
+	              this.displayTex += cursorTex;
+	            }
+	            this.displayTex += emptyTex;
+	          }
+
 	          continue;
 	        }
 
 	        cursorPoints.push(index);
+	      }
+
+	      // Add cursor at the end if it was not placed.
+	      if (!cursorPlaced && cursorIndex === length) {
+	        cursorPlaced = true;
+	        this.displayTex += cursorTex;
 	      }
 
 	      // Cursor can always be placed at the end.
@@ -1554,9 +1623,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	      for (i = iterator; i < length; i++) {
 	        var char = tex[i];
 	        var nextChar = tex[i + 1];
+	        var isVariable = test.isVariable.exec(char);
 
-	        if (opening === null && test.isVariable.exec(char)) {
-	          type += char;
+	        if (opening === null) {
+	          this.displayTex += char !== '\\' ? char : '';
+	          if (isVariable) {
+	            type += char;
+	          }
 	        }
 
 	        // Bracket found!
@@ -1564,6 +1637,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	          brackets = { openIndex: i };
 	          if (opening === null) {
 	            opening = i;
+	          }
+	          if (nextChar === ']') {
+	            this.displayTex += emptyTex;
 	          }
 	        }
 
@@ -1598,13 +1674,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	          is = type === 'mo' ? 'operator' : 'variable';
 	          end = i;
 	          opening = i;
-	          if ((0, _utils.isAny)(nextChar, NEAR_CLOSURE_HAYSTACK)) {
+	          if ((0, _utils.isAny)(nextChar, nearClosureHaystack)) {
 	            nearClosure = true;
 	          }
 	          break;
 	        }
 
-	        if (char === '}' && nextChar !== '{') {
+	        if (char === '}' && nextChar !== '{' && openBlocks === 0) {
 	          end = i;
 	          break;
 	        }
@@ -1714,6 +1790,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.addClass = addClass;
 	exports.toArray = toArray;
 	exports.isAny = isAny;
+	exports.inArray = inArray;
+	exports.repeat = repeat;
+	exports.removeFragment = removeFragment;
 	/**
 	 * Tries to find the specified element. If it fails, an error is thrown.
 	 * 
@@ -1835,6 +1914,54 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	function isAny(needle, haystack) {
 	  return !!~haystack.indexOf(needle);
+	}
+
+	/**
+	 * Same as `isAny`. Just better naming.
+	 * 
+	 * @see isAny
+	 */
+	function inArray(needle, haystack) {
+	  return isAny(needle, haystack);
+	}
+
+	/**
+	 * Repeat a string.
+	 * 
+	 * @param {String} str
+	 * @param {Number} count
+	 * 
+	 * @return {String}
+	 */
+	function repeat(str, count) {
+	  var result = '';
+	  var double = str + str;
+	  var isOdd = count % 2 !== 0;
+	  var length = Math.floor(count / 2);
+	  var i = 0;
+	  for (; i < length; i++) {
+	    result += double;
+	  }
+
+	  if (isOdd) {
+	    result += str;
+	  }
+
+	  return result;
+	}
+
+	/**
+	 * Remove part of a string.
+	 * 
+	 * >> removeFragment("0123456", 1, 3);
+	 * << "03456"
+	 * 
+	 * So, when start 1 and end 3, "0123456"
+	 *                               ^^
+	 *                             Removed
+	 */
+	function removeFragment(str, start, end) {
+	  return str.slice(0, start) + str.slice(end);
 	}
 
 /***/ },
