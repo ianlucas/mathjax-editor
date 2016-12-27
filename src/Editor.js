@@ -6,6 +6,7 @@ import {
   insertBetween,
   mustFindElement,
   removeClass,
+  removeFragment,
   repeat
 } from './utils';
 
@@ -73,7 +74,7 @@ class Editor {
     this.debug = debug;
     this.focusClass = focusClass;
     this.newLine = newLine;
-    this.tex = new Tex(value);
+    this.tex = new Tex(value, 0);
     this.value = value;
     this.lastValue = value;
   }
@@ -88,28 +89,20 @@ class Editor {
    * @return {Void}
    */
   update(cursorOptions = {}) {
-    const value = this.value;
+    const { cursor, value } = this;
+    let tex = this.tex;
 
     if (value !== this.lastValue) {
-      this.tex = new Tex(value);
+      tex = new Tex(value, cursor);
+      this.tex = tex;
     }
-
-    const cursor = this.cursor;
-    // TODO: Improve this ugh
-    const valueWithCursor = insertBetween(value, cursor, '{\\cursor}')
-      .replace(/\d/g, n => `{${n}}`)
-      .replace(/\,/g, comma => `{${comma}}`)
-      .replace(/\{\}/g, '{\\isEmpty}')
-      .replace(/\[\]/g, '[\\isEmpty]')
-      .replace(/\{\{\\cursor\}\}/g, '{{\\cursor}\\isEmpty}')
-      .replace(/\[\{\\cursor\}\]/g, '[{\\cursor}\\isEmpty]');
 
     if (this.debug) {
       this.$debug.innerHTML = insertBetween(value, cursor, '|');
     }
 
     this.updateJaxElement(
-      valueWithCursor,
+      tex.displayTex,
       () => {
         setTimeout(() => {
           const placer = new Placer(this);
@@ -199,57 +192,9 @@ class Editor {
     });
   }
 
-  /**
-   * Find a jax command at given position.
-   * 
-   * For instance, consider this as the current value of the editor:
-   * 
-   *     '\sqrt{2}'
-   * 
-   * If the given position is the index of any character of the
-   * command '\sqrt', it will return the start and the end of the
-   * command.
-   * 
-   * @param {Number} position
-   * 
-   * @return {Object}
-   */
-  findCommandAt(position) {
-    const coordinates = { start: null, end: null };
-    const value = this.value;
-    const length = value.length;
-    const previous = position - 1;
-    const next = position + 1;
-    let i;
-    
-    i = next;
-
-    while (i--) {
-      if (~['\\', '^', '_'].indexOf(value[i])) {
-        coordinates.start = i;
-        break;
-      }
-    }
-
-    i = previous;
-
-    while (i++ < value.length) {
-      if (value[i] === '}' && value[i + 1] !== '{') {
-        coordinates.end = i;
-        break;
-      }
-
-      if (value[i - 1] === ' ') {
-        coordinates.end = i - 1;
-        break;
-      }
-    }
-
-    if (coordinates.end === null) {
-      coordinates.end = i;
-    }
-
-    return coordinates;
+  setValue(value) {
+    this.lastValue = this.value;
+    this.value = value;
   }
 
   /**
@@ -394,7 +339,7 @@ class Editor {
    */
   focus() {
     this.$input.focus();
-    this.updateCursorElement({ hidden: false });
+    this.updateCursorElement({ cursorHidden: false });
     this.bus.trigger('focus');
     addClass(this.$display, this.focusClass);
   }
@@ -406,7 +351,7 @@ class Editor {
    */
   blur() {
     this.$input.blur();
-    this.updateCursorElement({ hidden: true });
+    this.updateCursorElement({ cursorHidden: true });
     this.bus.trigger('blur');
     removeClass(this.$display, this.focusClass);
   }
@@ -414,18 +359,17 @@ class Editor {
   /**
    * Insert a piece of text in editor's value.
    * 
-   * @param {String} value
+   * @param {String} chars
    * 
    * @return {Void}
    */
-  insert(value) {
+  insert(chars) {
     const cursor = this.cursor;
     const current = this.value;
 
-    this.cursor += value.length;
-    this.lastValue = this.value;
-    this.value = insertBetween(current, cursor, value);
+    this.cursor += chars.length;
 
+    this.setValue(insertBetween(current, cursor, chars));
     this.update();
   }
 
@@ -464,89 +408,115 @@ class Editor {
     const cursor = this.cursor;
     const blocks = '}' + repeat('{}', blockCount - 1);
 
-    this.lastValue = this.value;
-    this.value = insertBetween(value, cursor, blocks);
+    this.setValue(insertBetween(value, cursor, blocks));
+    this.update();
+  }
+
+  /**
+   * Apply a deletion method based on cursor position.
+   * 
+   * @param {String} method - Available: "erase" and "delete".
+   * 
+   * @return {Void}
+   */
+  applyDeletion(method) {
+    const cursor = this.cursor;
+    const prevIndex = cursor - 1;
+    const tex = this.tex;
+    const elements = tex.elements;
+
+    let deletionStart = null;
+    let deletionEnd = null;
+    let comparator;
+    let startOrEnd;
+    let openOrClose;
+    let numVarDeletionStart;
+    let numVarDeletionEnd;
+
+    switch (method) {
+      case 'erase':
+        if (cursor === 0) {
+          return;
+        }
+        comparator = prevIndex;
+        startOrEnd = 'end';
+        openOrClose = 'openIndex';
+        numVarDeletionStart = prevIndex;
+        numVarDeletionEnd = cursor;
+        break;
+
+      case 'delete':
+        if (cursor === tex.length) {
+          return;
+        }
+        comparator = cursor;
+        startOrEnd = 'start';
+        openOrClose = 'closeIndex';
+        numVarDeletionStart = cursor;
+        numVarDeletionEnd = cursor + 1;
+        break;
+
+      default:
+        throw new RangeError(`Unknown method "${method}".`);
+    }
+
+    // Deal with new lines deletion.
+    if (tex.newLines[comparator]) {
+      const nl = tex.newLines[comparator];
+      deletionStart = nl.start;
+      deletionEnd = nl.end + 1;
+    }
+    else {
+      for (const element of elements) {
+        const { index, props } = element;
+
+        // Command deletion.
+        if (props) {
+          // If is erasing at the start/end of the command.
+          if (props[startOrEnd] === comparator) {
+            deletionStart = props.start;
+            deletionEnd = props.end + 1;
+            break;
+          }
+          // If is erasing one of block opening/closing.
+          for (const block of props.blocks) {
+            if (block[openOrClose] === comparator) {
+              deletionStart = props.start;
+              deletionEnd = props.end + 1;
+              break;
+            }
+          }
+        }
+        // Number/variable deletion.
+        else if (index === comparator) {
+          deletionStart = numVarDeletionStart;
+          deletionEnd = numVarDeletionEnd;
+          break;
+        }
+      }
+    }
+
+    this.cursor = deletionStart;
+    this.setValue(removeFragment(this.value, deletionStart, deletionEnd));
     this.update();
   }
 
   /**
    * Erases the character before the cursor.
-   * TODO: REFACTORE THIS
    * 
    * @return {Void}
    */
   erase() {
-    const current = this.cursor;
-    const previous = this.cursor - 1;
-    const value = this.value;
-
-    let before;
-    let after;
-
-    // Check if we are erasing a command.
-    if (~['{', '}', ' '].indexOf(value[previous])) {
-      const coordinates = this.findCommandAt(current);
-      before = value.slice(0, coordinates.start);
-      after = value.slice(coordinates.end + 1);
-    }
-    else {
-      let beforeIndex = current - 1;
-
-      // Check if we are erasing a new line.
-      if (value[previous] === '\\' 
-            && value[previous - 1] === '\\') {
-        beforeIndex -= 1;
-      }
-
-      before = value.slice(0, beforeIndex);
-      after = value.slice(current);
-    }
-
-    this.value = before + after;
-    this.cursor = before.length;
-
-    this.update();
+    this.applyDeletion('erase');
   }
 
   /**
    * Erases the character before the cursor.
-   * TODO: REFACTORE THIS
    * 
    * @return {Void}
    */
   delete() {
-    const current = this.cursor;
-    const next = this.cursor + 1;
-    const value = this.value;
-
-    let before;
-    let after;
-
-    // Check if we are erasing a command (and not a new line).
-    if ((value[current] === '\\' && value[next] !== '\\') 
-          || value[current] === '}') {
-      const coordinates = this.findCommandAt(current);
-      before = value.slice(0, coordinates.start);
-      after = value.slice(coordinates.end + 1);
-    }
-    else {
-      let beforeIndex = current;
-      let afterIndex = next;
-
-      // Check if we are erasing a new line.
-      if (value[current] === '\\' 
-            && value[next] === '\\') {
-        afterIndex += 1;
-      }
-
-      before = value.slice(0, beforeIndex);
-      after = value.slice(afterIndex);
-    }
-
-    this.value = before + after;
-    this.cursor = before.length;
-
-    this.update();
+    this.applyDeletion('delete');
   }
 
   /**
