@@ -105,7 +105,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var core = new _Editor2.default(options);
 
 	    this.core = core;
-	    this.version = '1.2.4';
+	    this.version = '1.2.5';
 	  }
 
 	  /**
@@ -321,20 +321,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * 
 	   * @constructor
 	   */
-	  function Editor(_ref) {
+	  function Editor(options) {
 	    var _this = this;
 
-	    var el = _ref.el,
-	        _ref$debug = _ref.debug,
-	        debug = _ref$debug === undefined ? false : _ref$debug,
-	        _ref$focusClass = _ref.focusClass,
-	        focusClass = _ref$focusClass === undefined ? 'isFocused' : _ref$focusClass,
-	        _ref$newLine = _ref.newLine,
-	        newLine = _ref$newLine === undefined ? false : _ref$newLine,
-	        _ref$value = _ref.value,
-	        value = _ref$value === undefined ? '' : _ref$value;
-
 	    _classCallCheck(this, Editor);
+
+	    var el = options.el,
+	        _options$debug = options.debug,
+	        debug = _options$debug === undefined ? false : _options$debug,
+	        _options$focusClass = options.focusClass,
+	        focusClass = _options$focusClass === undefined ? 'isFocused' : _options$focusClass,
+	        _options$newLine = options.newLine,
+	        newLine = _options$newLine === undefined ? false : _options$newLine,
+	        _options$value = options.value,
+	        value = _options$value === undefined ? '' : _options$value,
+	        _options$scroll = options.scroll,
+	        scroll = _options$scroll === undefined ? false : _options$scroll;
+
 
 	    var Element = MathJax.HTML.Element;
 
@@ -356,6 +359,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    document.body.addEventListener('click', this.handleBodyClick.bind(this));
 
 	    $display.style.opacity = 0;
+	    $display.style.overflowX = scroll ? 'scroll' : 'hidden';
 	    $debug.style.display = debug ? 'block' : 'none';
 
 	    MathJax.Hub.Queue(function () {
@@ -495,19 +499,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _this4 = this;
 
 	      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	      var $display = this.$display;
 
 	      var hidden = options.cursorHidden || false;
 	      var className = 'wasRecentlyPlaced';
 
 	      MathJax.Hub.Queue(function () {
-	        var $cursor = _this4.$display.querySelector('.mjx-cursor');
+	        var $cursor = $display.querySelector('.mjx-cursor');
+	        var offsetWidth = $cursor.offsetWidth,
+	            offsetLeft = $cursor.offsetLeft;
+
 
 	        if (!$cursor) {
 	          return;
 	        }
 
 	        if (!$cursor.style.marginLeft) {
-	          $cursor.style.marginLeft = '-' + $cursor.offsetWidth + 'px';
+	          $cursor.style.marginLeft = '-' + offsetWidth + 'px';
 	        }
 
 	        if (_this4.lastCursorTimeout) {
@@ -519,6 +527,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _this4.lastCursorTimeout = setTimeout(function () {
 	          return (0, _utils.removeClass)($cursor, className);
 	        }, 600);
+
+	        $display.scrollLeft = offsetLeft;
 
 	        $cursor.style.display = hidden ? 'none' : 'inline-block';
 	      });
