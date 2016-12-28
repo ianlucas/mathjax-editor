@@ -1,6 +1,7 @@
 import Editor from './Editor';
 import extendMathJax from './extendMathJax';
 import { inArray } from './utils';
+import constants from './constants';
 
 window.addEventListener('load', extendMathJax);
 
@@ -62,7 +63,11 @@ class MathJaxEditor {
    * @return {Void}
    */
   insert(char) {
-    if (!char.match(/[0-9]/) && !char.match(/[a-z]/)) {
+    const { number, variable } = constants;
+    if (char.length !== 1) {
+      throw new RangeError('Only one char can be inserted through this method.');
+    }
+    if (!char.match(number) && !char.match(variable)) {
       throw new RangeError(`Only numbers and variables are allowed in insert, not "${char}".`);
     }
     this.core.insert(char);
@@ -74,23 +79,18 @@ class MathJaxEditor {
    * @param {String} symbol
    */
   insertSymbol(symbol) {
-    const symbols = [
-      '+', '-', '=', '<', '>', ',', '.', ':',
-      ';', '?', '(', ')', '[', ']', '%'
-    ];
-    const escape = [
-      '%'
-    ];
+    const { operators, escapedOperators } = constants;
+    const symbols = operators.slice().concat(escapedOperators);
 
     if (!inArray(symbol, symbols)) {
       throw new RangeError(`"${symbol}" is not a valid symbol.`);
     }
 
-    if (!inArray(symbol, escape)) {
-      return this.core.insert(symbol);
+    if (inArray(symbol, escapedOperators)) {
+      symbol = `\\${symbol}`;
     }
 
-    this.core.insertCommand(`\\${symbol}`);
+    this.core.insert(symbol);
   }
 
   /**

@@ -147,3 +147,15 @@ export function repeat(str, count) {
 export function removeFragment(str, start, end) {
   return str.slice(0, start) +  str.slice(end);
 }
+
+/**
+ * Convert a list to a character regex.
+ * 
+ * @param {Array} list
+ * 
+ * @return {RegExp}
+ */
+export function listToCharacterRegex(list) {
+  const chars = list.map(char => `\\${char}`).join('');
+  return new RegExp(`^[${chars}]$`);
+}

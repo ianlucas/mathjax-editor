@@ -1,14 +1,13 @@
-import { isAny, inArray } from './utils';
+import { isAny, inArray, listToCharacterRegex } from './utils';
+import constants from './constants';
 
-const nearClosureHaystack = ['}', ']'];
-const cursorTex = '{\\cursor}';
-const emptyTex = '\\isEmpty';
+const { nearClosureHaystack, cursorTex, emptyTex, escType } = constants;
 
 const test = {
-  isNumber: /[0-9]/,
-  isVariable: /[a-z]/,
-  isOperator: /[\+\-\=\,\.\[\]\(\);:]/,
-  isEscapedOperator: /[\{\}]/
+  isNumber: constants.number,
+  isVariable: constants.variable,
+  isOperator: listToCharacterRegex(constants.operators),
+  isEscapedOperator: listToCharacterRegex(constants.escapedOperators)
 };
 
 class Tex {
@@ -56,17 +55,19 @@ class Tex {
       const lastChar = tex[index - 1];
       const nearClosure = isAny(nextChar, nearClosureHaystack);
       const isComma = (char === ',');
+      const isGrOrLeSign = isAny(char, ['<', '>']);
       const isNumber = test.isNumber.exec(char);
       const isVariable = test.isVariable.exec(char);
       const isOperator = test.isOperator.exec(char);
-      const isEscapedOperator = test.isEscapedOperator.exec(char);
+      const isNextCharEscapedOperator = test.isEscapedOperator.exec(nextChar);
+      const shouldBeAroundBraces = isComma || isNumber || isGrOrLeSign;
 
       if (!this.cursorPlaced && cursorIndex === index) {
         this.cursorPlaced = true;
         this.displayTex += cursorTex;
       }
 
-      if (isComma || isNumber) {
+      if (shouldBeAroundBraces) {
         this.displayTex += '{';
       }
 
@@ -78,7 +79,7 @@ class Tex {
       // Add char to tex that are displayed on editor.
       this.displayTex += char;
 
-      if (isComma || isNumber) {
+      if (shouldBeAroundBraces) {
         this.displayTex += '}';
       }
 
@@ -112,13 +113,16 @@ class Tex {
         });
       }
 
-      if (isEscapedOperator && lastChar === '\\') {
+      if (char === '\\' && isNextCharEscapedOperator) {
+        const type = escType[nextChar] ? escType[nextChar] : 'mo';
         this.elements.push({
           is: 'operator',
-          type: 'mo',
+          type,
           index,
           nearClosure
         });
+        this.displayTex += nextChar;
+        i += 1;
       }
 
       // Newline up ahead.
