@@ -71,11 +71,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _Editor2 = _interopRequireDefault(_Editor);
 
-	var _extendMathJax = __webpack_require__(6);
+	var _extendMathJax = __webpack_require__(7);
 
 	var _extendMathJax2 = _interopRequireDefault(_extendMathJax);
 
 	var _utils = __webpack_require__(5);
+
+	var _constants = __webpack_require__(6);
+
+	var _constants2 = _interopRequireDefault(_constants);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -101,7 +105,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var core = new _Editor2.default(options);
 
 	    this.core = core;
-	    this.version = '1.2.3';
+	    this.version = '1.2.4';
 	  }
 
 	  /**
@@ -160,7 +164,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'insert',
 	    value: function insert(char) {
-	      if (!char.match(/[0-9]/) && !char.match(/[a-z]/)) {
+	      var number = _constants2.default.number,
+	          variable = _constants2.default.variable;
+
+	      if (char.length !== 1) {
+	        throw new RangeError('Only one char can be inserted through this method.');
+	      }
+	      if (!char.match(number) && !char.match(variable)) {
 	        throw new RangeError('Only numbers and variables are allowed in insert, not "' + char + '".');
 	      }
 	      this.core.insert(char);
@@ -175,18 +185,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'insertSymbol',
 	    value: function insertSymbol(symbol) {
-	      var symbols = ['+', '-', '=', '<', '>', ',', '.', ':', ';', '?', '(', ')', '[', ']', '%'];
-	      var escape = ['%'];
+	      var operators = _constants2.default.operators,
+	          escapedOperators = _constants2.default.escapedOperators;
+
+	      var symbols = operators.slice().concat(escapedOperators);
 
 	      if (!(0, _utils.inArray)(symbol, symbols)) {
 	        throw new RangeError('"' + symbol + '" is not a valid symbol.');
 	      }
 
-	      if (!(0, _utils.inArray)(symbol, escape)) {
-	        return this.core.insert(symbol);
+	      if ((0, _utils.inArray)(symbol, escapedOperators)) {
+	        symbol = '\\' + symbol;
 	      }
 
-	      this.core.insertCommand('\\' + symbol);
+	      this.core.insert(symbol);
 	    }
 
 	    /**
@@ -1129,7 +1141,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      var found = false;
-	      var proceedSearch = false;
+	      var proceedSearch = true;
 
 	      // First strategy: checks if the clicked point is inside a number/
 	      // variable/operator bounding. If it is, place it where is proper.
@@ -1257,6 +1269,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    /**
+	     * Add an interval without bouncing.
+	     * 
+	     * @param {Number} index
+	     * 
+	     * @return {Void}
+	     */
+
+	  }, {
+	    key: 'addBouncinglessInterval',
+	    value: function addBouncinglessInterval(index) {
+	      this.addInterval({
+	        index: index,
+	        top: 0,
+	        bottom: 0,
+	        left: 0,
+	        right: 0
+	      });
+	    }
+
+	    /**
 	     * Returns the index which the cursor should be placed
 	     * based on given `x`, and `y`.
 	     * 
@@ -1360,13 +1392,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      });
 
 	      if (nearClosure) {
-	        this.addInterval({
-	          index: index + 1,
-	          top: 0,
-	          bottom: 0,
-	          left: 0,
-	          right: 0
-	        });
+	        this.addBouncinglessInterval(index + 1);
 	      }
 	    }
 
@@ -1396,6 +1422,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	          blocks = props.blocks,
 	          subType = props.subType;
 
+
+	      this.addBouncinglessInterval(props.start);
 
 	      switch (type) {
 	        case 'frac':
@@ -1530,6 +1558,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      $div.style.height = interval.endY - interval.startY + 'px';
 	      $div.style.top = interval.startY + 'px';
 	      $div.style.left = interval.startX + 'px';
+	      $div.style.pointerEvents = 'none';
 	      document.body.appendChild($div);
 	      return $div;
 	    }
@@ -1573,17 +1602,25 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _utils = __webpack_require__(5);
 
+	var _constants = __webpack_require__(6);
+
+	var _constants2 = _interopRequireDefault(_constants);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var nearClosureHaystack = ['}', ']'];
-	var cursorTex = '{\\cursor}';
-	var emptyTex = '\\isEmpty';
+	var nearClosureHaystack = _constants2.default.nearClosureHaystack,
+	    cursorTex = _constants2.default.cursorTex,
+	    emptyTex = _constants2.default.emptyTex,
+	    escType = _constants2.default.escType;
+
 
 	var test = {
-	  isNumber: /[0-9]/,
-	  isVariable: /[a-z]/,
-	  isOperator: /[\+\-\=\,\.\[\]\(\);:]/,
-	  isEscapedOperator: /[\{\}]/
+	  isNumber: _constants2.default.number,
+	  isVariable: _constants2.default.variable,
+	  isOperator: (0, _utils.listToCharacterRegex)(_constants2.default.operators),
+	  isEscapedOperator: (0, _utils.listToCharacterRegex)(_constants2.default.escapedOperators)
 	};
 
 	var Tex = function () {
@@ -1639,17 +1676,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var lastChar = tex[index - 1];
 	        var nearClosure = (0, _utils.isAny)(nextChar, nearClosureHaystack);
 	        var isComma = char === ',';
+	        var isGrOrLeSign = (0, _utils.isAny)(char, ['<', '>']);
 	        var isNumber = test.isNumber.exec(char);
 	        var isVariable = test.isVariable.exec(char);
 	        var isOperator = test.isOperator.exec(char);
-	        var isEscapedOperator = test.isEscapedOperator.exec(char);
+	        var isNextCharEscapedOperator = test.isEscapedOperator.exec(nextChar);
+	        var shouldBeAroundBraces = isComma || isNumber || isGrOrLeSign;
 
 	        if (!this.cursorPlaced && cursorIndex === index) {
 	          this.cursorPlaced = true;
 	          this.displayTex += cursorTex;
 	        }
 
-	        if (isComma || isNumber) {
+	        if (shouldBeAroundBraces) {
 	          this.displayTex += '{';
 	        }
 
@@ -1661,7 +1700,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // Add char to tex that are displayed on editor.
 	        this.displayTex += char;
 
-	        if (isComma || isNumber) {
+	        if (shouldBeAroundBraces) {
 	          this.displayTex += '}';
 	        }
 
@@ -1695,13 +1734,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	          });
 	        }
 
-	        if (isEscapedOperator && lastChar === '\\') {
+	        if (char === '\\' && isNextCharEscapedOperator) {
+	          var type = escType[nextChar] ? escType[nextChar] : 'mo';
 	          this.elements.push({
 	            is: 'operator',
-	            type: 'mo',
+	            type: type,
 	            index: index,
 	            nearClosure: nearClosure
 	          });
+	          this.displayTex += nextChar;
+	          i += 1;
 	        }
 
 	        // Newline up ahead.
@@ -1997,6 +2039,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.inArray = inArray;
 	exports.repeat = repeat;
 	exports.removeFragment = removeFragment;
+	exports.listToCharacterRegex = listToCharacterRegex;
 	/**
 	 * Tries to find the specified element. If it fails, an error is thrown.
 	 * 
@@ -2168,8 +2211,51 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return str.slice(0, start) + str.slice(end);
 	}
 
+	/**
+	 * Convert a list to a character regex.
+	 * 
+	 * @param {Array} list
+	 * 
+	 * @return {RegExp}
+	 */
+	function listToCharacterRegex(list) {
+	  var chars = list.map(function (char) {
+	    return '\\' + char;
+	  }).join('');
+	  return new RegExp('^[' + chars + ']$');
+	}
+
 /***/ },
 /* 6 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = {
+	  cursorTex: '{\\cursor}',
+
+	  emptyTex: '\\isEmpty',
+
+	  number: /^[0-9]$/,
+
+	  variable: /^[a-z]$/,
+
+	  nearClosureHaystack: ['}', ']'],
+
+	  operators: ['+', '-', '=', '<', '>', ',', '.', ':', ';', '?', '(', ')', '[', ']'],
+
+	  escapedOperators: ['{', '}', '%'],
+
+	  escType: {
+	    '%': 'mi'
+	  }
+	};
+
+/***/ },
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2179,7 +2265,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = extendMathJax;
 
-	var _styles = __webpack_require__(7);
+	var _styles = __webpack_require__(8);
 
 	var _styles2 = _interopRequireDefault(_styles);
 
@@ -2250,7 +2336,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports) {
 
 	'use strict';
