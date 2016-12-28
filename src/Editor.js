@@ -31,7 +31,16 @@ class Editor {
    * 
    * @constructor
    */
-  constructor({ el, debug = false, focusClass = 'isFocused', newLine = false, value = '' }) {
+  constructor(options) {
+    const { 
+      el, 
+      debug = false,
+      focusClass = 'isFocused',
+      newLine = false,
+      value = '',
+      scroll = false
+    } = options;
+
     const Element = MathJax.HTML.Element;
 
     const $el = mustFindElement(el);
@@ -52,6 +61,7 @@ class Editor {
     document.body.addEventListener('click', this.handleBodyClick.bind(this));
 
     $display.style.opacity = 0;
+    $display.style.overflowX = scroll ? 'scroll' : 'hidden';
     $debug.style.display = debug ? 'block' : 'none';
 
     MathJax.Hub.Queue(
@@ -169,18 +179,20 @@ class Editor {
    * @return {Void}
    */
   updateCursorElement(options = {}) {
+    const { $display } = this;
     const hidden = options.cursorHidden || false;
     const className = 'wasRecentlyPlaced';
 
     MathJax.Hub.Queue(() => {
-      const $cursor = this.$display.querySelector('.mjx-cursor');
+      const $cursor = $display.querySelector('.mjx-cursor');
+      const { offsetWidth, offsetLeft } = $cursor;
 
       if (!$cursor) {
         return;
       }
 
       if (!$cursor.style.marginLeft) {
-        $cursor.style.marginLeft = `-${$cursor.offsetWidth}px`;
+        $cursor.style.marginLeft = `-${offsetWidth}px`;
       }
 
       if (this.lastCursorTimeout) {
@@ -192,6 +204,8 @@ class Editor {
       this.lastCursorTimeout = setTimeout(
         () => removeClass($cursor, className), 600
       );
+
+      $display.scrollLeft = offsetLeft;
 
       $cursor.style.display = hidden ? 'none' : 'inline-block';
     });
