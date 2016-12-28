@@ -70,7 +70,7 @@ class Placer {
     }
 
     let found = false;
-    let proceedSearch = false;
+    let proceedSearch = true;
 
     // First strategy: checks if the clicked point is inside a number/
     // variable/operator bounding. If it is, place it where is proper.
@@ -175,6 +175,23 @@ class Placer {
   }
 
   /**
+   * Add an interval without bouncing.
+   * 
+   * @param {Number} index
+   * 
+   * @return {Void}
+   */
+  addBouncinglessInterval(index) {
+    this.addInterval({
+      index,
+      top: 0,
+      bottom: 0, 
+      left: 0, 
+      right: 0
+    })
+  }
+
+  /**
    * Returns the index which the cursor should be placed
    * based on given `x`, and `y`.
    * 
@@ -260,13 +277,7 @@ class Placer {
     });
 
     if (nearClosure) {
-      this.addInterval({
-        index: index + 1,
-        top: 0,
-        bottom: 0, 
-        left: 0, 
-        right: 0
-      });
+      this.addBouncinglessInterval(index + 1);
     }
   }
 
@@ -284,6 +295,8 @@ class Placer {
     const key = this.getNextKeyFor(type);
     const $el = this.$display.querySelectorAll(`.mjx-m${type}`)[key];
     const { brackets, blocks, subType } = props;
+
+    this.addBouncinglessInterval(props.start);
 
     switch (type) {
       case 'frac':
@@ -400,6 +413,7 @@ class Placer {
     $div.style.height = (interval.endY - interval.startY) + 'px';
     $div.style.top = interval.startY + 'px';
     $div.style.left = interval.startX + 'px';
+    $div.style.pointerEvents = 'none';
     document.body.appendChild($div);
     return $div;
   }
