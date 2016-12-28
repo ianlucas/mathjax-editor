@@ -40,15 +40,15 @@ Enable the debug mode. Default is **`false`**.
 
 Enable new line insertion. Default is **`false`**.
 
+#### `options.scroll`
+
+Enable scroll to display element. Default is **`false`**, so the display `overflow` is `hidden`.
+
 #### `options.value`
 
 Define the default editor value.
 
 ### API
-
-#### `editor.insertCommand(command[, blockCount = 0, brackets = false])`
-
-This inserts a command into the editor. `blockCount` is the quantity of blocks (`{}`) the command requires (e.q. `\sqrt` requires 1, and `\frac` requires 2). Tested commands: Greek symbols, `\sqrt, \frac, \geq, \leq`.
 
 #### `editor.insert(char)`
 
@@ -57,6 +57,10 @@ This insert a character at cursor position. The allowed characters are numbers (
 #### `editor.insertSymbol(symbol)`
 
 This insert a symbol at cursor position. Currently supported symbols:  `'+', '-', '=', '<', '>', ',', '.', ':', ';', '?', '(', ')', '[', ']', '%'`.
+
+#### `editor.insertCommand(command[, blockCount = 0, brackets = false])`
+
+This inserts a command into the editor. `blockCount` is the quantity of blocks (`{}`) the command requires (e.q. `\sqrt` requires 1, and `\frac` requires 2). Tested commands: Greek symbols, `\sqrt, \frac, \geq, \leq`.
 
 #### `editor.moveCursorLeft()`
 
