@@ -374,6 +374,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.$input = $input;
 	    this.bus = new _EventBus2.default();
 	    this.cursorIndex = 0;
+	    this.lastCursorTimeout = null;
 	    this.placer = null;
 	    this.debug = debug;
 	    this.focusClass = focusClass;
@@ -496,23 +497,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 	      var hidden = options.cursorHidden || false;
+	      var className = 'wasRecentlyPlaced';
 
 	      MathJax.Hub.Queue(function () {
 	        var $cursor = _this4.$display.querySelector('.mjx-cursor');
+
 	        if (!$cursor) {
 	          return;
 	        }
+
 	        if (!$cursor.style.marginLeft) {
 	          $cursor.style.marginLeft = '-' + $cursor.offsetWidth + 'px';
 	        }
 
-	        // Fix #7
-	        if (_this4._cursorRecentlyPlaced) {
-	          clearTimeout(_this4._cursorRecentlyPlaced);
+	        if (_this4.lastCursorTimeout) {
+	          clearTimeout(_this4.lastCursorTimeout);
 	        }
-	        (0, _utils.addClass)($cursor, 'wasRecentlyPlaced');
-	        _this4._cursorRecentlyPlaced = setTimeout(function () {
-	          (0, _utils.removeClass)($cursor, 'wasRecentlyPlaced');
+
+	        (0, _utils.addClass)($cursor, className);
+
+	        _this4.lastCursorTimeout = setTimeout(function () {
+	          return (0, _utils.removeClass)($cursor, className);
 	        }, 600);
 
 	        $cursor.style.display = hidden ? 'none' : 'inline-block';

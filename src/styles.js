@@ -24,7 +24,8 @@ export default {
   },
 
   '.mj-ed-display': {
-    'box-sizing': 'border-box'
+    'box-sizing': 'border-box',
+//    'overflow-x': 'scroll'
   },
 
   '.mj-ed-display *': {
