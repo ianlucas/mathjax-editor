@@ -105,7 +105,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var core = new _Editor2.default(options);
 
 	    this.core = core;
-	    this.version = '1.2.5';
+	    this.version = '1.2.6';
 	  }
 
 	  /**
@@ -506,13 +506,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      MathJax.Hub.Queue(function () {
 	        var $cursor = $display.querySelector('.mjx-cursor');
-	        var offsetWidth = $cursor.offsetWidth,
-	            offsetLeft = $cursor.offsetLeft;
-
 
 	        if (!$cursor) {
 	          return;
 	        }
+
+	        var offsetWidth = $cursor.offsetWidth,
+	            offsetLeft = $cursor.offsetLeft;
+
 
 	        if (!$cursor.style.marginLeft) {
 	          $cursor.style.marginLeft = '-' + offsetWidth + 'px';
@@ -762,6 +763,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var brackets = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
 	      this.focus();
+
+	      if (command[0] !== '\\') {
+	        command = '\\' + command;
+	      }
 
 	      if (brackets) {
 	        command += '[]';
@@ -1666,13 +1671,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  /**
-	   * Parse the given tex.
+	   * Place the cursor at `displayTex` if it is
+	   * in the given index, and was not placed before.
+	   * 
+	   * @param {Number} index
 	   * 
 	   * @return {Void}
 	   */
 
 
 	  _createClass(Tex, [{
+	    key: 'addCursorToTexDisplay',
+	    value: function addCursorToTexDisplay(index) {
+	      if (!this.cursorPlaced && this.cursorIndex === index) {
+	        this.cursorPlaced = true;
+	        this.displayTex += cursorTex;
+	      }
+	    }
+
+	    /**
+	     * Parse the given tex.
+	     * 
+	     * @return {Void}
+	     */
+
+	  }, {
 	    key: 'parse',
 	    value: function parse() {
 	      var cursorPoints = [];
@@ -1698,10 +1721,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var isNextCharEscapedOperator = test.isEscapedOperator.exec(nextChar);
 	        var shouldBeAroundBraces = isComma || isNumber || isGrOrLeSign;
 
-	        if (!this.cursorPlaced && cursorIndex === index) {
-	          this.cursorPlaced = true;
-	          this.displayTex += cursorTex;
-	        }
+	        this.addCursorToTexDisplay(index);
 
 	        if (shouldBeAroundBraces) {
 	          this.displayTex += '{';
@@ -1787,11 +1807,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        // Opening a command block.
 	        if (char === '{') {
+	          this.displayTex += '\\;';
 	          if (nextChar === '}') {
-	            if (!this.cursorPlaced && nextIndex === cursorIndex) {
-	              this.cursorPlaced = true;
-	              this.displayTex += cursorTex;
-	            }
+	            this.addCursorToTexDisplay(nextIndex);
 	            this.displayTex += emptyTex;
 	          }
 	          continue;
@@ -1814,10 +1832,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      // Add cursor at the end if it was not placed.
-	      if (!this.cursorPlaced && cursorIndex === length) {
-	        this.cursorPlaced = true;
-	        this.displayTex += cursorTex;
-	      }
+	      this.addCursorToTexDisplay(length);
 
 	      // Cursor can always be placed at the end.
 	      cursorPoints.push(length);
@@ -1905,11 +1920,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	          if (opening === null) {
 	            opening = i;
 
+	            this.displayTex += '\\;';
+
 	            // Place the cursor if it is there.
-	            if (!this.cursorPlaced && nextIndex === cursorIndex) {
-	              this.cursorPlaced = true;
-	              this.displayTex += cursorTex;
-	            }
+	            this.addCursorToTexDisplay(nextIndex);
 
 	            if (nextChar === '}') {
 	              this.displayTex += emptyTex;
@@ -1928,7 +1942,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          }
 	        }
 
-	        if (char === ' ') {
+	        if (opening === null && char === ' ') {
 	          type = this.decideType(type);
 	          is = type === 'mo' ? 'operator' : 'variable';
 	          end = i;
