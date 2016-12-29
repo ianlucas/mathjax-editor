@@ -185,11 +185,12 @@ class Editor {
 
     MathJax.Hub.Queue(() => {
       const $cursor = $display.querySelector('.mjx-cursor');
-      const { offsetWidth, offsetLeft } = $cursor;
 
       if (!$cursor) {
         return;
       }
+
+      const { offsetWidth, offsetLeft } = $cursor;
 
       if (!$cursor.style.marginLeft) {
         $cursor.style.marginLeft = `-${offsetWidth}px`;
@@ -404,6 +405,10 @@ class Editor {
    */
   insertCommand(command, blockCount = 0, brackets = false) {
     this.focus();
+
+    if (command[0] !== '\\') {
+      command = `\\${command}`;
+    }
 
     if (brackets) {
       command += '[]';
