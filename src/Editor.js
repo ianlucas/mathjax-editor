@@ -4,6 +4,7 @@ import Tex from './Tex';
 import {
   addClass,
   insertBetween,
+  isAny,
   mustFindElement,
   removeClass,
   removeFragment,
@@ -404,9 +405,11 @@ class Editor {
    * @return {Void}
    */
   insertCommand(command, blockCount = 0, brackets = false) {
+    const dontNeedBackslash = ['^', '_'];
+
     this.focus();
 
-    if (command[0] !== '\\') {
+    if (command[0] !== '\\' && !isAny(command, dontNeedBackslash)) {
       command = `\\${command}`;
     }
 
