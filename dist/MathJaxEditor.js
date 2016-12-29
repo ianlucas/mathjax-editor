@@ -105,7 +105,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var core = new _Editor2.default(options);
 
 	    this.core = core;
-	    this.version = '1.2.6';
+	    this.version = '1.2.7';
 	  }
 
 	  /**
@@ -762,9 +762,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var blockCount = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 	      var brackets = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
+	      var dontNeedBackslash = ['^', '_'];
+
 	      this.focus();
 
-	      if (command[0] !== '\\') {
+	      if (command[0] !== '\\' && !(0, _utils.isAny)(command, dontNeedBackslash)) {
 	        command = '\\' + command;
 	      }
 
