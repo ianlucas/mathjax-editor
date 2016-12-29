@@ -34,6 +34,21 @@ class Tex {
   }
 
   /**
+   * Place the cursor at `displayTex` if it is
+   * in the given index, and was not placed before.
+   * 
+   * @param {Number} index
+   * 
+   * @return {Void}
+   */
+  addCursorToTexDisplay(index) {
+    if (!this.cursorPlaced && this.cursorIndex === index) {
+      this.cursorPlaced = true;
+      this.displayTex += cursorTex;
+    }
+  }
+
+  /**
    * Parse the given tex.
    * 
    * @return {Void}
@@ -62,10 +77,7 @@ class Tex {
       const isNextCharEscapedOperator = test.isEscapedOperator.exec(nextChar);
       const shouldBeAroundBraces = isComma || isNumber || isGrOrLeSign;
 
-      if (!this.cursorPlaced && cursorIndex === index) {
-        this.cursorPlaced = true;
-        this.displayTex += cursorTex;
-      }
+      this.addCursorToTexDisplay(index);
 
       if (shouldBeAroundBraces) {
         this.displayTex += '{';
@@ -151,11 +163,9 @@ class Tex {
 
       // Opening a command block.
       if (char === '{') {
+        this.displayTex += '\\;';
         if (nextChar === '}') {
-          if (!this.cursorPlaced && nextIndex === cursorIndex) {
-            this.cursorPlaced = true;
-            this.displayTex += cursorTex;
-          }
+          this.addCursorToTexDisplay(nextIndex);
           this.displayTex += emptyTex;
         }
         continue;
@@ -178,10 +188,7 @@ class Tex {
     }
 
     // Add cursor at the end if it was not placed.
-    if (!this.cursorPlaced && cursorIndex === length) {
-      this.cursorPlaced = true;
-      this.displayTex += cursorTex;
-    }
+    this.addCursorToTexDisplay(length);
 
     // Cursor can always be placed at the end.
     cursorPoints.push(length);
@@ -266,11 +273,10 @@ class Tex {
         if (opening === null) {
           opening = i;
 
+          this.displayTex += '\\;';
+
           // Place the cursor if it is there.
-          if (!this.cursorPlaced && nextIndex === cursorIndex) {
-            this.cursorPlaced = true;
-            this.displayTex += cursorTex;
-          }
+          this.addCursorToTexDisplay(nextIndex);
           
           if (nextChar === '}') {
             this.displayTex += emptyTex;
@@ -289,7 +295,7 @@ class Tex {
         }
       }
 
-      if (char === ' ') {
+      if (opening === null && char === ' ') {
         type = this.decideType(type);
         is = type === 'mo' ? 'operator' : 'variable';
         end = i;
