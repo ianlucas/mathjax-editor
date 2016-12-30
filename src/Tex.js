@@ -34,7 +34,6 @@ class Tex {
     this.displayTex = '';
     this.cursorIndex = cursorIndex;
     this.isPartOfCommand = {};
-    this.commands = [];
 
     this.parse();
   }
@@ -82,7 +81,6 @@ class Tex {
       const isOperator = test.isOperator.exec(char);
       const isNextCharEscapedOperator = test.isEscapedOperator.exec(nextChar);
       const shouldBeAroundBraces = isComma || isNumber || isGrOrLeSign;
-      const lastCommand = this.commands[this.commands.length - 1];
 
       this.addCursorToTexDisplay(index);
 
