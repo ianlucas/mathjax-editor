@@ -18,7 +18,7 @@ class MathJaxEditor {
     const core = new Editor(options);
 
     this.core = core;
-    this.version = '1.2.11';
+    this.version = '1.2.12';
   }
 
   /**
