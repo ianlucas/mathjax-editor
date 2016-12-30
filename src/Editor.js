@@ -236,7 +236,7 @@ class Editor {
       charToCommand, operators,
       escapedOperators 
     } = constants;
-    
+
     const inputValue = $input.value.trim();
     let which = e.keyCode;
 
@@ -532,6 +532,11 @@ class Editor {
             deletionEnd = props.end + 1;
             break;
           }
+
+          if (!props.blocks) {
+            continue;
+          }
+
           // If is erasing one of block opening/closing.
           for (const block of props.blocks) {
             if (block[openOrClose] === comparator) {
