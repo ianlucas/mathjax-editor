@@ -99,7 +99,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var core = new _Editor2.default(options);
 
 	    this.core = core;
-	    this.version = '1.2.11';
+	    this.version = '1.2.12';
 	  }
 
 	  /**
@@ -320,13 +320,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var Element = MathJax.HTML.Element;
 
-	    var $el = (0, _utils.mustFindElement)(el);
+	    var $el = (0, _utils.mustFindElement)(el, 'textarea');
 	    var $container = Element('div', { className: 'mj-ed-container' });
 	    var $input = Element('input', { className: 'mj-ed-input' });
 	    var $display = Element('div', { className: 'mj-ed-display' }, ['\\({\\cursor}' + value + '\\)']);
 	    var $debug = Element('pre', { className: 'mj-ed-debug' }, ['|']);
 
-	    $el.parentNode.replaceChild($container, $el);
+	    $el.parentNode.insertBefore($container, $el.nextSibling);
 	    $container.appendChild($input);
 	    $container.appendChild($display);
 	    $container.appendChild($debug);
@@ -340,6 +340,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    $display.style.opacity = 0;
 	    $display.style.overflowX = scroll ? 'scroll' : 'hidden';
 	    $debug.style.display = debug ? 'block' : 'none';
+	    $el.style.display = 'none';
 
 	    MathJax.Hub.Queue(function () {
 	      return MathJax.Hub.Typeset($display);
@@ -355,6 +356,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.$debug = $debug;
 	    this.$display = $display;
 	    this.$input = $input;
+	    this.$el = $el;
 	    this.bus = new _EventBus2.default();
 	    this.cursorIndex = 0;
 	    this.lastCursorTimeout = null;
@@ -364,7 +366,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.newLine = newLine;
 	    this.tex = new _Tex2.default(value, 0);
 	    this.value = value;
-	    this.lastValue = value;
 	  }
 
 	  /**
@@ -387,16 +388,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var cursorIndex = this.cursorIndex,
 	          value = this.value;
 
-	      var tex = this.tex;
+	      var tex = new _Tex2.default(value, cursorIndex);
 
-	      if (value !== this.lastValue) {
-	        tex = new _Tex2.default(value, cursorIndex);
-	        this.tex = tex;
-	      }
+	      this.tex = tex;
 
 	      if (this.debug) {
 	        this.$debug.innerHTML = (0, _utils.insertBetween)(value, cursorIndex, '|');
 	      }
+
+	      // Update original textarea value.
+	      this.$el.innerHTML = value;
 
 	      this.updateJaxElement(tex.displayTex, function () {
 	        setTimeout(function () {
@@ -516,7 +517,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'setValue',
 	    value: function setValue(value) {
-	      this.lastValue = this.value;
 	      this.value = value;
 	    }
 
@@ -2132,7 +2132,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * 
 	 * @return {DOMElement}
 	 */
-	function mustFindElement(el) {
+	function mustFindElement(el, tagName) {
 	  var error = new Error('You must define a target element.');
 
 	  if (!el) {
@@ -2140,11 +2140,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  if (typeof el === 'string') {
-	    var $el = document.querySelector(el);
-	    if (!$el) {
+	    el = document.querySelector(el);
+	    if (!el) {
 	      throw error;
 	    }
-	    return $el;
+	  }
+
+	  if (el.tagName.toLowerCase() !== tagName.toLowerCase()) {
+	    throw new Error('The target element must be <' + tagName + '>.');
 	  }
 
 	  // Yeah, we just assume an element was given...
@@ -2454,7 +2457,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  '.mj-ed-display': {
 	    'box-sizing': 'border-box',
-	    'cursor': 'text'
+	    'cursor': 'text',
+	    'overflow-Y': 'overflow'
 	  },
 
 	  '.mj-ed-display *': {
