@@ -175,7 +175,7 @@ class Tex {
           this.displayTex += emptyTex;
         }
         else {
-          if (this.isPartOfCommandThatStartsWith(index, supOrSub)) {
+          if (!this.isPartOfCommandThatStartsWith(index, supOrSub)) {
             this.displayTex += spacingTex;
           }
         }
