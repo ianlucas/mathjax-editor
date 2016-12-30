@@ -25,6 +25,7 @@ export default {
 
   '.mj-ed-display': {
     'box-sizing': 'border-box',
+    'cursor': 'text'
   },
 
   '.mj-ed-display *': {
