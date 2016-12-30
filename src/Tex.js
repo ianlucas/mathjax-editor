@@ -137,7 +137,11 @@ class Tex {
           is: 'operator',
           type,
           index,
-          nearClosure
+          nearClosure,
+          props: {
+            start: index,
+            end: nextIndex
+          }
         });
         this.displayTex += nextChar;
         i += 1;
