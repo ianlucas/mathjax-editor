@@ -105,7 +105,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var core = new _Editor2.default(options);
 
 	    this.core = core;
-	    this.version = '1.2.7';
+	    this.version = '1.2.8';
 	  }
 
 	  /**
@@ -2276,7 +2276,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  nearClosureHaystack: ['}', ']'],
 
-	  operators: ['+', '-', '=', '<', '>', ',', '.', ':', ';', '?', '(', ')', '[', ']'],
+	  operators: ['+', '-', '=', '<', '>', ',', '.', ':', ';', '?', '(', ')', '[', ']', '|'],
 
 	  escapedOperators: ['{', '}', '%'],
 
