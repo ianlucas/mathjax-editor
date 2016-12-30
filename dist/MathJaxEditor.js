@@ -75,12 +75,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _extendMathJax2 = _interopRequireDefault(_extendMathJax);
 
-	var _utils = __webpack_require__(5);
-
-	var _constants = __webpack_require__(6);
-
-	var _constants2 = _interopRequireDefault(_constants);
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -105,7 +99,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var core = new _Editor2.default(options);
 
 	    this.core = core;
-	    this.version = '1.2.10';
+	    this.version = '1.2.11';
 	  }
 
 	  /**
@@ -164,15 +158,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'insert',
 	    value: function insert(char) {
-	      var number = _constants2.default.number,
-	          variable = _constants2.default.variable;
-
-	      if (char.length !== 1) {
-	        throw new RangeError('Only one char can be inserted through this method.');
-	      }
-	      if (!char.match(number) && !char.match(variable)) {
-	        throw new RangeError('Only numbers and variables are allowed in insert, not "' + char + '".');
-	      }
 	      this.core.insert(char);
 	    }
 
@@ -185,20 +170,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'insertSymbol',
 	    value: function insertSymbol(symbol) {
-	      var operators = _constants2.default.operators,
-	          escapedOperators = _constants2.default.escapedOperators;
-
-	      var symbols = operators.slice().concat(escapedOperators);
-
-	      if (!(0, _utils.inArray)(symbol, symbols)) {
-	        throw new RangeError('"' + symbol + '" is not a valid symbol.');
-	      }
-
-	      if ((0, _utils.inArray)(symbol, escapedOperators)) {
-	        symbol = '\\' + symbol;
-	      }
-
-	      this.core.insert(symbol);
+	      this.core.insertSymbol(symbol);
 	    }
 
 	    /**
@@ -294,11 +266,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _Tex2 = _interopRequireDefault(_Tex);
 
+	var _constants = __webpack_require__(6);
+
+	var _constants2 = _interopRequireDefault(_constants);
+
 	var _utils = __webpack_require__(5);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var supOrSub = _constants2.default.supOrSub;
+
 
 	var KEY_BACKSPACE = 8;
 	var KEY_ENTER = 13;
@@ -556,6 +535,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _this5 = this;
 
 	      var $input = this.$input;
+	      var number = _constants2.default.number,
+	          variable = _constants2.default.variable,
+	          charToCommand = _constants2.default.charToCommand,
+	          operators = _constants2.default.operators,
+	          escapedOperators = _constants2.default.escapedOperators;
+
 
 	      var inputValue = $input.value.trim();
 	      var which = e.keyCode;
@@ -567,48 +552,35 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      if (!inputValue.length) {
-	        return this.handleInput(which);
+	        return this.handleKeyPress(which);
 	      }
 
-	      var translate = {
-	        '+': '+',
-	        '-': '-',
-	        '=': '=',
-	        ',': ',',
-	        '.': '.',
-	        '*': '\\cdot ',
-	        '/': '\\div '
-	      };
-
-	      var test = {
-	        char: /[\d\w]/
-	      };
-
 	      inputValue.split('').forEach(function (char) {
-	        if (!char.match(test.char) && !translate[char]) {
-	          return;
+	        if (char.match(number) || char.match(variable)) {
+	          return _this5.insert(char);
 	        }
 
-	        if (translate[char]) {
-	          char = translate[char];
+	        if (charToCommand.hasOwnProperty(char)) {
+	          return _this5.insertCommand(charToCommand[char]);
 	        }
 
-	        _this5.handleInput(which, char);
+	        if ((0, _utils.inArray)(char, operators.concat(escapedOperators))) {
+	          return _this5.insertSymbol(char);
+	        }
 	      });
 	    }
 
 	    /**
-	     * Handles the user input.
+	     * Handles the key press.
 	     * 
 	     * @param {Number} which - Which key was pressed.
-	     * @param {String} char - The character that was typed.
 	     * 
 	     * @return {Void}
 	     */
 
 	  }, {
-	    key: 'handleInput',
-	    value: function handleInput(which, char) {
+	    key: 'handleKeyPress',
+	    value: function handleKeyPress(which) {
 	      switch (which) {
 	        case KEY_LEFT:
 	          this.moveCursorLeft();
@@ -636,12 +608,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (which && this.debug) {
 	        console.warn('The key ' + which + ' was pressed.');
 	      }
-
-	      if (!char) {
-	        return;
-	      }
-
-	      this.insert(char);
 	    }
 
 	    /**
@@ -739,9 +705,59 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	      this.cursorIndex += chars.length;
-
 	      this.setValue((0, _utils.insertBetween)(value, cursorIndex, chars));
 	      this.update();
+	    }
+
+	    /**
+	     * Insert a character at cursor position.
+	     * Allowed characters: 0-9 (numbers), a-z (variables).
+	     * 
+	     * @param {String} insert
+	     * 
+	     * @return {Void}
+	     */
+
+	  }, {
+	    key: 'insertChar',
+	    value: function insertChar(char) {
+	      var number = _constants2.default.number,
+	          variable = _constants2.default.variable;
+
+
+	      if (char.length !== 1) {
+	        throw new RangeError('Only one char can be inserted through this method.');
+	      }
+	      if (!char.match(number) && !char.match(variable)) {
+	        throw new RangeError('Only numbers and variables are allowed in insert, not "' + char + '".');
+	      }
+
+	      this.insert(char);
+	    }
+
+	    /**
+	     * Insert a symbol at cursor position.
+	     * 
+	     * @param {String} symbol
+	     */
+
+	  }, {
+	    key: 'insertSymbol',
+	    value: function insertSymbol(symbol) {
+	      var operators = _constants2.default.operators,
+	          escapedOperators = _constants2.default.escapedOperators;
+
+	      var symbols = operators.slice().concat(escapedOperators);
+
+	      if (!(0, _utils.inArray)(symbol, symbols)) {
+	        throw new RangeError('"' + symbol + '" is not a valid symbol.');
+	      }
+
+	      if ((0, _utils.inArray)(symbol, escapedOperators)) {
+	        symbol = '\\' + symbol;
+	      }
+
+	      this.insert(symbol);
 	    }
 
 	    /**
@@ -762,11 +778,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var blockCount = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 	      var brackets = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
-	      var dontNeedBackslash = ['^', '_'];
-
 	      this.focus();
 
-	      if (command[0] !== '\\' && !(0, _utils.isAny)(command, dontNeedBackslash)) {
+	      if (command[0] !== '\\' && !(0, _utils.inArray)(command, supOrSub)) {
 	        command = '\\' + command;
 	      }
 
@@ -874,6 +888,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                deletionEnd = props.end + 1;
 	                break;
 	              }
+
+	              if (!props.blocks) {
+	                continue;
+	              }
+
 	              // If is erasing one of block opening/closing.
 	              var _iteratorNormalCompletion2 = true;
 	              var _didIteratorError2 = false;
@@ -1717,9 +1736,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var char = tex[index];
 	        var nextChar = tex[nextIndex];
 	        var lastChar = tex[index - 1];
-	        var nearClosure = (0, _utils.isAny)(nextChar, nearClosureHaystack);
+	        var nearClosure = (0, _utils.inArray)(nextChar, nearClosureHaystack);
 	        var isComma = char === ',';
-	        var isGrOrLeSign = (0, _utils.isAny)(char, ['<', '>']);
+	        var isGrOrLeSign = (0, _utils.inArray)(char, ['<', '>']);
 	        var isNumber = test.isNumber.exec(char);
 	        var isVariable = test.isVariable.exec(char);
 	        var isOperator = test.isOperator.exec(char);
@@ -1782,7 +1801,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            is: 'operator',
 	            type: type,
 	            index: index,
-	            nearClosure: nearClosure
+	            nearClosure: nearClosure,
+	            props: {
+	              start: index,
+	              end: nextIndex
+	            }
 	          });
 	          this.displayTex += nextChar;
 	          i += 1;
@@ -1808,7 +1831,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        // Sup and sub commands.
-	        if ((0, _utils.isAny)(char, supOrSub)) {
+	        if ((0, _utils.inArray)(char, supOrSub)) {
 	          i = this.parseCommand(i);
 	        }
 
@@ -1895,7 +1918,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var isVariable = test.isVariable.exec(char);
 
 	        if (opening === null) {
-	          this.displayTex += !(0, _utils.isAny)(char, ['\\', '^', '_']) ? char : '';
+	          this.displayTex += !(0, _utils.inArray)(char, ['\\', '^', '_']) ? char : '';
 	          if (isVariable) {
 	            type += char;
 	          }
@@ -1931,7 +1954,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          if (opening === null) {
 	            opening = i;
 
-	            if (!(0, _utils.isAny)(firstChar, supOrSub)) {
+	            if (!(0, _utils.inArray)(firstChar, supOrSub)) {
 	              this.displayTex += spacingTex;
 	            }
 
@@ -1961,7 +1984,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          is = type === 'mo' ? 'operator' : 'variable';
 	          end = i;
 	          opening = i;
-	          if ((0, _utils.isAny)(nextChar, nearClosureHaystack)) {
+	          if ((0, _utils.inArray)(nextChar, nearClosureHaystack)) {
 	            nearClosure = true;
 	          }
 	          break;
@@ -2075,7 +2098,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (!data) {
 	        return false;
 	      }
-	      return (0, _utils.isAny)(data.firstChar, haystack);
+	      return (0, _utils.inArray)(data.firstChar, haystack);
 	    }
 	  }]);
 
@@ -2098,7 +2121,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.removeClass = removeClass;
 	exports.addClass = addClass;
 	exports.toArray = toArray;
-	exports.isAny = isAny;
 	exports.inArray = inArray;
 	exports.repeat = repeat;
 	exports.removeFragment = removeFragment;
@@ -2222,17 +2244,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * 
 	 * @return {Boolean}
 	 */
-	function isAny(needle, haystack) {
-	  return !!~haystack.indexOf(needle);
-	}
-
-	/**
-	 * Same as `isAny`. Just better naming.
-	 * 
-	 * @see isAny
-	 */
 	function inArray(needle, haystack) {
-	  return isAny(needle, haystack);
+	  return !!~haystack.indexOf(needle);
 	}
 
 	/**
@@ -2318,6 +2331,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  escType: {
 	    '%': 'mi'
+	  },
+
+	  charToCommand: {
+	    '*': 'cdot',
+	    '/': 'div'
 	  }
 	};
 
