@@ -93,7 +93,6 @@ class Editor {
     this.newLine = newLine;
     this.tex = new Tex(value, 0);
     this.value = value;
-    this.lastValue = value;
   }
 
   /**
@@ -107,12 +106,9 @@ class Editor {
    */
   update(cursorOptions = {}) {
     const { cursorIndex, value } = this;
-    let tex = this.tex;
+    let tex = new Tex(value, cursorIndex);
 
-    if (value !== this.lastValue) {
-      tex = new Tex(value, cursorIndex);
-      this.tex = tex;
-    }
+    this.tex = tex;
 
     if (this.debug) {
       this.$debug.innerHTML = insertBetween(value, cursorIndex, '|');
@@ -222,7 +218,6 @@ class Editor {
   }
 
   setValue(value) {
-    this.lastValue = this.value;
     this.value = value;
   }
 
