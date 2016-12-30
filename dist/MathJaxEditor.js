@@ -105,7 +105,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var core = new _Editor2.default(options);
 
 	    this.core = core;
-	    this.version = '1.2.9';
+	    this.version = '1.2.10';
 	  }
 
 	  /**
@@ -423,7 +423,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        setTimeout(function () {
 	          var placer = new _Placer2.default(_this2);
 	          placer.on('setCursor', function (index) {
-	            _this2.debug && console.log('The cursor should be placed at ' + index + '.');
+	            _this2.debug && console.info('The cursor should be placed at ' + index + '.');
 	            _this2.cursorIndex = index;
 	            _this2.update();
 	          });
@@ -1172,7 +1172,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (interval.startX <= x && x < interval.endX && proceedSearch) {
 	          if (interval.startY <= y && y < interval.endY) {
 	            found = true;
-	            index = _this.placeAtInterval(interval, i, x, y);
+	            index = _this.placeAtInterval(interval, i, x);
 	            if (interval.box) {
 	              proceedSearch = false;
 	            }
@@ -1257,8 +1257,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'addInterval',
 	    value: function addInterval(data) {
 	      if (Number.isNaN(data.index)) {
-	        console.log(this.elements);
-	        console.error('This interval has NaN as index.');
+	        console.error('An interval has NaN as index.');
 	      }
 	      this.intervals.push(data);
 	    }
@@ -1315,16 +1314,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * based on given `x`, and `y`.
 	     * 
 	     * @param {Object} interval
-	     * @param {Number} x
-	     * @param {Number} y
 	     * @param {Number} i - Index of the given interval inside `this.intervals`.
+	     * @param {Number} x
 	     * 
 	     * @return {Number}
 	     */
 
 	  }, {
 	    key: 'placeAtInterval',
-	    value: function placeAtInterval(interval, i, x, y) {
+	    value: function placeAtInterval(interval, i, x) {
 	      var intervals = this.intervals;
 	      var width = interval.endX - interval.startX;
 	      var nextInterval = i + 1;
@@ -1423,7 +1421,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * 
 	     * @param {Object} data
 	     * @param {String} data.type
-	     * @param {Number} data.index
 	     * @param {Object} data.props
 	     * 
 	     * @return {Void}
@@ -1435,7 +1432,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _this3 = this;
 
 	      var type = _ref2.type,
-	          index = _ref2.index,
 	          props = _ref2.props;
 
 	      var key = this.getNextKeyFor(type);
@@ -1449,41 +1445,47 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      switch (type) {
 	        case 'frac':
-	          var $numerator = $el.querySelector('.mjx-numerator');
-	          var $denominator = $el.querySelector('.mjx-denominator');
-	          var numBounding = $numerator.getBoundingClientRect();
-	          var denBounding = $denominator.getBoundingClientRect();
-	          var boundings = [numBounding, denBounding];
+	          {
+	            var $numerator = $el.querySelector('.mjx-numerator');
+	            var $denominator = $el.querySelector('.mjx-denominator');
+	            var numBounding = $numerator.getBoundingClientRect();
+	            var denBounding = $denominator.getBoundingClientRect();
+	            var boundings = [numBounding, denBounding];
 
-	          boundings.forEach(function (bounding, i) {
-	            if (blocks[i].length === 1) {
-	              _this3.addIntervalBox(blocks[i].closeIndex, bounding);
-	            }
-	          });
+	            boundings.forEach(function (bounding, i) {
+	              if (blocks[i].length === 1) {
+	                _this3.addIntervalBox(blocks[i].closeIndex, bounding);
+	              }
+	            });
 
-	          break;
+	            break;
+	          }
 
 	        case 'root':
 	        case 'sqrt':
-	          if (brackets && brackets.closeIndex - brackets.openIndex === 1) {
-	            var $root = $el.querySelector('.mjx-root .mjx-char');
-	            var bounding = $root.getBoundingClientRect();
-	            this.addIntervalBox(brackets.closeIndex, bounding);
+	          {
+	            if (brackets && brackets.closeIndex - brackets.openIndex === 1) {
+	              var $root = $el.querySelector('.mjx-root .mjx-char');
+	              var bounding = $root.getBoundingClientRect();
+	              this.addIntervalBox(brackets.closeIndex, bounding);
+	            }
+	            if (blocks[0].length === 1) {
+	              var $box = $el.querySelector('.mjx-box');
+	              var _bounding = $box.getBoundingClientRect();
+	              this.addIntervalBox(blocks[0].closeIndex, _bounding);
+	            }
+	            break;
 	          }
-	          if (blocks[0].length === 1) {
-	            var $box = $el.querySelector('.mjx-box');
-	            var _bounding = $box.getBoundingClientRect();
-	            this.addIntervalBox(blocks[0].closeIndex, _bounding);
-	          }
-	          break;
 
 	        case 'subsup':
-	          if (blocks[0].length === 1) {
-	            var $target = $el.querySelector('.mjx-' + subType);
-	            var _bounding2 = $target.getBoundingClientRect();
-	            this.addIntervalBox(blocks[0].closeIndex, _bounding2);
+	          {
+	            if (blocks[0].length === 1) {
+	              var $target = $el.querySelector('.mjx-' + subType);
+	              var _bounding2 = $target.getBoundingClientRect();
+	              this.addIntervalBox(blocks[0].closeIndex, _bounding2);
+	            }
+	            break;
 	          }
-	          break;
 	      }
 	    }
 
@@ -1560,7 +1562,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var interval = intervals[i];
 	        if (interval.is === 'eol') {
 	          start = interval.index + 2;
-	          intervalKey = key;
+	          intervalKey = i;
 	          break;
 	        }
 	      }
@@ -1705,7 +1707,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var cursorPoints = [];
 	      var tex = this.tex;
 	      var length = this.tex.length;
-	      var cursorIndex = this.cursorIndex;
 	      var i = 0;
 
 	      this.cursorPlaced = false;
@@ -1863,7 +1864,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var iterator = i;
 	      var tex = this.tex;
 	      var length = this.tex.length;
-	      var cursorIndex = this.cursorIndex;
 	      var firstChar = tex[iterator];
 	      var partOfCommandObject = { firstChar: firstChar };
 	      var opening = null; // the first place the cursor can be placed inside this command
@@ -2351,7 +2351,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  MathJax.Hub.processSectionDelay = 0;
 
-	  MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
+	  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function () {
 	    var defaults = {
 	      mathvariant: MML.INHERIT,
 	      mathsize: MML.INHERIT,
@@ -2388,11 +2388,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 
 	    TEX.Parse.Augment({
-	      Cursor: function Cursor(name) {
+	      Cursor: function Cursor() {
 	        var $cursor = MML.mcursor('0');
 	        this.Push($cursor);
 	      },
-	      IsEmpty: function IsEmpty(name) {
+	      IsEmpty: function IsEmpty() {
 	        var $isEmpty = MML.misEmpty('?');
 	        this.Push($isEmpty);
 	      }
@@ -2411,14 +2411,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _mjxCursor$MjxCur;
-
-	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 	var animation = 'from, to { border-color: #000 }\n 50% { border-color: transparent }';
 
-	exports.default = (_mjxCursor$MjxCur = {
+	exports.default = {
 	  '.mjx-cursor': {
 	    '-webkit-animation': '1s mj-ed-blink step-end infinite',
 	    '-moz-animation': '1s mj-ed-blink step-end infinite',
@@ -2456,8 +2451,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    color: '#ccc'
 	  },
 
-	  '@keyframes mj-ed-blink': animation
-	}, _defineProperty(_mjxCursor$MjxCur, '@keyframes mj-ed-blink', animation), _defineProperty(_mjxCursor$MjxCur, '@-moz-keyframes mj-ed-blink', animation), _defineProperty(_mjxCursor$MjxCur, '@-webkit-keyframes mj-ed-blink', animation), _defineProperty(_mjxCursor$MjxCur, '@-ms-keyframes mj-ed-blink', animation), _defineProperty(_mjxCursor$MjxCur, '@-o-keyframes mj-ed-blink', animation), _mjxCursor$MjxCur);
+	  '@keyframes mj-ed-blink': animation,
+	  '@-moz-keyframes mj-ed-blink': animation,
+	  '@-webkit-keyframes mj-ed-blink': animation,
+	  '@-ms-keyframes mj-ed-blink': animation,
+	  '@-o-keyframes mj-ed-blink': animation
+	};
 
 /***/ }
 /******/ ])
