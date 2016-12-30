@@ -1,7 +1,12 @@
 import { isAny, inArray, listToCharacterRegex } from './utils';
 import constants from './constants';
 
-const { nearClosureHaystack, cursorTex, emptyTex, escType } = constants;
+const {
+  nearClosureHaystack,
+  supOrSub, cursorTex,
+  emptyTex, escType,
+  spacingTex
+} = constants;
 
 const test = {
   isNumber: constants.number,
@@ -28,7 +33,8 @@ class Tex {
     this.length = tex.length;
     this.displayTex = '';
     this.cursorIndex = cursorIndex;
-    this.isPartOfCommand = [];
+    this.isPartOfCommand = {};
+    this.commands = [];
 
     this.parse();
   }
@@ -76,6 +82,7 @@ class Tex {
       const isOperator = test.isOperator.exec(char);
       const isNextCharEscapedOperator = test.isEscapedOperator.exec(nextChar);
       const shouldBeAroundBraces = isComma || isNumber || isGrOrLeSign;
+      const lastCommand = this.commands[this.commands.length - 1];
 
       this.addCursorToTexDisplay(index);
 
@@ -85,7 +92,9 @@ class Tex {
 
       // Closing a command block, add spacing.
       if (char === '}' && lastChar !== '\\') {
-        this.displayTex += '\\;';
+        if (!this.isPartOfCommandThatStartsWith(index, supOrSub)) {
+          this.displayTex += spacingTex;
+        }
       }
 
       // Add char to tex that are displayed on editor.
@@ -116,7 +125,7 @@ class Tex {
       }
 
       // Check if character is an operator.
-      if (isOperator && !inArray(index, this.isPartOfCommand)) {
+      if (isOperator && !this.isPartOfCommand.hasOwnProperty(index)) {
         this.elements.push({
           is: 'operator',
           type: 'mo',
@@ -157,16 +166,20 @@ class Tex {
       }
 
       // Sup and sub commands.
-      if (isAny(char, ['^', '_'])) {
+      if (isAny(char, supOrSub)) {
         i = this.parseCommand(i);
       }
 
       // Opening a command block.
       if (char === '{') {
-        this.displayTex += '\\;';
         if (nextChar === '}') {
           this.addCursorToTexDisplay(nextIndex);
           this.displayTex += emptyTex;
+        }
+        else {
+          if (this.isPartOfCommandThatStartsWith(index, supOrSub)) {
+            this.displayTex += spacingTex;
+          }
         }
         continue;
       }
@@ -209,6 +222,7 @@ class Tex {
     const length = this.tex.length;
     const cursorIndex = this.cursorIndex;
     const firstChar = tex[iterator];
+    const partOfCommandObject = { firstChar };
     let opening = null; // the first place the cursor can be placed inside this command
     let blocks = [];
     let brackets = null; 
@@ -260,7 +274,7 @@ class Tex {
       // Closing brackets!
       if (char === ']') {
         brackets.closeIndex = i;
-        this.isPartOfCommand.push(i);
+        this.isPartOfCommand[i] = partOfCommandObject;
       }
 
       // Find a block being openned.
@@ -268,12 +282,15 @@ class Tex {
         // If it is this command block...
         if (openBlocks === 0) {
           blocks.push({ openIndex: i });
+          this.isPartOfCommand[i] = partOfCommandObject;
         }
         openBlocks += 1;
         if (opening === null) {
           opening = i;
 
-          this.displayTex += '\\;';
+          if (!isAny(firstChar, supOrSub)) {
+            this.displayTex += spacingTex;
+          }
 
           // Place the cursor if it is there.
           this.addCursorToTexDisplay(nextIndex);
@@ -292,6 +309,7 @@ class Tex {
           const key = blocks.length - 1;
           blocks[key].closeIndex = i;
           blocks[key].length = i - blocks[key].openIndex;
+          this.isPartOfCommand[i] = partOfCommandObject;
         }
       }
 
@@ -392,6 +410,23 @@ class Tex {
     };
 
     return list.hasOwnProperty(type) ? list[type] : 'mo';
+  }
+
+  /**
+   * Check if the command where the character of the given index
+   * starts with any of characters inside haystack.
+   * 
+   * @param {Number} index
+   * @param {Array} haystack
+   * 
+   * @return {Boolean}
+   */
+  isPartOfCommandThatStartsWith(index, haystack) {
+    const data = this.isPartOfCommand[index];
+    if (!data) {
+      return false;
+    }
+    return isAny(data.firstChar, haystack);
   }
 }
 

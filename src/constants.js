@@ -3,11 +3,15 @@ export default {
 
   emptyTex: '\\isEmpty',
 
+  spacingTex: '\\;',
+
   number: /^[0-9]$/,
 
   variable: /^[a-z]$/,
 
   nearClosureHaystack: ['}', ']'],
+
+  supOrSub: ['^', '_'],
 
   operators: [
     '+', '-', '=', '<', '>', ',', '.',
