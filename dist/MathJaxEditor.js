@@ -99,7 +99,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var core = new _Editor2.default(options);
 
 	    this.core = core;
-	    this.version = '1.2.12';
+	    this.version = '1.2.13';
 	  }
 
 	  /**
@@ -1658,7 +1658,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    cursorTex = _constants2.default.cursorTex,
 	    emptyTex = _constants2.default.emptyTex,
 	    escType = _constants2.default.escType,
-	    spacingTex = _constants2.default.spacingTex;
+	    spacingTex = _constants2.default.spacingTex,
+	    relationCommands = _constants2.default.relationCommands;
 
 
 	var test = {
@@ -1747,7 +1748,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        this.addCursorToTexDisplay(index);
 
-	        if (shouldBeAroundBraces) {
+	        if (shouldBeAroundBraces || this.isRelationCommand(index)) {
 	          this.displayTex += '{';
 	        }
 
@@ -1849,6 +1850,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        if (char === ' ') {
+
 	          continue;
 	        }
 
@@ -1980,12 +1982,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        if (opening === null && char === ' ') {
+	          var shouldBeAroundBraces = (0, _utils.inArray)(type, relationCommands);
 	          type = this.decideType(type);
 	          is = type === 'mo' ? 'operator' : 'variable';
 	          end = i;
 	          opening = i;
 	          if ((0, _utils.inArray)(nextChar, nearClosureHaystack)) {
 	            nearClosure = true;
+	          }
+	          if (shouldBeAroundBraces) {
+	            this.displayTex += '}';
 	          }
 	          break;
 	        }
@@ -2099,6 +2105,45 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return false;
 	      }
 	      return (0, _utils.inArray)(data.firstChar, haystack);
+	    }
+
+	    /**
+	     * Check if a relation command is ahead.
+	     * (In the future can be extended to other commands).
+	     * This to avoid MathJax from joining two elements into one, and
+	     * so bugging the cursor placement.
+	     * 
+	     * @param {Number} index
+	     * 
+	     * @return {Void}
+	     */
+
+	  }, {
+	    key: 'isRelationCommand',
+	    value: function isRelationCommand(index) {
+	      var tex = this.tex;
+
+	      var length = tex.length;
+
+	      if (tex[index] !== '\\') {
+	        return;
+	      }
+
+	      var i = index + 1;
+	      var name = '';
+
+	      for (; i < length; i++) {
+	        var char = tex[i];
+
+	        if (!test.isVariable.exec(char) && char !== ' ') {
+	          return false;
+	        } else if (char === ' ') {
+	          return (0, _utils.inArray)(name, relationCommands);
+	        }
+	        name += char;
+	      }
+
+	      return false;
 	    }
 	  }]);
 
@@ -2322,7 +2367,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  number: /^[0-9]$/,
 
-	  variable: /^[a-z]$/,
+	  variable: /^[a-zA-Z]$/,
 
 	  nearClosureHaystack: ['}', ']'],
 
@@ -2339,7 +2384,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  charToCommand: {
 	    '*': 'cdot',
 	    '/': 'div'
-	  }
+	  },
+
+	  relationCommands: ['geq', 'leq', 'll', 'gg', 'doteq', 'equiv', 'approx', 'cong', 'simeq', 'sim', 'propto', 'neq', 'subset', 'subseteq', 'nsubseteq', 'sqsubset', 'sqsubseteq', 'preceq', 'supset', 'supseteq', 'nsupseteq', 'sqsupset', 'sqsupseteq', 'succeq']
 	};
 
 /***/ },
