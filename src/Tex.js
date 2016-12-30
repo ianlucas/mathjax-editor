@@ -459,7 +459,6 @@ class Tex {
       const char = tex[i];
 
       if (!test.isVariable.exec(char) && char !== ' ') {
-        console.log(char);
         return false;
       }
       else if (char === ' ') {
