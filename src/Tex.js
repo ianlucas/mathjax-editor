@@ -5,7 +5,7 @@ const {
   nearClosureHaystack,
   supOrSub, cursorTex,
   emptyTex, escType,
-  spacingTex
+  spacingTex, relationCommands
 } = constants;
 
 const test = {
@@ -83,7 +83,7 @@ class Tex {
 
       this.addCursorToTexDisplay(index);
 
-      if (shouldBeAroundBraces) {
+      if (shouldBeAroundBraces || this.isRelationCommand(index)) {
         this.displayTex += '{';
       }
 
@@ -186,6 +186,7 @@ class Tex {
       }
 
       if (char === ' ') {
+
         continue;
       }
 
@@ -314,12 +315,16 @@ class Tex {
       }
 
       if (opening === null && char === ' ') {
+        const shouldBeAroundBraces = inArray(type, relationCommands);
         type = this.decideType(type);
         is = type === 'mo' ? 'operator' : 'variable';
         end = i;
         opening = i;
         if (inArray(nextChar, nearClosureHaystack)) {
           nearClosure = true;
+        }
+        if (shouldBeAroundBraces) {
+          this.displayTex += '}';
         }
         break;
       }
@@ -427,6 +432,43 @@ class Tex {
       return false;
     }
     return inArray(data.firstChar, haystack);
+  }
+
+  /**
+   * Check if a relation command is ahead.
+   * (In the future can be extended to other commands).
+   * This to avoid MathJax from joining two elements into one, and
+   * so bugging the cursor placement.
+   * 
+   * @param {Number} index
+   * 
+   * @return {Void}
+   */
+  isRelationCommand(index) {
+    const { tex } = this;
+    const length = tex.length;
+
+    if (tex[index] !== '\\') {
+      return;
+    }
+
+    let i = index + 1;
+    let name = '';
+
+    for (; i < length; i++) {
+      const char = tex[i];
+
+      if (!test.isVariable.exec(char) && char !== ' ') {
+        console.log(char);
+        return false;
+      }
+      else if (char === ' ') {
+        return inArray(name, relationCommands);
+      }
+      name += char;
+    }
+
+    return false;
   }
 }
 
