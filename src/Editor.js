@@ -119,7 +119,7 @@ class Editor {
         setTimeout(() => {
           const placer = new Placer(this);
           placer.on('setCursor', index => {
-            this.debug && console.log(`The cursor should be placed at ${index}.`);
+            this.debug && console.info(`The cursor should be placed at ${index}.`);
             this.cursorIndex = index;
             this.update();
           });
@@ -156,7 +156,7 @@ class Editor {
   updateCursor(amount = 0) {
     const cursorIndex = this.cursorIndex;
     const points = this.tex.cursorPoints;
-    const key = points.indexOf(cursorIndex)
+    const key = points.indexOf(cursorIndex);
 
     let to = cursorIndex;
 

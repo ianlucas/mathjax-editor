@@ -1,4 +1,4 @@
-import { isAny, inArray, listToCharacterRegex } from './utils';
+import { isAny, listToCharacterRegex } from './utils';
 import constants from './constants';
 
 const {
@@ -62,7 +62,6 @@ class Tex {
     const cursorPoints = [];
     const tex = this.tex;
     const length = this.tex.length;
-    const cursorIndex = this.cursorIndex;
     let i = 0;
 
     this.cursorPlaced = false;
@@ -146,7 +145,7 @@ class Tex {
 
       // Newline up ahead.
       if (char === '\\' && nextChar === '\\') {
-        const newLine = { start: index, end: nextIndex};
+        const newLine = { start: index, end: nextIndex };
         this.newLines[index] = newLine;
         this.newLines[nextIndex] = newLine;
         this.displayTex += '\\';
@@ -218,7 +217,6 @@ class Tex {
     const iterator = i;
     const tex = this.tex;
     const length = this.tex.length;
-    const cursorIndex = this.cursorIndex;
     const firstChar = tex[iterator];
     const partOfCommandObject = { firstChar };
     let opening = null; // the first place the cursor can be placed inside this command

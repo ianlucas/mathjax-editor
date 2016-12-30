@@ -41,7 +41,6 @@ export default {
   },
 
   '@keyframes mj-ed-blink': animation,
-  '@keyframes mj-ed-blink': animation,
   '@-moz-keyframes mj-ed-blink': animation,
   '@-webkit-keyframes mj-ed-blink': animation,
   '@-ms-keyframes mj-ed-blink': animation,

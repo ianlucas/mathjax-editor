@@ -79,7 +79,7 @@ class Placer {
       if (interval.startX <= x && x < interval.endX && proceedSearch) {
         if (interval.startY <= y && y < interval.endY) {
           found = true;
-          index = this.placeAtInterval(interval, i, x, y);
+          index = this.placeAtInterval(interval, i, x);
           if (interval.box) {
             proceedSearch = false;
           }
@@ -149,8 +149,7 @@ class Placer {
    */
   addInterval(data) {
     if (Number.isNaN(data.index)) {
-      console.log(this.elements);
-      console.error('This interval has NaN as index.');
+      console.error('An interval has NaN as index.');
     }
     this.intervals.push(data);
   }
@@ -188,7 +187,7 @@ class Placer {
       bottom: 0, 
       left: 0, 
       right: 0
-    })
+    });
   }
 
   /**
@@ -196,13 +195,12 @@ class Placer {
    * based on given `x`, and `y`.
    * 
    * @param {Object} interval
-   * @param {Number} x
-   * @param {Number} y
    * @param {Number} i - Index of the given interval inside `this.intervals`.
+   * @param {Number} x
    * 
    * @return {Number}
    */
-  placeAtInterval(interval, i, x, y) {
+  placeAtInterval(interval, i, x) {
     const intervals = this.intervals;
     const width = interval.endX - interval.startX;
     const nextInterval = i + 1;
@@ -286,12 +284,11 @@ class Placer {
    * 
    * @param {Object} data
    * @param {String} data.type
-   * @param {Number} data.index
    * @param {Object} data.props
    * 
    * @return {Void}
    */
-  findCommand({ type, index, props }) {
+  findCommand({ type, props }) {
     const key = this.getNextKeyFor(type);
     const $el = this.$display.querySelectorAll(`.mjx-m${type}`)[key];
     const { brackets, blocks, subType } = props;
@@ -299,7 +296,7 @@ class Placer {
     this.addBouncinglessInterval(props.start);
 
     switch (type) {
-      case 'frac':
+      case 'frac': {
         const $numerator = $el.querySelector('.mjx-numerator');
         const $denominator = $el.querySelector('.mjx-denominator');
         const numBounding = $numerator.getBoundingClientRect();
@@ -313,9 +310,10 @@ class Placer {
         });
 
         break;
+      }
 
       case 'root':
-      case 'sqrt':
+      case 'sqrt': {
         if (brackets && (brackets.closeIndex - brackets.openIndex) === 1) {
           const $root = $el.querySelector('.mjx-root .mjx-char');  
           const bounding = $root.getBoundingClientRect();
@@ -327,14 +325,16 @@ class Placer {
           this.addIntervalBox(blocks[0].closeIndex, bounding);
         }
         break;
+      }
 
-      case 'subsup':
+      case 'subsup': {
         if (blocks[0].length === 1) {
           const $target = $el.querySelector(`.mjx-${subType}`);
           const bounding = $target.getBoundingClientRect();
           this.addIntervalBox(blocks[0].closeIndex, bounding);
         }
         break;
+      }
     }
   }
   
@@ -396,7 +396,7 @@ class Placer {
       const interval = intervals[i];
       if (interval.is === 'eol') {
         start = interval.index + 2;
-        intervalKey = key;
+        intervalKey = i;
         break;
       }
     }

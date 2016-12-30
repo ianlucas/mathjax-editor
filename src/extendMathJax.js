@@ -13,7 +13,7 @@ export default function extendMathJax() {
 
   MathJax.Hub.processSectionDelay = 0;
 
-  MathJax.Hub.Register.StartupHook("TeX Jax Ready", () => {
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', () => {
     const defaults = {
       mathvariant: MML.INHERIT,
       mathsize: MML.INHERIT,
@@ -46,12 +46,12 @@ export default function extendMathJax() {
     });
 
     TEX.Parse.Augment({
-      Cursor(name) {
+      Cursor() {
         const $cursor = MML.mcursor('0');
         this.Push($cursor);
       },
 
-      IsEmpty(name) {
+      IsEmpty() {
         const $isEmpty = MML.misEmpty('?');
         this.Push($isEmpty);
       }
