@@ -7,7 +7,7 @@ export default {
 
   number: /^[0-9]$/,
 
-  variable: /^[a-z]$/,
+  variable: /^[a-zA-Z]$/,
 
   nearClosureHaystack: ['}', ']'],
 
