@@ -5,7 +5,7 @@
  * 
  * @return {DOMElement}
  */
-export function mustFindElement(el) {
+export function mustFindElement(el, tagName) {
   const error = new Error('You must define a target element.');
 
   if (!el) {
@@ -13,11 +13,14 @@ export function mustFindElement(el) {
   }
 
   if (typeof el === 'string') {
-    const $el = document.querySelector(el);
-    if (!$el) {
+    el = document.querySelector(el);
+    if (!el) {
       throw error;
     }
-    return $el;
+  }
+
+  if (el.tagName.toLowerCase() !== tagName.toLowerCase()) {
+    throw new Error(`The target element must be <${tagName}>.`);
   }
 
   // Yeah, we just assume an element was given...

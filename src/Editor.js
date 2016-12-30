@@ -47,13 +47,13 @@ class Editor {
 
     const Element = MathJax.HTML.Element;
 
-    const $el = mustFindElement(el);
+    const $el = mustFindElement(el, 'textarea');
     const $container = Element('div', { className: 'mj-ed-container' });
     const $input = Element('input', { className: 'mj-ed-input' });
     const $display = Element('div', { className: 'mj-ed-display' }, [`\\({\\cursor}${value}\\)`]);
     const $debug = Element('pre', { className: 'mj-ed-debug' }, ['|']);
 
-    $el.parentNode.replaceChild($container, $el);
+    $el.parentNode.insertBefore($container, $el.nextSibling);
     $container.appendChild($input);
     $container.appendChild($display);
     $container.appendChild($debug);
@@ -67,6 +67,7 @@ class Editor {
     $display.style.opacity = 0;
     $display.style.overflowX = scroll ? 'scroll' : 'hidden';
     $debug.style.display = debug ? 'block' : 'none';
+    $el.style.display = 'none';
 
     MathJax.Hub.Queue(
       () => MathJax.Hub.Typeset($display),
@@ -82,6 +83,7 @@ class Editor {
     this.$debug = $debug;
     this.$display = $display;
     this.$input = $input;
+    this.$el = $el;
     this.bus = new EventBus;
     this.cursorIndex = 0;
     this.lastCursorTimeout = null;
@@ -115,6 +117,9 @@ class Editor {
     if (this.debug) {
       this.$debug.innerHTML = insertBetween(value, cursorIndex, '|');
     }
+
+    // Update original textarea value.
+    this.$el.innerHTML = value;
 
     this.updateJaxElement(
       tex.displayTex,
