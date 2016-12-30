@@ -25,5 +25,10 @@ export default {
 
   escType: {
     '%': 'mi'
+  },
+
+  charToCommand: {
+    '*': 'cdot',
+    '/': 'div'
   }
 };

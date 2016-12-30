@@ -1,4 +1,4 @@
-import { isAny, listToCharacterRegex } from './utils';
+import { inArray, listToCharacterRegex } from './utils';
 import constants from './constants';
 
 const {
@@ -72,9 +72,9 @@ class Tex {
       const char = tex[index];
       const nextChar = tex[nextIndex];
       const lastChar = tex[index - 1];
-      const nearClosure = isAny(nextChar, nearClosureHaystack);
+      const nearClosure = inArray(nextChar, nearClosureHaystack);
       const isComma = (char === ',');
-      const isGrOrLeSign = isAny(char, ['<', '>']);
+      const isGrOrLeSign = inArray(char, ['<', '>']);
       const isNumber = test.isNumber.exec(char);
       const isVariable = test.isVariable.exec(char);
       const isOperator = test.isOperator.exec(char);
@@ -163,7 +163,7 @@ class Tex {
       }
 
       // Sup and sub commands.
-      if (isAny(char, supOrSub)) {
+      if (inArray(char, supOrSub)) {
         i = this.parseCommand(i);
       }
 
@@ -248,7 +248,7 @@ class Tex {
       const isVariable = test.isVariable.exec(char);
 
       if (opening === null) {
-        this.displayTex += (!isAny(char, ['\\', '^', '_']) ? char : '');
+        this.displayTex += (!inArray(char, ['\\', '^', '_']) ? char : '');
         if (isVariable) {
           type += char;
         }
@@ -284,7 +284,7 @@ class Tex {
         if (opening === null) {
           opening = i;
 
-          if (!isAny(firstChar, supOrSub)) {
+          if (!inArray(firstChar, supOrSub)) {
             this.displayTex += spacingTex;
           }
 
@@ -314,7 +314,7 @@ class Tex {
         is = type === 'mo' ? 'operator' : 'variable';
         end = i;
         opening = i;
-        if (isAny(nextChar, nearClosureHaystack)) {
+        if (inArray(nextChar, nearClosureHaystack)) {
           nearClosure = true;
         }
         break;
@@ -422,7 +422,7 @@ class Tex {
     if (!data) {
       return false;
     }
-    return isAny(data.firstChar, haystack);
+    return inArray(data.firstChar, haystack);
   }
 }
 

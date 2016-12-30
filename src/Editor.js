@@ -1,15 +1,18 @@
 import EventBus from './EventBus';
 import Placer from './Placer';
 import Tex from './Tex';
+import constants from './constants';
 import {
   addClass,
   insertBetween,
-  isAny,
+  inArray,
   mustFindElement,
   removeClass,
   removeFragment,
   repeat
 } from './utils';
+
+const { supOrSub } = constants;
 
 const KEY_BACKSPACE = 8;
 const KEY_ENTER = 13;
@@ -228,6 +231,12 @@ class Editor {
    */
   handleInputEvent(e) {
     const { $input } = this;
+    const {
+      number, variable,
+      charToCommand, operators,
+      escapedOperators 
+    } = constants;
+    
     const inputValue = $input.value.trim();
     let which = e.keyCode;
 
@@ -238,46 +247,33 @@ class Editor {
     }
 
     if (!inputValue.length) {
-      return this.handleInput(which);
+      return this.handleKeyPress(which);
     }
-
-    const translate = {
-      '+': '+',
-      '-': '-',
-      '=': '=',
-      ',': ',',
-      '.': '.',
-      '*': '\\cdot ',
-      '/': '\\div '
-    };
-
-    const test = {
-      char: /[\d\w]/
-    };
 
     inputValue.split('')
       .forEach(char => {
-        if (!char.match(test.char) && !translate[char]) {
-          return;
+        if (char.match(number) || char.match(variable)) {
+          return this.insert(char);
         }
 
-        if (translate[char]) {
-          char = translate[char];
+        if (charToCommand.hasOwnProperty(char)) {
+          return this.insertCommand(charToCommand[char]);
         }
 
-        this.handleInput(which, char);
+        if (inArray(char, operators.concat(escapedOperators))) {
+          return this.insertSymbol(char);
+        }
       });
   }
 
   /**
-   * Handles the user input.
+   * Handles the key press.
    * 
    * @param {Number} which - Which key was pressed.
-   * @param {String} char - The character that was typed.
    * 
    * @return {Void}
    */
-  handleInput(which, char) {
+  handleKeyPress(which) {
     switch (which) {
       case KEY_LEFT:
         this.moveCursorLeft();
@@ -305,12 +301,6 @@ class Editor {
     if (which && this.debug) {
       console.warn(`The key ${which} was pressed.`);
     }
-
-    if (!char) {
-      return;
-    }
-
-    this.insert(char);
   }
 
   /**
@@ -388,9 +378,49 @@ class Editor {
     const { cursorIndex, value } = this;
 
     this.cursorIndex += chars.length;
-
     this.setValue(insertBetween(value, cursorIndex, chars));
     this.update();
+  }
+  
+  /**
+   * Insert a character at cursor position.
+   * Allowed characters: 0-9 (numbers), a-z (variables).
+   * 
+   * @param {String} insert
+   * 
+   * @return {Void}
+   */
+  insertChar(char) {
+    const { number, variable } = constants;
+
+    if (char.length !== 1) {
+      throw new RangeError('Only one char can be inserted through this method.');
+    }
+    if (!char.match(number) && !char.match(variable)) {
+      throw new RangeError(`Only numbers and variables are allowed in insert, not "${char}".`);
+    }
+
+    this.insert(char);
+  }
+
+  /**
+   * Insert a symbol at cursor position.
+   * 
+   * @param {String} symbol
+   */
+  insertSymbol(symbol) {
+    const { operators, escapedOperators } = constants;
+    const symbols = operators.slice().concat(escapedOperators);
+
+    if (!inArray(symbol, symbols)) {
+      throw new RangeError(`"${symbol}" is not a valid symbol.`);
+    }
+
+    if (inArray(symbol, escapedOperators)) {
+      symbol = `\\${symbol}`;
+    }
+
+    this.insert(symbol);
   }
 
   /**
@@ -405,11 +435,9 @@ class Editor {
    * @return {Void}
    */
   insertCommand(command, blockCount = 0, brackets = false) {
-    const dontNeedBackslash = ['^', '_'];
-
     this.focus();
 
-    if (command[0] !== '\\' && !isAny(command, dontNeedBackslash)) {
+    if (command[0] !== '\\' && !inArray(command, supOrSub)) {
       command = `\\${command}`;
     }
 

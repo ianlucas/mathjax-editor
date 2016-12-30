@@ -96,17 +96,8 @@ export function toArray(children) {
  * 
  * @return {Boolean}
  */
-export function isAny(needle, haystack) {
-  return !!~haystack.indexOf(needle);
-}
-
-/**
- * Same as `isAny`. Just better naming.
- * 
- * @see isAny
- */
 export function inArray(needle, haystack) {
-  return isAny(needle, haystack);
+  return !!~haystack.indexOf(needle);
 }
 
 /**
