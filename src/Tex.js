@@ -79,11 +79,12 @@ class Tex {
       const isVariable = test.isVariable.exec(char);
       const isOperator = test.isOperator.exec(char);
       const isNextCharEscapedOperator = test.isEscapedOperator.exec(nextChar);
+      const isRelationCommand = (char === '\\' && this.isRelationCommand(index));
       const shouldBeAroundBraces = isComma || isNumber || isGrOrLeSign;
 
       this.addCursorToTexDisplay(index);
 
-      if (shouldBeAroundBraces || this.isRelationCommand(index)) {
+      if (shouldBeAroundBraces || isRelationCommand) {
         this.displayTex += '{';
       }
 
