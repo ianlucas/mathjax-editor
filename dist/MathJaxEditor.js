@@ -3,7 +3,7 @@
  * MathJax Editor
  * https://github.com/ianlucas/mathjax-editor
  * 
- * (c) 2016, Ian Lucas.
+ * (c) 2016-2017, Ian Lucas.
  * Released under the MIT license
  * 
  */
@@ -99,7 +99,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var core = new _Editor2.default(options);
 
 	    this.core = core;
-	    this.version = '1.2.13';
+	    this.version = '1.2.14';
 	  }
 
 	  /**
@@ -517,6 +517,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'setValue',
 	    value: function setValue(value) {
+	      this.bus.trigger('change');
 	      this.value = value;
 	    }
 
@@ -1385,6 +1386,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            _this2.findEndOfLine(element);
 	            break;
 
+	          case 'begin':
+	            _this2.findBegin(element);
+	            break;
+
 	          default:
 	            _this2.find(element);
 	        }
@@ -1561,6 +1566,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        box: true
 	      });
 	    }
+	  }, {
+	    key: 'findBegin',
+	    value: function findBegin(element) {}
 
 	    /**
 	     * Find the last start of line index in the intervals list.
@@ -1728,6 +1736,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var tex = this.tex;
 	      var length = this.tex.length;
 	      var i = 0;
+	      var isInsideBegin = false;
 
 	      this.cursorPlaced = false;
 
@@ -1744,11 +1753,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var isVariable = test.isVariable.exec(char);
 	        var isOperator = test.isOperator.exec(char);
 	        var isNextCharEscapedOperator = test.isEscapedOperator.exec(nextChar);
+	        var isRelationCommand = char === '\\' && this.isRelationCommand(index);
 	        var shouldBeAroundBraces = isComma || isNumber || isGrOrLeSign;
 
 	        this.addCursorToTexDisplay(index);
 
-	        if (shouldBeAroundBraces || this.isRelationCommand(index)) {
+	        if (shouldBeAroundBraces || isRelationCommand) {
 	          this.displayTex += '{';
 	        }
 
@@ -1813,7 +1823,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        // Newline up ahead.
-	        if (char === '\\' && nextChar === '\\') {
+	        if (char === '\\' && nextChar === '\\' && !isInsideBegin) {
 	          var newLine = { start: index, end: nextIndex };
 	          this.newLines[index] = newLine;
 	          this.newLines[nextIndex] = newLine;
@@ -1828,12 +1838,23 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        // A command.
 	        if (char === '\\' && test.isVariable.exec(nextChar)) {
-	          i = this.parseCommand(i);
+	          var _parseCommand = this.parseCommand(i),
+	              continueIterationAt = _parseCommand.continueIterationAt,
+	              element = _parseCommand.element;
+
+	          switch (element.is) {
+	            case 'begin':
+	              isInsideBegin = true;break;
+	            case 'end':
+	              isInsideBegin = false;break;
+	          }
+
+	          i = continueIterationAt;
 	        }
 
 	        // Sup and sub commands.
 	        if ((0, _utils.inArray)(char, supOrSub)) {
-	          i = this.parseCommand(i);
+	          i = this.parseCommand(i).continueIterationAt;
 	        }
 
 	        // Opening a command block.
@@ -1850,7 +1871,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        if (char === ' ') {
+	          continue;
+	        }
 
+	        if (char === '&') {
 	          continue;
 	        }
 
@@ -1897,10 +1921,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var openBlocks = 0;
 	      var type = '';
 	      var subType = null;
-	      var is = 'command'; // we assume it is a command but it can be operator or variable
+	      var is = 'command'; // we assume it is a command but it can be operator, variable or begin
 	      var start = iterator; // index command starts
 	      var end = null; // index command ends
 	      var nearClosure = false;
+	      var continueIterationAt = null;
 
 	      switch (firstChar) {
 	        case '^':
@@ -1918,6 +1943,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var nextIndex = i + 1;
 	        var nextChar = tex[nextIndex];
 	        var isVariable = test.isVariable.exec(char);
+	        var blockContents = '';
 
 	        if (opening === null) {
 	          this.displayTex += !(0, _utils.inArray)(char, ['\\', '^', '_']) ? char : '';
@@ -1931,6 +1957,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          brackets = { openIndex: i };
 	          if (opening === null) {
 	            opening = i;
+	            continueIterationAt = opening;
 	          }
 
 	          // Add symbol of empty.
@@ -1952,9 +1979,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            blocks.push({ openIndex: i });
 	            this.isPartOfCommand[i] = partOfCommandObject;
 	          }
-	          openBlocks += 1;
+
+	          // First block openning is there.
 	          if (opening === null) {
 	            opening = i;
+	            continueIterationAt = opening;
 
 	            if (!(0, _utils.inArray)(firstChar, supOrSub)) {
 	              this.displayTex += spacingTex;
@@ -1966,19 +1995,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (nextChar === '}') {
 	              this.displayTex += emptyTex;
 	            }
+	          } else if (openBlocks > 0 && char !== '}') {
+	            blockContents += char;
 	          }
+
+	          openBlocks += 1;
 	        }
 
 	        // Find a block being closed.
 	        if (char === '}') {
-	          openBlocks -= 1;
 	          // If it is this command block...
 	          if (openBlocks === 0) {
 	            var key = blocks.length - 1;
 	            blocks[key].closeIndex = i;
+	            blocks[key].contents = blockContents;
 	            blocks[key].length = i - blocks[key].openIndex;
 	            this.isPartOfCommand[i] = partOfCommandObject;
 	          }
+
+	          openBlocks -= 1;
 	        }
 
 	        if (opening === null && char === ' ') {
@@ -1987,6 +2022,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          is = type === 'mo' ? 'operator' : 'variable';
 	          end = i;
 	          opening = i;
+	          continueIterationAt = opening;
 	          if ((0, _utils.inArray)(nextChar, nearClosureHaystack)) {
 	            nearClosure = true;
 	          }
@@ -2010,7 +2046,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	        throw new SyntaxError('Looks like this TeX is invalid. Now have a hard time finding where, lul.');
 	      }
 
-	      this.elements.push({
+	      // Handle \begin and \end commands.
+	      // We must skip its blocks contents.
+
+	      if ((0, _utils.inArray)(type, ['begin', 'end'])) {
+	        type = blocks[0].contents;
+	        is = 'begin';
+	        continueIterationAt = end;
+	        if (type === 'end') {
+	          return {
+	            continueIterationAt: continueIterationAt,
+	            element: {
+	              is: 'end'
+	            }
+	          };
+	        }
+	      }
+
+	      var element = {
 	        is: is,
 	        type: type,
 	        index: iterator,
@@ -2023,9 +2076,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	          blocks: blocks,
 	          brackets: brackets
 	        }
-	      });
+	      };
 
-	      return opening;
+	      this.elements.push(element);
+
+	      return {
+	        continueIterationAt: continueIterationAt,
+	        element: element
+	      };
 	    }
 
 	    /**
