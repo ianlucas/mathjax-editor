@@ -218,6 +218,7 @@ class Editor {
   }
 
   setValue(value) {
+    this.bus.trigger('change');
     this.value = value;
   }
 

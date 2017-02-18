@@ -86,7 +86,7 @@ Blur the editor.
 
 #### `editor.on(type, listener)`
 
-Listen to a editor event. Currently available: `focus`, and `blur`.
+Listen to a editor event. Currently available: `change`, `focus`, and `blur`.
 
 #### `editor.getValue()`
 
