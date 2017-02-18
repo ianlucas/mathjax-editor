@@ -5,7 +5,7 @@ const banner =
 MathJax Editor
 https://github.com/ianlucas/mathjax-editor
 
-(c) 2016, Ian Lucas.
+(c) 2016-2017, Ian Lucas.
 Released under the MIT license
 `;
 
