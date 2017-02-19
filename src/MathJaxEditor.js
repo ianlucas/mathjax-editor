@@ -1,5 +1,6 @@
 import Editor from './Editor';
 import extendMathJax from './extendMathJax';
+import { repeat } from './utils';
 
 window.addEventListener('load', extendMathJax);
 
@@ -83,6 +84,16 @@ class MathJaxEditor {
   }
 
   /**
+   * Set editor's value.
+   * 
+   * @return {String}
+   */
+  setValue(value) {
+    this.core.setValue(value);
+    this.core.update();
+  }
+
+  /**
    * Move the cursor to the left.
    * 
    * @return {Void}
@@ -98,6 +109,29 @@ class MathJaxEditor {
    */
   moveCursorRight() {
     this.core.moveCursorRight();
+  }
+
+  /**
+   * Insert a matrix in the editor.
+   * 
+   * @param {Number} rows
+   * @param {Number} columns
+   * 
+   * @return {Void}
+   */
+  insertMatrix(rows, columns) {
+    const rowStr = repeat('&', rows - 1);
+    const length = columns - 1;
+    let matrix = `\\begin{bmatrix}${rowStr}`;
+    let i = 0;
+
+    for (; i < length; i++) {
+      matrix += `\\\\${rowStr}`;
+    }
+
+    matrix += '\\end{bmatrix}';
+
+    this.core.insert(matrix);
   }
 
   /**

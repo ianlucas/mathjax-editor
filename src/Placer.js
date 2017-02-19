@@ -240,6 +240,16 @@ class Placer {
           this.findEndOfLine(element);
           break;
 
+        case 'begin':
+          this.findBegin(element);
+          break;
+
+        case 'end': break;
+
+        case 'skip':
+          this.skip(element);
+          break;
+
         default:
           this.find(element);
       }
@@ -378,6 +388,41 @@ class Placer {
       endY: bottom,
       box: true
     });
+  }
+
+  /**
+   * Find a begin element.
+   * 
+   * @param {Object} element
+   */
+  findBegin({ type, props }) {
+    const key = this.getNextKeyFor(type);
+    const $el = this.$display.querySelectorAll('.mjx-mtable')[key];
+    const $nodes = $el.querySelectorAll('.mjx-isEmpty');
+    let i = 0;
+
+    props.cells.forEach(cell => {
+      const diff = cell.end - cell.start;
+
+      if (diff !== 0 && diff !== 1) {
+        return;
+      }
+
+      const $target = $nodes[i++];
+      const bounding = $target.getBoundingClientRect();
+      this.addIntervalBox(cell.start, bounding);
+    });
+  }
+
+  /**
+   * Skip an element to be found.
+   * 
+   * @param {Object} element
+   * 
+   * @return {Void}
+   */
+  skip({ type }) {
+    this.getNextKeyFor(type);
   }
 
   /**

@@ -63,6 +63,8 @@ class Tex {
     const tex = this.tex;
     const length = this.tex.length;
     let i = 0;
+    let isInsideBegin = false;
+    let parsedBegin = null;
 
     this.cursorPlaced = false;
     
@@ -150,26 +152,52 @@ class Tex {
 
       // Newline up ahead.
       if (char === '\\' && nextChar === '\\') {
-        const newLine = { start: index, end: nextIndex };
-        this.newLines[index] = newLine;
-        this.newLines[nextIndex] = newLine;
+        if (!isInsideBegin) {
+          const newLine = { start: index, end: nextIndex };
+          this.newLines[index] = newLine;
+          this.newLines[nextIndex] = newLine;
+          this.elements.push({
+            is: 'eol',
+            type: 'block',
+            index
+          });
+        }
+
         this.displayTex += '\\';
-        this.elements.push({
-          is: 'eol',
-          type: 'block',
-          index
-        });
         i += 1;
+
+        if (isInsideBegin && tex[i + 1] === '&') {
+          this.displayTex += emptyTex;
+        }
       }
 
       // A command.
       if (char === '\\' && test.isVariable.exec(nextChar)) {
-        i = this.parseCommand(i);
+        const { continueIterationAt, element } = this.parseCommand(i);
+
+        switch (element.is) {
+          case 'begin':
+            isInsideBegin = true;
+            parsedBegin = element;
+            
+            if (this.findAhead(element.props.end, '}&')) {
+              this.displayTex += emptyTex;
+            }
+            break;
+
+          case 'end':
+            isInsideBegin = false;
+            this.parseBegin(parsedBegin, element);
+            parsedBegin = null;
+            break;
+        }
+
+        i = continueIterationAt;
       }
 
       // Sup and sub commands.
       if (inArray(char, supOrSub)) {
-        i = this.parseCommand(i);
+        i = this.parseCommand(i).continueIterationAt;
       }
 
       // Opening a command block.
@@ -178,17 +206,24 @@ class Tex {
           this.addCursorToTexDisplay(nextIndex);
           this.displayTex += emptyTex;
         }
-        else {
-          if (!this.isPartOfCommandThatStartsWith(index, supOrSub)) {
-            this.displayTex += spacingTex;
-          }
+        else if (!this.isPartOfCommandThatStartsWith(index, supOrSub) && !isInsideBegin) {
+          this.displayTex += spacingTex;
         }
         continue;
       }
 
       if (char === ' ') {
-
         continue;
+      }
+
+      if (char === '&') {
+        if (
+          this.findAhead(i + 1, '\\end') || 
+          nextChar === '&' ||
+          this.findAhead(i + 1, '\\\\')
+        ) {
+          this.displayTex += emptyTex;
+        }
       }
 
       cursorPoints.push(index);
@@ -231,10 +266,12 @@ class Tex {
     let openBlocks = 0;
     let type = '';
     let subType = null;
-    let is = 'command'; // we assume it is a command but it can be operator or variable
+    let is = 'command'; // we assume it is a command but it can be operator, variable or begin
     let start = iterator; // index command starts
     let end = null; // index command ends
     let nearClosure = false;
+    let continueIterationAt = null;
+    let blockContents = '';
 
     switch (firstChar) {
       case '^':
@@ -265,6 +302,7 @@ class Tex {
         brackets = { openIndex: i };
         if (opening === null) {
           opening = i;
+          continueIterationAt = opening;
         }
 
         // Add symbol of empty.
@@ -286,11 +324,13 @@ class Tex {
           blocks.push({ openIndex: i });
           this.isPartOfCommand[i] = partOfCommandObject;
         }
-        openBlocks += 1;
+
+        // First block openning is there.
         if (opening === null) {
           opening = i;
+          continueIterationAt = opening;
 
-          if (!inArray(firstChar, supOrSub)) {
+          if (!inArray(firstChar, supOrSub) && !inArray(type, ['begin', 'end'])) {
             this.displayTex += spacingTex;
           }
 
@@ -301,16 +341,24 @@ class Tex {
             this.displayTex += emptyTex;
           }
         }
+
+        openBlocks += 1;
+      }
+      else if (openBlocks > 0 && char !== '}') {
+        blockContents += char;
       }
 
       // Find a block being closed.
       if (char === '}') {
         openBlocks -= 1;
+
         // If it is this command block...
         if (openBlocks === 0) {
           const key = blocks.length - 1;
           blocks[key].closeIndex = i;
+          blocks[key].contents = blockContents;
           blocks[key].length = i - blocks[key].openIndex;
+          blockContents = '';
           this.isPartOfCommand[i] = partOfCommandObject;
         }
       }
@@ -321,6 +369,7 @@ class Tex {
         is = type === 'mo' ? 'operator' : 'variable';
         end = i;
         opening = i;
+        continueIterationAt = opening;
         if (inArray(nextChar, nearClosureHaystack)) {
           nearClosure = true;
         }
@@ -344,7 +393,26 @@ class Tex {
       throw new SyntaxError('Looks like this TeX is invalid. Now have a hard time finding where, lul.');
     }
 
-    this.elements.push({
+    // Handle \begin and \end commands.
+    // We must skip its blocks contents.
+
+    if (inArray(type, ['begin', 'end'])) {
+      is = type;
+      type = blocks[0].contents;
+      continueIterationAt = end;
+      this.displayTex += type + '}';
+
+      if (type === 'end') {
+        return {
+          continueIterationAt,
+          element: {
+            is: 'end'
+          }
+        };
+      }
+    }
+
+    const element = {
       is,
       type,
       index: iterator,
@@ -357,9 +425,22 @@ class Tex {
         blocks,
         brackets
       }
-    });
+    };
 
-    return opening;
+    if (is === 'begin') {
+      this.elements.push({ is: 'skip', type: 'mo' });
+    }
+
+    this.elements.push(element);
+
+    if (is === 'end') {
+      this.elements.push({ is: 'skip', type: 'mo' });
+    }
+
+    return {
+      continueIterationAt,
+      element
+    };
   }
 
   /**
@@ -469,6 +550,72 @@ class Tex {
     }
 
     return false;
+  }
+
+  /**
+   * Parse a begin command.
+   * 
+   * @param {Object} beginElement
+   * @param {Object} endElement
+   * 
+   * @return {Void}
+   */
+  parseBegin(beginElement, endElement) {
+    const { tex } = this;
+    const length = endElement.index + 1;
+    const cells = [];
+    let i = beginElement.props.end + 1;
+    let openBlocks = 0;
+    let start = i;
+    let end = null;
+
+    for (; i < length; i++) {
+      const char = tex[i];
+      const nextChar = tex[i + 1];
+      const isNewLine = (char === '\\' && nextChar === '\\');
+      const isAtEnd = (i === length - 1);
+
+      if (char === '{') {
+        openBlocks += 1;
+      }
+      if (char === '}') {
+        openBlocks -= 1;
+      }
+      if (openBlocks === 0 && ( 
+        (char === '&') ||
+        (isNewLine) ||
+        (isAtEnd)
+      )) {
+        end = i + (isAtEnd ? 1 : 0);
+        cells.push({ start, end });
+        start = i + 1 + (isNewLine ? 1 : 0);
+      }
+    }
+
+    beginElement.props.cells = cells;
+  }
+
+  /**
+   * Find a string ahead an index pos.
+   * 
+   * @param {Number} index
+   * @param {String} str
+   * 
+   * @return {Boolean}
+   */
+  findAhead(index, str) {
+    const { tex } = this;
+    const strLength = str.length;
+    const length = index + strLength;
+    let i = index;
+
+    for (; i < length; i++) {
+      if (tex[i] !== str[i - index]) {
+        return false; 
+      }
+    }
+
+    return true;
   }
 }
 
