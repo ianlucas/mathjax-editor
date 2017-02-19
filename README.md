@@ -64,6 +64,10 @@ This insert a symbol at cursor position. Currently supported symbols:  `'+', '-'
 
 This inserts a command into the editor. `blockCount` is the quantity of blocks (`{}`) the command requires (e.q. `\sqrt` requires 1, and `\frac` requires 2). Tested commands: Greek symbols, `\sqrt, \frac, \geq, \leq`.
 
+#### `editor.insertMatrix(rows, columns)`
+
+This inserts a matrix into the editor.
+
 #### `editor.moveCursorLeft()`
 
 This will move the cursor to the left.
@@ -91,6 +95,10 @@ Listen to a editor event. Currently available: `change`, `focus`, and `blur`.
 #### `editor.getValue()`
 
 Get the editor's value.
+
+#### `editor.getValue()`
+
+Set the editor's value.
 
 ---
 
