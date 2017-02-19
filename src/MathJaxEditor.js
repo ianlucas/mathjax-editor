@@ -119,14 +119,14 @@ class MathJaxEditor {
    * 
    * @return {Void}
    */
-  insertMatrix(rows, columns) {
-    const rowStr = repeat('&', rows - 1);
-    const length = columns - 1;
-    let matrix = `\\begin{bmatrix}${rowStr}`;
+  insertMatrix(columns, rows) {
+    const columnStr = repeat('&', columns - 1);
+    const lines = rows - 1;
+    let matrix = `\\begin{bmatrix}${columnStr}`;
     let i = 0;
 
-    for (; i < length; i++) {
-      matrix += `\\\\${rowStr}`;
+    for (; i < lines; i++) {
+      matrix += `\\\\${columnStr}`;
     }
 
     matrix += '\\end{bmatrix}';
