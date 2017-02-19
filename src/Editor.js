@@ -50,7 +50,7 @@ class Editor {
     const $el = mustFindElement(el, 'textarea');
     const $container = Element('div', { className: 'mj-ed-container' });
     const $input = Element('input', { className: 'mj-ed-input' });
-    const $display = Element('div', { className: 'mj-ed-display' }, [`\\({\\cursor}${value}\\)`]);
+    const $display = Element('div', { className: 'mj-ed-display mathjax-editor' }, [`\\({\\cursor}${value}\\)`]);
     const $debug = Element('pre', { className: 'mj-ed-debug' }, ['|']);
 
     $el.parentNode.insertBefore($container, $el.nextSibling);
