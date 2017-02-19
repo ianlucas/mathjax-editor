@@ -101,7 +101,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var core = new _Editor2.default(options);
 
 	    this.core = core;
-	    this.version = '1.3.0';
+	    this.version = '1.3.1';
 	  }
 
 	  /**
@@ -364,7 +364,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var $el = (0, _utils.mustFindElement)(el, 'textarea');
 	    var $container = Element('div', { className: 'mj-ed-container' });
 	    var $input = Element('input', { className: 'mj-ed-input' });
-	    var $display = Element('div', { className: 'mj-ed-display' }, ['\\({\\cursor}' + value + '\\)']);
+	    var $display = Element('div', { className: 'mj-ed-display mathjax-editor' }, ['\\({\\cursor}' + value + '\\)']);
 	    var $debug = Element('pre', { className: 'mj-ed-debug' }, ['|']);
 
 	    $el.parentNode.insertBefore($container, $el.nextSibling);
