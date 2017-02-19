@@ -101,7 +101,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var core = new _Editor2.default(options);
 
 	    this.core = core;
-	    this.version = '1.3.1';
+	    this.version = '1.3.2';
 	  }
 
 	  /**
@@ -235,14 +235,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  }, {
 	    key: 'insertMatrix',
-	    value: function insertMatrix(rows, columns) {
-	      var rowStr = (0, _utils.repeat)('&', rows - 1);
-	      var length = columns - 1;
-	      var matrix = '\\begin{bmatrix}' + rowStr;
+	    value: function insertMatrix(columns, rows) {
+	      var columnStr = (0, _utils.repeat)('&', columns - 1);
+	      var lines = rows - 1;
+	      var matrix = '\\begin{bmatrix}' + columnStr;
 	      var i = 0;
 
-	      for (; i < length; i++) {
-	        matrix += '\\\\' + rowStr;
+	      for (; i < lines; i++) {
+	        matrix += '\\\\' + columnStr;
 	      }
 
 	      matrix += '\\end{bmatrix}';
