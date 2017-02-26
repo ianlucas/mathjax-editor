@@ -48,10 +48,10 @@ class Editor {
     const Element = MathJax.HTML.Element;
 
     const $el = mustFindElement(el, 'textarea');
-    const $container = Element('div', { className: 'mj-ed-container' });
-    const $input = Element('input', { className: 'mj-ed-input' });
-    const $display = Element('div', { className: 'mj-ed-display mathjax-editor' }, [`\\({\\cursor}${value}\\)`]);
-    const $debug = Element('pre', { className: 'mj-ed-debug' }, ['|']);
+    const $container = Element('div', { className: 'Mathjax_Editor' });
+    const $input = Element('input', { className: 'Mathjax_EditorInput' });
+    const $display = Element('div', { className: 'Mathjax_EditorDisplay' }, [`\\({\\cursor}${value}\\)`]);
+    const $debug = Element('pre', { className: 'Mathjax_EditorDebug' }, ['|']);
 
     $el.parentNode.insertBefore($container, $el.nextSibling);
     $container.appendChild($input);
@@ -223,7 +223,7 @@ class Editor {
    */
   setValue(value) {
     this.value = value;
-    
+
     // Update original textarea value.
     this.$el.innerHTML = value;
 
