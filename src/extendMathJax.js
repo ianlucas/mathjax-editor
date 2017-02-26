@@ -59,4 +59,4 @@ module.exports = function extendMathJax() {
   });
 
   MathJax.Ajax.Styles(styles);
-}
+};
