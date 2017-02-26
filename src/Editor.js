@@ -217,9 +217,16 @@ class Editor {
     });
   }
 
+  /**
+   * Set the editor's value.
+   * 
+   * @param {String} value
+   * 
+   * @return {Void}
+   */
   setValue(value) {
-    this.bus.trigger('change');
     this.value = value;
+    this.bus.trigger('change');
   }
 
   /**
