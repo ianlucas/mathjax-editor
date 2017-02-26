@@ -101,7 +101,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var core = new _Editor2.default(options);
 
 	    this.core = core;
-	    this.version = '1.3.2';
+	    this.version = '1.3.3';
 	  }
 
 	  /**
@@ -362,20 +362,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var Element = MathJax.HTML.Element;
 
 	    var $el = (0, _utils.mustFindElement)(el, 'textarea');
-	    var $container = Element('div', { className: 'mj-ed-container' });
-	    var $input = Element('input', { className: 'mj-ed-input' });
-	    var $display = Element('div', { className: 'mj-ed-display mathjax-editor' }, ['\\({\\cursor}' + value + '\\)']);
-	    var $debug = Element('pre', { className: 'mj-ed-debug' }, ['|']);
+	    var $container = Element('div', { className: 'Mathjax_Editor' });
+	    var $input = Element('input', { className: 'Mathjax_EditorInput' });
+	    var $display = Element('div', { className: 'Mathjax_EditorDisplay' }, ['\\({\\cursor}' + value + '\\)']);
+	    var $debug = Element('pre', { className: 'Mathjax_EditorDebug' }, ['|']);
+	    var $cursor = Element('div', { className: 'Mathjax_EditorCursor' });
 
 	    $el.parentNode.insertBefore($container, $el.nextSibling);
 	    $container.appendChild($input);
 	    $container.appendChild($display);
 	    $container.appendChild($debug);
+	    $container.appendChild($cursor);
 
 	    $input.addEventListener('keydown', this.handleInputEvent.bind(this));
 	    $input.addEventListener('keyup', this.handleInputEvent.bind(this));
 	    $input.addEventListener('blur', this.blur.bind(this));
 	    $display.addEventListener('click', this.focus.bind(this));
+	    $display.addEventListener('mouseenter', this.handleMouseEnter.bind(this));
+	    $display.addEventListener('mouseleave', this.handleMouseLeave.bind(this));
 	    document.body.addEventListener('click', this.handleBodyClick.bind(this));
 
 	    $display.style.opacity = 0;
@@ -394,6 +398,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 
 	    this.$container = $container;
+	    this.$cursor = $cursor;
 	    this.$debug = $debug;
 	    this.$display = $display;
 	    this.$input = $input;
@@ -407,6 +412,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.newLine = newLine;
 	    this.tex = new _Tex2.default(value, 0);
 	    this.value = value;
+	    this.mouseAtDisplay = false;
 	  }
 
 	  /**
@@ -436,9 +442,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (this.debug) {
 	        this.$debug.innerHTML = (0, _utils.insertBetween)(value, cursorIndex, '|');
 	      }
-
-	      // Update original textarea value.
-	      this.$el.innerHTML = value;
 
 	      this.updateJaxElement(tex.displayTex, function () {
 	        setTimeout(function () {
@@ -517,49 +520,63 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'updateCursorElement',
 	    value: function updateCursorElement() {
-	      var _this4 = this;
-
 	      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-	      var $display = this.$display;
+	      var $display = this.$display,
+	          $cursor = this.$cursor;
 
 	      var hidden = options.cursorHidden || false;
 	      var className = 'wasRecentlyPlaced';
 
-	      MathJax.Hub.Queue(function () {
-	        var $cursor = $display.querySelector('.mjx-cursor');
+	      $cursor.style.display = hidden ? 'none' : 'inline-block';
 
-	        if (!$cursor) {
+	      if (this.lastCursorTimeout) {
+	        clearTimeout(this.lastCursorTimeout);
+	      }
+
+	      (0, _utils.addClass)($cursor, className);
+
+	      this.lastCursorTimeout = setTimeout(function () {
+	        return (0, _utils.removeClass)($cursor, className);
+	      }, 400);
+
+	      MathJax.Hub.Queue(function () {
+	        var $mjxCursor = $display.querySelector('.mjx-cursor');
+
+	        if (!$mjxCursor) {
 	          return;
 	        }
 
-	        var offsetWidth = $cursor.offsetWidth,
-	            offsetLeft = $cursor.offsetLeft;
+	        var _$mjxCursor$getBoundi = $mjxCursor.getBoundingClientRect(),
+	            left = _$mjxCursor$getBoundi.left,
+	            top = _$mjxCursor$getBoundi.top,
+	            bottom = _$mjxCursor$getBoundi.bottom;
 
+	        $cursor.style.left = left + 'px';
+	        $cursor.style.top = top + 'px';
+	        $cursor.style.height = bottom - top + 'px';
+	        $display.scrollLeft = left;
 
-	        if (!$cursor.style.marginLeft) {
-	          $cursor.style.marginLeft = '-' + offsetWidth + 'px';
-	        }
-
-	        if (_this4.lastCursorTimeout) {
-	          clearTimeout(_this4.lastCursorTimeout);
-	        }
-
-	        (0, _utils.addClass)($cursor, className);
-
-	        _this4.lastCursorTimeout = setTimeout(function () {
-	          return (0, _utils.removeClass)($cursor, className);
-	        }, 600);
-
-	        $display.scrollLeft = offsetLeft;
-
-	        $cursor.style.display = hidden ? 'none' : 'inline-block';
+	        $mjxCursor.parentNode.removeChild($mjxCursor);
 	      });
 	    }
+
+	    /**
+	     * Set the editor's value.
+	     * 
+	     * @param {String} value
+	     * 
+	     * @return {Void}
+	     */
+
 	  }, {
 	    key: 'setValue',
 	    value: function setValue(value) {
-	      this.bus.trigger('change');
 	      this.value = value;
+
+	      // Update original textarea value.
+	      this.$el.innerHTML = value;
+
+	      this.bus.trigger('change');
 	    }
 
 	    /**
@@ -574,7 +591,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'handleInputEvent',
 	    value: function handleInputEvent(e) {
-	      var _this5 = this;
+	      var _this4 = this;
 
 	      var $input = this.$input;
 	      var number = _constants2.default.number,
@@ -599,15 +616,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      inputValue.split('').forEach(function (char) {
 	        if (char.match(number) || char.match(variable)) {
-	          return _this5.insert(char);
+	          return _this4.insert(char);
 	        }
 
 	        if (charToCommand.hasOwnProperty(char)) {
-	          return _this5.insertCommand(charToCommand[char]);
+	          return _this4.insertCommand(charToCommand[char]);
 	        }
 
 	        if ((0, _utils.inArray)(char, operators.concat(escapedOperators))) {
-	          return _this5.insertSymbol(char);
+	          return _this4.insertSymbol(char);
 	        }
 	      });
 	    }
@@ -725,10 +742,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'blur',
 	    value: function blur() {
+	      if (this.mouseAtDisplay) {
+	        return;
+	      }
 	      this.$input.blur();
 	      this.updateCursorElement({ cursorHidden: true });
 	      this.bus.trigger('blur');
 	      (0, _utils.removeClass)(this.$display, this.focusClass);
+	    }
+
+	    /**
+	     * Triggered when user's mouse enters the display.
+	     * 
+	     * @return {Void}
+	     */
+
+	  }, {
+	    key: 'handleMouseEnter',
+	    value: function handleMouseEnter() {
+	      this.mouseAtDisplay = true;
+	    }
+
+	    /**
+	     * Triggered when user's mouse leaves the display.
+	     * 
+	     * @return {Void}
+	     */
+
+	  }, {
+	    key: 'handleMouseLeave',
+	    value: function handleMouseLeave() {
+	      this.mouseAtDisplay = false;
 	    }
 
 	    /**
@@ -2729,52 +2773,57 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	var animation = 'from, to { border-color: #000 }\n 50% { border-color: transparent }';
+	var animation = 'from, to { opacity: 1 }\n 50% { opacity: 0 }';
 
 	exports.default = {
-	  '.mjx-cursor': {
-	    '-webkit-animation': '1s mj-ed-blink step-end infinite',
-	    '-moz-animation': '1s mj-ed-blink step-end infinite',
-	    '-ms-animation': '1s mj-ed-blink step-end infinite',
-	    '-o-animation': '1s mj-ed-blink step-end infinite',
-	    animation: '1s mj-ed-blink step-end infinite',
-	    'border-right': '2px solid #000',
-	    color: 'transparent'
+	  '.Mathjax_Editor': {
+	    '-moz-user-select': 'none',
+	    '-webkit-user-select': 'none',
+	    '-ms-user-select': 'none',
+	    'user-select': 'none'
 	  },
 
-	  '.mjx-cursor.wasRecentlyPlaced': {
-	    'border-right-color': '#000 !important'
+	  '.Mathjax_EditorCursor.wasRecentlyPlaced': {
+	    'animation': 'none !important',
+	    'opacity': '1 !important'
 	  },
 
-	  '.mj-ed-input': {
+	  '.Mathjax_EditorInput': {
 	    left: '-100%',
 	    position: 'absolute',
 	    top: '-100%'
 	  },
 
-	  '.mj-ed-display': {
+	  '.Mathjax_EditorDisplay': {
 	    'box-sizing': 'border-box',
 	    'cursor': 'text',
 	    'overflow-Y': 'overflow'
 	  },
 
-	  '.mj-ed-display *': {
+	  '.Mathjax_EditorDisplay *': {
 	    outline: 'none'
 	  },
 
-	  '.mj-ed-selectionButton': {
-	    cursor: 'text'
+	  '.Mathjax_EditorCursor': {
+	    '-webkit-animation': '1s Mathjax_EditorCursorBlink step-end infinite',
+	    '-moz-animation': '1s Mathjax_EditorCursorBlink step-end infinite',
+	    '-ms-animation': '1s Mathjax_EditorCursorBlink step-end infinite',
+	    '-o-animation': '1s Mathjax_EditorCursorBlink step-end infinite',
+	    animation: '1s Mathjax_EditorCursorBlink step-end infinite',
+	    'background-color': '#000',
+	    position: 'absolute',
+	    width: '2px'
 	  },
 
 	  '.mjx-isEmpty': {
 	    color: '#ccc'
 	  },
 
-	  '@keyframes mj-ed-blink': animation,
-	  '@-moz-keyframes mj-ed-blink': animation,
-	  '@-webkit-keyframes mj-ed-blink': animation,
-	  '@-ms-keyframes mj-ed-blink': animation,
-	  '@-o-keyframes mj-ed-blink': animation
+	  '@keyframes Mathjax_EditorCursorBlink': animation,
+	  '@-moz-keyframes Mathjax_EditorCursorBlink': animation,
+	  '@-webkit-keyframes Mathjax_EditorCursorBlink': animation,
+	  '@-ms-keyframes Mathjax_EditorCursorBlink': animation,
+	  '@-o-keyframes Mathjax_EditorCursorBlink': animation
 	};
 
 /***/ }
