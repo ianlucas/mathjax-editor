@@ -52,16 +52,20 @@ class Editor {
     const $input = Element('input', { className: 'Mathjax_EditorInput' });
     const $display = Element('div', { className: 'Mathjax_EditorDisplay' }, [`\\({\\cursor}${value}\\)`]);
     const $debug = Element('pre', { className: 'Mathjax_EditorDebug' }, ['|']);
+    const $cursor = Element('div', { className: 'Mathjax_EditorCursor' });
 
     $el.parentNode.insertBefore($container, $el.nextSibling);
     $container.appendChild($input);
     $container.appendChild($display);
     $container.appendChild($debug);
+    $container.appendChild($cursor);
 
     $input.addEventListener('keydown', this.handleInputEvent.bind(this));
     $input.addEventListener('keyup', this.handleInputEvent.bind(this));
     $input.addEventListener('blur', this.blur.bind(this));
     $display.addEventListener('click', this.focus.bind(this));
+    $display.addEventListener('mouseenter', this.handleMouseEnter.bind(this));
+    $display.addEventListener('mouseleave', this.handleMouseLeave.bind(this));
     document.body.addEventListener('click', this.handleBodyClick.bind(this));
 
     $display.style.opacity = 0;
@@ -80,6 +84,7 @@ class Editor {
     );
 
     this.$container = $container;
+    this.$cursor = $cursor;
     this.$debug = $debug;
     this.$display = $display;
     this.$input = $input;
@@ -93,6 +98,7 @@ class Editor {
     this.newLine = newLine;
     this.tex = new Tex(value, 0);
     this.value = value;
+    this.mouseAtDisplay = false;
   }
 
   /**
@@ -181,36 +187,37 @@ class Editor {
    * @return {Void}
    */
   updateCursorElement(options = {}) {
-    const { $display } = this;
+    const { $display, $cursor } = this;
     const hidden = options.cursorHidden || false;
     const className = 'wasRecentlyPlaced';
 
-    MathJax.Hub.Queue(() => {
-      const $cursor = $display.querySelector('.mjx-cursor');
+    $cursor.style.display = hidden ? 'none' : 'inline-block';
 
-      if (!$cursor) {
+    if (this.lastCursorTimeout) {
+      clearTimeout(this.lastCursorTimeout);
+    }
+
+    addClass($cursor, className);
+
+    this.lastCursorTimeout = setTimeout(
+      () => removeClass($cursor, className), 400
+    );
+
+    MathJax.Hub.Queue(() => {
+      const $mjxCursor = $display.querySelector('.mjx-cursor');
+
+      if (!$mjxCursor) {
         return;
       }
 
-      const { offsetWidth, offsetLeft } = $cursor;
+      const { left, top, bottom } = $mjxCursor.getBoundingClientRect();
 
-      if (!$cursor.style.marginLeft) {
-        $cursor.style.marginLeft = `-${offsetWidth}px`;
-      }
+      $cursor.style.left = `${left}px`;
+      $cursor.style.top = `${top}px`;
+      $cursor.style.height = `${bottom - top}px`;
+      $display.scrollLeft = left;
 
-      if (this.lastCursorTimeout) {
-        clearTimeout(this.lastCursorTimeout);
-      }
-
-      addClass($cursor, className);
-
-      this.lastCursorTimeout = setTimeout(
-        () => removeClass($cursor, className), 600
-      );
-
-      $display.scrollLeft = offsetLeft;
-
-      $cursor.style.display = hidden ? 'none' : 'inline-block';
+      $mjxCursor.parentNode.removeChild($mjxCursor);
     });
   }
 
@@ -370,10 +377,31 @@ class Editor {
    * @return {Void}
    */
   blur() {
+    if (this.mouseAtDisplay) {
+      return;
+    }    
     this.$input.blur();
     this.updateCursorElement({ cursorHidden: true });
     this.bus.trigger('blur');
     removeClass(this.$display, this.focusClass);
+  }
+
+  /**
+   * Triggered when user's mouse enters the display.
+   * 
+   * @return {Void}
+   */
+  handleMouseEnter() {
+    this.mouseAtDisplay = true;
+  }
+
+  /**
+   * Triggered when user's mouse leaves the display.
+   * 
+   * @return {Void}
+   */
+  handleMouseLeave() {
+    this.mouseAtDisplay = false;
   }
 
   /**
