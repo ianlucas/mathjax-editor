@@ -114,9 +114,6 @@ class Editor {
       this.$debug.innerHTML = insertBetween(value, cursorIndex, '|');
     }
 
-    // Update original textarea value.
-    this.$el.innerHTML = value;
-
     this.updateJaxElement(
       tex.displayTex,
       () => {
@@ -226,6 +223,10 @@ class Editor {
    */
   setValue(value) {
     this.value = value;
+    
+    // Update original textarea value.
+    this.$el.innerHTML = value;
+
     this.bus.trigger('change');
   }
 
