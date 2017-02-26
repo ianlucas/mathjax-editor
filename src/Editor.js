@@ -99,6 +99,8 @@ class Editor {
     this.tex = new Tex(value, 0);
     this.value = value;
     this.mouseAtDisplay = false;
+    this.textAlignment = 'left';
+    this.getDisplayAlignment();
   }
 
   /**
@@ -205,20 +207,38 @@ class Editor {
 
     MathJax.Hub.Queue(() => {
       const $mjxCursor = $display.querySelector('.mjx-cursor');
+      let cursorLeft = left;
 
       if (!$mjxCursor) {
         return;
       }
 
-      const { left, top, bottom } = $mjxCursor.getBoundingClientRect();
+      const { left, right, top, bottom } = $mjxCursor.getBoundingClientRect();
 
-      $cursor.style.left = `${left}px`;
+      if (this.textAlignment === 'center') {
+        cursorLeft = left + ((right - left) / 2);
+      }
+      else {
+        cursorLeft = right;
+      }
+
+      $cursor.style.left = `${cursorLeft}px`;
       $cursor.style.top = `${top}px`;
       $cursor.style.height = `${bottom - top}px`;
       $display.scrollLeft = left;
 
       $mjxCursor.parentNode.removeChild($mjxCursor);
     });
+  }
+
+  /**
+   * Get the alignment put on the editor's display.
+   * 
+   * @return {Void}
+   */
+  getDisplayAlignment() {
+    const style = window.getComputedStyle(this.$display);
+    this.textAlignment = style.getPropertyValue('text-align') || 'left';
   }
 
   /**
