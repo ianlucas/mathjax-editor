@@ -101,7 +101,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var core = new _Editor2.default(options);
 
 	    this.core = core;
-	    this.version = '1.3.3';
+	    this.version = '1.3.4';
 	  }
 
 	  /**
@@ -413,6 +413,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.tex = new _Tex2.default(value, 0);
 	    this.value = value;
 	    this.mouseAtDisplay = false;
+	    this.textAlignment = 'left';
+	    this.getDisplayAlignment();
 	  }
 
 	  /**
@@ -520,6 +522,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'updateCursorElement',
 	    value: function updateCursorElement() {
+	      var _this4 = this;
+
 	      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	      var $display = this.$display,
 	          $cursor = this.$cursor;
@@ -541,6 +545,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      MathJax.Hub.Queue(function () {
 	        var $mjxCursor = $display.querySelector('.mjx-cursor');
+	        var cursorLeft = left;
 
 	        if (!$mjxCursor) {
 	          return;
@@ -548,16 +553,36 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        var _$mjxCursor$getBoundi = $mjxCursor.getBoundingClientRect(),
 	            left = _$mjxCursor$getBoundi.left,
+	            right = _$mjxCursor$getBoundi.right,
 	            top = _$mjxCursor$getBoundi.top,
 	            bottom = _$mjxCursor$getBoundi.bottom;
 
-	        $cursor.style.left = left + 'px';
+	        if (_this4.textAlignment === 'center') {
+	          cursorLeft = left + (right - left) / 2;
+	        } else {
+	          cursorLeft = right;
+	        }
+
+	        $cursor.style.left = cursorLeft + 'px';
 	        $cursor.style.top = top + 'px';
 	        $cursor.style.height = bottom - top + 'px';
 	        $display.scrollLeft = left;
 
 	        $mjxCursor.parentNode.removeChild($mjxCursor);
 	      });
+	    }
+
+	    /**
+	     * Get the alignment put on the editor's display.
+	     * 
+	     * @return {Void}
+	     */
+
+	  }, {
+	    key: 'getDisplayAlignment',
+	    value: function getDisplayAlignment() {
+	      var style = window.getComputedStyle(this.$display);
+	      this.textAlignment = style.getPropertyValue('text-align') || 'left';
 	    }
 
 	    /**
@@ -591,7 +616,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'handleInputEvent',
 	    value: function handleInputEvent(e) {
-	      var _this4 = this;
+	      var _this5 = this;
 
 	      var $input = this.$input;
 	      var number = _constants2.default.number,
@@ -616,15 +641,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      inputValue.split('').forEach(function (char) {
 	        if (char.match(number) || char.match(variable)) {
-	          return _this4.insert(char);
+	          return _this5.insert(char);
 	        }
 
 	        if (charToCommand.hasOwnProperty(char)) {
-	          return _this4.insertCommand(charToCommand[char]);
+	          return _this5.insertCommand(charToCommand[char]);
 	        }
 
 	        if ((0, _utils.inArray)(char, operators.concat(escapedOperators))) {
-	          return _this4.insertSymbol(char);
+	          return _this5.insertSymbol(char);
 	        }
 	      });
 	    }
