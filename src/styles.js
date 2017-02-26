@@ -17,26 +17,22 @@ export default {
     'border-right-color': '#000 !important'
   },
 
-  '.mj-ed-input': {
+  '.Mathjax_EditorInput': {
     left: '-100%',
     position: 'absolute',
     top: '-100%'
   },
 
-  '.mj-ed-display': {
+  '.Mathjax_EditorDisplay': {
     'box-sizing': 'border-box',
     'cursor': 'text',
     'overflow-Y': 'overflow'
   },
 
-  '.mj-ed-display *': {
+  '.Mathjax_EditorDisplay *': {
     outline: 'none'
   },
-
-  '.mj-ed-selectionButton': {
-    cursor: 'text'
-  },
-
+  
   '.mjx-isEmpty': {
     color: '#ccc'
   },
