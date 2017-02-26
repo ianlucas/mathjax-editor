@@ -207,19 +207,20 @@ class Editor {
 
     MathJax.Hub.Queue(() => {
       const $mjxCursor = $display.querySelector('.mjx-cursor');
-      let cursorLeft = left;
 
       if (!$mjxCursor) {
         return;
       }
 
       const { left, right, top, bottom } = $mjxCursor.getBoundingClientRect();
+      let cursorLeft = left;
 
-      if (this.textAlignment === 'center') {
-        cursorLeft = left + ((right - left) / 2);
-      }
-      else {
-        cursorLeft = right;
+      switch (this.textAlignment) {
+        case 'center':
+          cursorLeft = left + ((right - left) / 2); break;
+        
+        case 'right':
+          cursorLeft = right; break;
       }
 
       $cursor.style.left = `${cursorLeft}px`;
