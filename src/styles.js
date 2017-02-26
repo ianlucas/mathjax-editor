@@ -2,7 +2,7 @@ const animation =
 `from, to { opacity: 1 }
  50% { opacity: 0 }`;
 
-export default {
+module.exports = {
   '.Mathjax_Editor': {
     '-moz-user-select': 'none',
     '-webkit-user-select': 'none',

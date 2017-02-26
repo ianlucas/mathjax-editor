@@ -1,10 +1,10 @@
-import styles from './styles';
+const styles = require('./styles');
 
 /**
  * This will extend MathJax so that we can put our simple
  * cursor there.
  */
-export default function extendMathJax() {
+module.exports = function extendMathJax() {
   const TEX = MathJax.InputJax.TeX;
   const MML = MathJax.ElementJax.mml;
 

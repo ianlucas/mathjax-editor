@@ -1,4 +1,4 @@
-import EventBus from './EventBus';
+const EventBus = require('./EventBus');
 
 let $paints = [];
 
@@ -476,4 +476,4 @@ class Placer {
   }
 }
 
-export default Placer;
+module.exports = Placer;

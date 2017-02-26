@@ -35,4 +35,4 @@ class EventBus {
   }
 }
 
-export default EventBus;
+module.exports = EventBus;

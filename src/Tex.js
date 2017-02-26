@@ -1,5 +1,5 @@
-import { inArray, listToCharacterRegex } from './utils';
-import constants from './constants';
+const { inArray, listToCharacterRegex } = require('./utils');
+const constants = require('./constants');
 
 const {
   nearClosureHaystack,
@@ -619,4 +619,4 @@ class Tex {
   }
 }
 
-export default Tex;
+module.exports = Tex;

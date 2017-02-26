@@ -1,6 +1,6 @@
-import Editor from './Editor';
-import extendMathJax from './extendMathJax';
-import { repeat } from './utils';
+const Editor = require('./Editor');
+const extendMathJax = require('./extendMathJax');
+const { repeat } = require('./utils');
 
 window.addEventListener('load', extendMathJax);
 

@@ -1,8 +1,8 @@
-import EventBus from './EventBus';
-import Placer from './Placer';
-import Tex from './Tex';
-import constants from './constants';
-import {
+const EventBus = require('./EventBus');
+const Placer = require('./Placer');
+const Tex = require('./Tex');
+const constants = require('./constants');
+const {
   addClass,
   insertBetween,
   inArray,
@@ -10,7 +10,7 @@ import {
   removeClass,
   removeFragment,
   repeat
-} from './utils';
+} = require('./utils');
 
 const { supOrSub } = constants;
 
@@ -648,4 +648,4 @@ class Editor {
   }
 }
 
-export default Editor;
+module.exports = Editor;
