@@ -67,21 +67,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _Editor = __webpack_require__(1);
-
-	var _Editor2 = _interopRequireDefault(_Editor);
-
-	var _extendMathJax = __webpack_require__(7);
-
-	var _extendMathJax2 = _interopRequireDefault(_extendMathJax);
-
-	var _utils = __webpack_require__(5);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	window.addEventListener('load', _extendMathJax2.default);
+	var Editor = __webpack_require__(1);
+	var extendMathJax = __webpack_require__(7);
+
+	var _require = __webpack_require__(5),
+	    repeat = _require.repeat;
+
+	window.addEventListener('load', extendMathJax);
 
 	/**
 	 * This is the MathJaxEditor class.
@@ -98,10 +92,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function MathJaxEditor(options) {
 	    _classCallCheck(this, MathJaxEditor);
 
-	    var core = new _Editor2.default(options);
+	    var core = new Editor(options);
 
 	    this.core = core;
-	    this.version = '1.3.4';
+	    this.version = '1.3.6';
 	  }
 
 	  /**
@@ -236,7 +230,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'insertMatrix',
 	    value: function insertMatrix(columns, rows) {
-	      var columnStr = (0, _utils.repeat)('&', columns - 1);
+	      var columnStr = repeat('&', columns - 1);
 	      var lines = rows - 1;
 	      var matrix = '\\begin{bmatrix}' + columnStr;
 	      var i = 0;
@@ -289,35 +283,25 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _EventBus = __webpack_require__(2);
-
-	var _EventBus2 = _interopRequireDefault(_EventBus);
-
-	var _Placer = __webpack_require__(3);
-
-	var _Placer2 = _interopRequireDefault(_Placer);
-
-	var _Tex = __webpack_require__(4);
-
-	var _Tex2 = _interopRequireDefault(_Tex);
-
-	var _constants = __webpack_require__(6);
-
-	var _constants2 = _interopRequireDefault(_constants);
-
-	var _utils = __webpack_require__(5);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var supOrSub = _constants2.default.supOrSub;
+	var EventBus = __webpack_require__(2);
+	var Placer = __webpack_require__(3);
+	var Tex = __webpack_require__(4);
+	var constants = __webpack_require__(6);
+
+	var _require = __webpack_require__(5),
+	    addClass = _require.addClass,
+	    insertBetween = _require.insertBetween,
+	    inArray = _require.inArray,
+	    mustFindElement = _require.mustFindElement,
+	    removeClass = _require.removeClass,
+	    removeFragment = _require.removeFragment,
+	    repeat = _require.repeat;
+
+	var supOrSub = constants.supOrSub;
 
 
 	var KEY_BACKSPACE = 8;
@@ -361,7 +345,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var Element = MathJax.HTML.Element;
 
-	    var $el = (0, _utils.mustFindElement)(el, 'textarea');
+	    var $el = mustFindElement(el, 'textarea');
 	    var $container = Element('div', { className: 'Mathjax_Editor' });
 	    var $input = Element('input', { className: 'Mathjax_EditorInput' });
 	    var $display = Element('div', { className: 'Mathjax_EditorDisplay' }, ['\\({\\cursor}' + value + '\\)']);
@@ -403,14 +387,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.$display = $display;
 	    this.$input = $input;
 	    this.$el = $el;
-	    this.bus = new _EventBus2.default();
+	    this.bus = new EventBus();
 	    this.cursorIndex = 0;
 	    this.lastCursorTimeout = null;
 	    this.placer = null;
 	    this.debug = debug;
 	    this.focusClass = focusClass;
 	    this.newLine = newLine;
-	    this.tex = new _Tex2.default(value, 0);
+	    this.tex = new Tex(value, 0);
 	    this.value = value;
 	    this.mouseAtDisplay = false;
 	    this.textAlignment = 'left';
@@ -437,17 +421,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var cursorIndex = this.cursorIndex,
 	          value = this.value;
 
-	      var tex = new _Tex2.default(value, cursorIndex);
+	      var tex = new Tex(value, cursorIndex);
 
 	      this.tex = tex;
 
 	      if (this.debug) {
-	        this.$debug.innerHTML = (0, _utils.insertBetween)(value, cursorIndex, '|');
+	        this.$debug.innerHTML = insertBetween(value, cursorIndex, '|');
 	      }
 
 	      this.updateJaxElement(tex.displayTex, function () {
 	        setTimeout(function () {
-	          var placer = new _Placer2.default(_this2);
+	          var placer = new Placer(_this2);
 	          placer.on('setCursor', function (index) {
 	            _this2.debug && console.info('The cursor should be placed at ' + index + '.');
 	            _this2.cursorIndex = index;
@@ -537,15 +521,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        clearTimeout(this.lastCursorTimeout);
 	      }
 
-	      (0, _utils.addClass)($cursor, className);
+	      addClass($cursor, className);
 
 	      this.lastCursorTimeout = setTimeout(function () {
-	        return (0, _utils.removeClass)($cursor, className);
+	        return removeClass($cursor, className);
 	      }, 400);
 
 	      MathJax.Hub.Queue(function () {
 	        var $mjxCursor = $display.querySelector('.mjx-cursor');
-	        var cursorLeft = left;
 
 	        if (!$mjxCursor) {
 	          return;
@@ -557,10 +540,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	            top = _$mjxCursor$getBoundi.top,
 	            bottom = _$mjxCursor$getBoundi.bottom;
 
-	        if (_this4.textAlignment === 'center') {
-	          cursorLeft = left + (right - left) / 2;
-	        } else {
-	          cursorLeft = right;
+	        var cursorLeft = left;
+
+	        switch (_this4.textAlignment) {
+	          case 'center':
+	            cursorLeft = left + (right - left) / 2;break;
+
+	          case 'right':
+	            cursorLeft = right;break;
 	        }
 
 	        $cursor.style.left = cursorLeft + 'px';
@@ -619,11 +606,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _this5 = this;
 
 	      var $input = this.$input;
-	      var number = _constants2.default.number,
-	          variable = _constants2.default.variable,
-	          charToCommand = _constants2.default.charToCommand,
-	          operators = _constants2.default.operators,
-	          escapedOperators = _constants2.default.escapedOperators;
+	      var number = constants.number,
+	          variable = constants.variable,
+	          charToCommand = constants.charToCommand,
+	          operators = constants.operators,
+	          escapedOperators = constants.escapedOperators;
 
 
 	      var inputValue = $input.value.trim();
@@ -648,7 +635,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          return _this5.insertCommand(charToCommand[char]);
 	        }
 
-	        if ((0, _utils.inArray)(char, operators.concat(escapedOperators))) {
+	        if (inArray(char, operators.concat(escapedOperators))) {
 	          return _this5.insertSymbol(char);
 	        }
 	      });
@@ -755,7 +742,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this.$input.focus();
 	      this.updateCursorElement({ cursorHidden: false });
 	      this.bus.trigger('focus');
-	      (0, _utils.addClass)(this.$display, this.focusClass);
+	      addClass(this.$display, this.focusClass);
 	    }
 
 	    /**
@@ -773,7 +760,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this.$input.blur();
 	      this.updateCursorElement({ cursorHidden: true });
 	      this.bus.trigger('blur');
-	      (0, _utils.removeClass)(this.$display, this.focusClass);
+	      removeClass(this.$display, this.focusClass);
 	    }
 
 	    /**
@@ -816,7 +803,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	      this.cursorIndex += chars.length;
-	      this.setValue((0, _utils.insertBetween)(value, cursorIndex, chars));
+	      this.setValue(insertBetween(value, cursorIndex, chars));
 	      this.update();
 	    }
 
@@ -832,8 +819,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'insertChar',
 	    value: function insertChar(char) {
-	      var number = _constants2.default.number,
-	          variable = _constants2.default.variable;
+	      var number = constants.number,
+	          variable = constants.variable;
 
 
 	      if (char.length !== 1) {
@@ -855,16 +842,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'insertSymbol',
 	    value: function insertSymbol(symbol) {
-	      var operators = _constants2.default.operators,
-	          escapedOperators = _constants2.default.escapedOperators;
+	      var operators = constants.operators,
+	          escapedOperators = constants.escapedOperators;
 
 	      var symbols = operators.slice().concat(escapedOperators);
 
-	      if (!(0, _utils.inArray)(symbol, symbols)) {
+	      if (!inArray(symbol, symbols)) {
 	        throw new RangeError('"' + symbol + '" is not a valid symbol.');
 	      }
 
-	      if ((0, _utils.inArray)(symbol, escapedOperators)) {
+	      if (inArray(symbol, escapedOperators)) {
 	        symbol = '\\' + symbol;
 	      }
 
@@ -891,7 +878,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      this.focus();
 
-	      if (command[0] !== '\\' && !(0, _utils.inArray)(command, supOrSub)) {
+	      if (command[0] !== '\\' && !inArray(command, supOrSub)) {
 	        command = '\\' + command;
 	      }
 
@@ -914,9 +901,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var value = this.value,
 	          cursorIndex = this.cursorIndex;
 
-	      var blocks = '}' + (0, _utils.repeat)('{}', blockCount - 1);
+	      var blocks = '}' + repeat('{}', blockCount - 1);
 
-	      this.setValue((0, _utils.insertBetween)(value, cursorIndex, blocks));
+	      this.setValue(insertBetween(value, cursorIndex, blocks));
 	      this.update();
 	    }
 
@@ -1058,7 +1045,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      this.cursorIndex = deletionStart;
-	      this.setValue((0, _utils.removeFragment)(this.value, deletionStart, deletionEnd));
+	      this.setValue(removeFragment(this.value, deletionStart, deletionEnd));
 	      this.update();
 	    }
 
@@ -1105,17 +1092,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return Editor;
 	}();
 
-	exports.default = Editor;
+	module.exports = Editor;
 
 /***/ },
 /* 2 */
 /***/ function(module, exports) {
 
 	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -1176,7 +1159,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return EventBus;
 	}();
 
-	exports.default = EventBus;
+	module.exports = EventBus;
 
 /***/ },
 /* 3 */
@@ -1184,21 +1167,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _EventBus = __webpack_require__(2);
-
-	var _EventBus2 = _interopRequireDefault(_EventBus);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var EventBus = __webpack_require__(2);
 
 	var $paints = [];
 
@@ -1214,7 +1189,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function Placer(editor) {
 	    _classCallCheck(this, Placer);
 
-	    var bus = new _EventBus2.default();
+	    var bus = new EventBus();
 
 	    bus.on('click', this.handleClick.bind(this));
 
@@ -1799,7 +1774,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return Placer;
 	}();
 
-	exports.default = Placer;
+	module.exports = Placer;
 
 /***/ },
 /* 4 */
@@ -1807,36 +1782,30 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _utils = __webpack_require__(5);
-
-	var _constants = __webpack_require__(6);
-
-	var _constants2 = _interopRequireDefault(_constants);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var nearClosureHaystack = _constants2.default.nearClosureHaystack,
-	    supOrSub = _constants2.default.supOrSub,
-	    cursorTex = _constants2.default.cursorTex,
-	    emptyTex = _constants2.default.emptyTex,
-	    escType = _constants2.default.escType,
-	    spacingTex = _constants2.default.spacingTex,
-	    relationCommands = _constants2.default.relationCommands;
+	var _require = __webpack_require__(5),
+	    inArray = _require.inArray,
+	    listToCharacterRegex = _require.listToCharacterRegex;
+
+	var constants = __webpack_require__(6);
+
+	var nearClosureHaystack = constants.nearClosureHaystack,
+	    supOrSub = constants.supOrSub,
+	    cursorTex = constants.cursorTex,
+	    emptyTex = constants.emptyTex,
+	    escType = constants.escType,
+	    spacingTex = constants.spacingTex,
+	    relationCommands = constants.relationCommands;
 
 
 	var test = {
-	  isNumber: _constants2.default.number,
-	  isVariable: _constants2.default.variable,
-	  isOperator: (0, _utils.listToCharacterRegex)(_constants2.default.operators),
-	  isEscapedOperator: (0, _utils.listToCharacterRegex)(_constants2.default.escapedOperators)
+	  isNumber: constants.number,
+	  isVariable: constants.variable,
+	  isOperator: listToCharacterRegex(constants.operators),
+	  isEscapedOperator: listToCharacterRegex(constants.escapedOperators)
 	};
 
 	var Tex = function () {
@@ -1909,9 +1878,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var char = tex[index];
 	        var nextChar = tex[nextIndex];
 	        var lastChar = tex[index - 1];
-	        var nearClosure = (0, _utils.inArray)(nextChar, nearClosureHaystack);
+	        var nearClosure = inArray(nextChar, nearClosureHaystack);
 	        var isComma = char === ',';
-	        var isGrOrLeSign = (0, _utils.inArray)(char, ['<', '>']);
+	        var isGrOrLeSign = inArray(char, ['<', '>']);
 	        var isNumber = test.isNumber.exec(char);
 	        var isVariable = test.isVariable.exec(char);
 	        var isOperator = test.isOperator.exec(char);
@@ -2033,7 +2002,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        // Sup and sub commands.
-	        if ((0, _utils.inArray)(char, supOrSub)) {
+	        if (inArray(char, supOrSub)) {
 	          i = this.parseCommand(i).continueIterationAt;
 	        }
 
@@ -2126,7 +2095,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var isVariable = test.isVariable.exec(char);
 
 	        if (opening === null) {
-	          this.displayTex += !(0, _utils.inArray)(char, ['\\', '^', '_']) ? char : '';
+	          this.displayTex += !inArray(char, ['\\', '^', '_']) ? char : '';
 	          if (isVariable) {
 	            type += char;
 	          }
@@ -2165,7 +2134,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            opening = i;
 	            continueIterationAt = opening;
 
-	            if (!(0, _utils.inArray)(firstChar, supOrSub) && !(0, _utils.inArray)(type, ['begin', 'end'])) {
+	            if (!inArray(firstChar, supOrSub) && !inArray(type, ['begin', 'end'])) {
 	              this.displayTex += spacingTex;
 	            }
 
@@ -2198,13 +2167,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        if (opening === null && char === ' ') {
-	          var shouldBeAroundBraces = (0, _utils.inArray)(type, relationCommands);
+	          var shouldBeAroundBraces = inArray(type, relationCommands);
 	          type = this.decideType(type);
 	          is = type === 'mo' ? 'operator' : 'variable';
 	          end = i;
 	          opening = i;
 	          continueIterationAt = opening;
-	          if ((0, _utils.inArray)(nextChar, nearClosureHaystack)) {
+	          if (inArray(nextChar, nearClosureHaystack)) {
 	            nearClosure = true;
 	          }
 	          if (shouldBeAroundBraces) {
@@ -2230,7 +2199,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // Handle \begin and \end commands.
 	      // We must skip its blocks contents.
 
-	      if ((0, _utils.inArray)(type, ['begin', 'end'])) {
+	      if (inArray(type, ['begin', 'end'])) {
 	        is = type;
 	        type = blocks[0].contents;
 	        continueIterationAt = end;
@@ -2353,7 +2322,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (!data) {
 	        return false;
 	      }
-	      return (0, _utils.inArray)(data.firstChar, haystack);
+	      return inArray(data.firstChar, haystack);
 	    }
 
 	    /**
@@ -2387,7 +2356,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (!test.isVariable.exec(char) && char !== ' ') {
 	          return false;
 	        } else if (char === ' ') {
-	          return (0, _utils.inArray)(name, relationCommands);
+	          return inArray(name, relationCommands);
 	        }
 	        name += char;
 	      }
@@ -2469,7 +2438,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return Tex;
 	}();
 
-	exports.default = Tex;
+	module.exports = Tex;
 
 /***/ },
 /* 5 */
@@ -2477,196 +2446,194 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.mustFindElement = mustFindElement;
-	exports.insertBetween = insertBetween;
-	exports.removeClass = removeClass;
-	exports.addClass = addClass;
-	exports.toArray = toArray;
-	exports.inArray = inArray;
-	exports.repeat = repeat;
-	exports.removeFragment = removeFragment;
-	exports.listToCharacterRegex = listToCharacterRegex;
-	/**
-	 * Tries to find the specified element. If it fails, an error is thrown.
-	 * 
-	 * @param {DOMElement|string} el - An element or a selector.
-	 * 
-	 * @return {DOMElement}
-	 */
-	function mustFindElement(el, tagName) {
-	  var error = new Error('You must define a target element.');
+	module.exports = {
+	  /**
+	   * Tries to find the specified element. If it fails, an error is thrown.
+	   * 
+	   * @param {DOMElement|string} el - An element or a selector.
+	   * 
+	   * @return {DOMElement}
+	   */
+	  mustFindElement: function mustFindElement(el, tagName) {
+	    var error = new Error('You must define a target element.');
 
-	  if (!el) {
-	    throw error;
-	  }
-
-	  if (typeof el === 'string') {
-	    el = document.querySelector(el);
 	    if (!el) {
 	      throw error;
 	    }
-	  }
 
-	  if (el.tagName.toLowerCase() !== tagName.toLowerCase()) {
-	    throw new Error('The target element must be <' + tagName + '>.');
-	  }
-
-	  // Yeah, we just assume an element was given...
-	  return el;
-	}
-
-	/**
-	 * Insert a text in the middle of the given string.
-	 * 
-	 * @param {String} string
-	 * @param {Number} index
-	 * @param {String} fragment
-	 * 
-	 * @return {String}
-	 */
-	function insertBetween(string, index, fragment) {
-	  var before = string.slice(0, index);
-	  var after = string.slice(index);
-	  return before + fragment + after;
-	}
-
-	/**
-	 * Remove a class of an element.
-	 * 
-	 * @param {DOMElement} $el
-	 * @param {String} className
-	 * 
-	 * @return {Void}
-	 */
-	function removeClass($el, className) {
-	  var classes = $el.className.split(' ');
-	  var finalValue = '';
-
-	  var _iteratorNormalCompletion = true;
-	  var _didIteratorError = false;
-	  var _iteratorError = undefined;
-
-	  try {
-	    for (var _iterator = classes[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	      var c = _step.value;
-
-	      if (c !== className) {
-	        finalValue += ' ' + c;
+	    if (typeof el === 'string') {
+	      el = document.querySelector(el);
+	      if (!el) {
+	        throw error;
 	      }
 	    }
-	  } catch (err) {
-	    _didIteratorError = true;
-	    _iteratorError = err;
-	  } finally {
+
+	    if (el.tagName.toLowerCase() !== tagName.toLowerCase()) {
+	      throw new Error('The target element must be <' + tagName + '>.');
+	    }
+
+	    // Yeah, we just assume an element was given...
+	    return el;
+	  },
+
+
+	  /**
+	   * Insert a text in the middle of the given string.
+	   * 
+	   * @param {String} string
+	   * @param {Number} index
+	   * @param {String} fragment
+	   * 
+	   * @return {String}
+	   */
+	  insertBetween: function insertBetween(string, index, fragment) {
+	    var before = string.slice(0, index);
+	    var after = string.slice(index);
+	    return before + fragment + after;
+	  },
+
+
+	  /**
+	   * Remove a class of an element.
+	   * 
+	   * @param {DOMElement} $el
+	   * @param {String} className
+	   * 
+	   * @return {Void}
+	   */
+	  removeClass: function removeClass($el, className) {
+	    var classes = $el.className.split(' ');
+	    var finalValue = '';
+
+	    var _iteratorNormalCompletion = true;
+	    var _didIteratorError = false;
+	    var _iteratorError = undefined;
+
 	    try {
-	      if (!_iteratorNormalCompletion && _iterator.return) {
-	        _iterator.return();
+	      for (var _iterator = classes[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	        var c = _step.value;
+
+	        if (c !== className) {
+	          finalValue += ' ' + c;
+	        }
 	      }
+	    } catch (err) {
+	      _didIteratorError = true;
+	      _iteratorError = err;
 	    } finally {
-	      if (_didIteratorError) {
-	        throw _iteratorError;
+	      try {
+	        if (!_iteratorNormalCompletion && _iterator.return) {
+	          _iterator.return();
+	        }
+	      } finally {
+	        if (_didIteratorError) {
+	          throw _iteratorError;
+	        }
 	      }
 	    }
+
+	    $el.className = finalValue.trim();
+	  },
+
+
+	  /**
+	   * Add a class to an element.
+	   * 
+	   * @param {DOMElement} $el
+	   * @param {String} className
+	   * 
+	   * @return {Void}
+	   */
+	  addClass: function addClass($el, className) {
+	    var classes = $el.className.split(' ');
+	    if (!~classes.indexOf(className)) {
+	      $el.className += ' ' + className;
+	    }
+	    $el.className = $el.className.trim();
+	  },
+
+
+	  /**
+	   * Converts a DOM node list to array.
+	   * 
+	   * @param {DOMNodeList}
+	   * 
+	   * @return {Array}
+	   */
+	  toArray: function toArray(children) {
+	    var slice = [].slice;
+	    return slice.call(children);
+	  },
+
+
+	  /**
+	   * Check if the needle is found in haystack.
+	   * 
+	   * @param {Mixed} needle
+	   * @param {Array} haystack
+	   * 
+	   * @return {Boolean}
+	   */
+	  inArray: function inArray(needle, haystack) {
+	    return !!~haystack.indexOf(needle);
+	  },
+
+
+	  /**
+	   * Repeat a string.
+	   * 
+	   * @param {String} str
+	   * @param {Number} count
+	   * 
+	   * @return {String}
+	   */
+	  repeat: function repeat(str, count) {
+	    var result = '';
+	    var double = str + str;
+	    var isOdd = count % 2 !== 0;
+	    var length = Math.floor(count / 2);
+	    var i = 0;
+	    for (; i < length; i++) {
+	      result += double;
+	    }
+
+	    if (isOdd) {
+	      result += str;
+	    }
+
+	    return result;
+	  },
+
+
+	  /**
+	   * Remove part of a string.
+	   * 
+	   * >> removeFragment("0123456", 1, 3);
+	   * << "03456"
+	   * 
+	   * So, when start 1 and end 3, "0123456"
+	   *                               ^^
+	   *                             Removed
+	   */
+	  removeFragment: function removeFragment(str, start, end) {
+	    return str.slice(0, start) + str.slice(end);
+	  },
+
+
+	  /**
+	   * Convert a list to a character regex.
+	   * 
+	   * @param {Array} list
+	   * 
+	   * @return {RegExp}
+	   */
+	  listToCharacterRegex: function listToCharacterRegex(list) {
+	    var chars = list.map(function (char) {
+	      return '\\' + char;
+	    }).join('');
+	    return new RegExp('^[' + chars + ']$');
 	  }
-
-	  $el.className = finalValue.trim();
-	}
-
-	/**
-	 * Add a class to an element.
-	 * 
-	 * @param {DOMElement} $el
-	 * @param {String} className
-	 * 
-	 * @return {Void}
-	 */
-	function addClass($el, className) {
-	  var classes = $el.className.split(' ');
-	  if (!~classes.indexOf(className)) {
-	    $el.className += ' ' + className;
-	  }
-	  $el.className = $el.className.trim();
-	}
-
-	/**
-	 * Converts a DOM node list to array.
-	 * 
-	 * @param {DOMNodeList}
-	 * 
-	 * @return {Array}
-	 */
-	function toArray(children) {
-	  var slice = [].slice;
-	  return slice.call(children);
-	}
-
-	/**
-	 * Check if the needle is found in haystack.
-	 * 
-	 * @param {Mixed} needle
-	 * @param {Array} haystack
-	 * 
-	 * @return {Boolean}
-	 */
-	function inArray(needle, haystack) {
-	  return !!~haystack.indexOf(needle);
-	}
-
-	/**
-	 * Repeat a string.
-	 * 
-	 * @param {String} str
-	 * @param {Number} count
-	 * 
-	 * @return {String}
-	 */
-	function repeat(str, count) {
-	  var result = '';
-	  var double = str + str;
-	  var isOdd = count % 2 !== 0;
-	  var length = Math.floor(count / 2);
-	  var i = 0;
-	  for (; i < length; i++) {
-	    result += double;
-	  }
-
-	  if (isOdd) {
-	    result += str;
-	  }
-
-	  return result;
-	}
-
-	/**
-	 * Remove part of a string.
-	 * 
-	 * >> removeFragment("0123456", 1, 3);
-	 * << "03456"
-	 * 
-	 * So, when start 1 and end 3, "0123456"
-	 *                               ^^
-	 *                             Removed
-	 */
-	function removeFragment(str, start, end) {
-	  return str.slice(0, start) + str.slice(end);
-	}
-
-	/**
-	 * Convert a list to a character regex.
-	 * 
-	 * @param {Array} list
-	 * 
-	 * @return {RegExp}
-	 */
-	function listToCharacterRegex(list) {
-	  var chars = list.map(function (char) {
-	    return '\\' + char;
-	  }).join('');
-	  return new RegExp('^[' + chars + ']$');
-	}
+	};
 
 /***/ },
 /* 6 */
@@ -2674,10 +2641,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = {
+	module.exports = {
 	  cursorTex: '{\\cursor}',
 
 	  emptyTex: '\\isEmpty',
@@ -2714,22 +2678,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = extendMathJax;
-
-	var _styles = __webpack_require__(8);
-
-	var _styles2 = _interopRequireDefault(_styles);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	var styles = __webpack_require__(8);
 
 	/**
 	 * This will extend MathJax so that we can put our simple
 	 * cursor there.
 	 */
-	function extendMathJax() {
+	module.exports = function extendMathJax() {
 	  var TEX = MathJax.InputJax.TeX;
 	  var MML = MathJax.ElementJax.mml;
 
@@ -2786,8 +2741,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	  });
 
-	  MathJax.Ajax.Styles(_styles2.default);
-	}
+	  MathJax.Ajax.Styles(styles);
+	};
 
 /***/ },
 /* 8 */
@@ -2795,12 +2750,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
 	var animation = 'from, to { opacity: 1 }\n 50% { opacity: 0 }';
 
-	exports.default = {
+	module.exports = {
 	  '.Mathjax_Editor': {
 	    '-moz-user-select': 'none',
 	    '-webkit-user-select': 'none',
