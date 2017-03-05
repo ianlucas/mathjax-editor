@@ -89,8 +89,7 @@ class MathJaxEditor {
    * @return {String}
    */
   setValue(value) {
-    this.core.setValue(value);
-    this.core.update();
+    this.core.setValue(value, true);
   }
 
   /**

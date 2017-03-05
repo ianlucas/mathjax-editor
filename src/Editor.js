@@ -246,15 +246,21 @@ class Editor {
    * Set the editor's value.
    * 
    * @param {String} value
+   * @param {Boolean} resetCursorIndex
    * 
    * @return {Void}
    */
-  setValue(value) {
+  setValue(value, resetCursorIndex = false) {
     this.value = value;
+
+    if (resetCursorIndex) {
+      this.cursorIndex = 0;
+    }
 
     // Update original textarea value.
     this.$el.innerHTML = value;
 
+    this.update();
     this.bus.trigger('change');
   }
 

@@ -47,7 +47,14 @@ class Tex {
    * @return {Void}
    */
   addCursorToTexDisplay(index) {
-    if (!this.cursorPlaced && this.cursorIndex === index) {
+    if (
+      !this.cursorPlaced &&
+      (
+        this.cursorIndex === index ||
+        this.length === 0 ||
+        index === this.length
+      )
+    ) {
       this.cursorPlaced = true;
       this.displayTex += cursorTex;
     }
