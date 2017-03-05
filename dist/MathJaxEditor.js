@@ -95,7 +95,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var core = new Editor(options);
 
 	    this.core = core;
-	    this.version = '1.3.6';
+	    this.version = '1.3.7';
 	  }
 
 	  /**
@@ -190,8 +190,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'setValue',
 	    value: function setValue(value) {
-	      this.core.setValue(value);
-	      this.core.update();
+	      this.core.setValue(value, true);
 	    }
 
 	    /**
@@ -576,6 +575,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Set the editor's value.
 	     * 
 	     * @param {String} value
+	     * @param {Boolean} resetCursorIndex
 	     * 
 	     * @return {Void}
 	     */
@@ -583,11 +583,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'setValue',
 	    value: function setValue(value) {
+	      var resetCursorIndex = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
 	      this.value = value;
+
+	      if (resetCursorIndex) {
+	        this.cursorIndex = 0;
+	      }
 
 	      // Update original textarea value.
 	      this.$el.innerHTML = value;
 
+	      this.update();
 	      this.bus.trigger('change');
 	    }
 
@@ -1848,7 +1855,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _createClass(Tex, [{
 	    key: 'addCursorToTexDisplay',
 	    value: function addCursorToTexDisplay(index) {
-	      if (!this.cursorPlaced && this.cursorIndex === index) {
+	      if (!this.cursorPlaced && (this.cursorIndex === index || this.length === 0 || index === this.length)) {
 	        this.cursorPlaced = true;
 	        this.displayTex += cursorTex;
 	      }
