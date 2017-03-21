@@ -25,7 +25,7 @@ class Tex {
    * 
    * @constructor
    */
-  constructor(tex, cursorIndex = null) {
+  constructor(tex = '', cursorIndex = null) {
     this.tex = tex;
     this.cursorPoints = [];
     this.elements = [];
