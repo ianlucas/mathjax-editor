@@ -95,7 +95,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var core = new Editor(options);
 
 	    this.core = core;
-	    this.version = '1.3.7';
+	    this.version = '1.3.8';
 	  }
 
 	  /**
@@ -1825,7 +1825,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * 
 	   * @constructor
 	   */
-	  function Tex(tex) {
+	  function Tex() {
+	    var tex = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
 	    var cursorIndex = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
 	    _classCallCheck(this, Tex);
