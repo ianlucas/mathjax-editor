@@ -193,6 +193,10 @@ class Editor {
     const hidden = options.cursorHidden || false;
     const className = 'wasRecentlyPlaced';
 
+    if (!$cursor) {
+      return;
+    }
+
     $cursor.style.display = hidden ? 'none' : 'inline-block';
 
     if (this.lastCursorTimeout) {
