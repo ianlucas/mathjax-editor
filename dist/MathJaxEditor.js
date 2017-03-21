@@ -95,7 +95,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var core = new Editor(options);
 
 	    this.core = core;
-	    this.version = '1.3.8';
+	    this.version = '1.3.9';
 	  }
 
 	  /**
@@ -513,6 +513,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var hidden = options.cursorHidden || false;
 	      var className = 'wasRecentlyPlaced';
+
+	      if (!$cursor) {
+	        return;
+	      }
 
 	      $cursor.style.display = hidden ? 'none' : 'inline-block';
 
