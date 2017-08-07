@@ -169,18 +169,4 @@ export default class Editor {
     this.cursor = $el
     this.updateJaxElement()
   }
-
-  /**
-   * @param {Number} n 
-   */
-  insertNumber(n) {
-    if (n < 0 || n > 9) {
-      throw new RangeError('MathjaxEditor: The number must be 0 or up to 9.')
-    }
-
-    const $mn = document.createElement('mn')
-    $mn.innerHTML = n
-
-    this.insert($mn)
-  }
 }

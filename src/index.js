@@ -1,4 +1,4 @@
-import Editor from './editor'
+import MathJaxEditor from './math-jax-editor'
 import './utils/extend-math-jax'
 
-module.exports = Editor
+module.exports = MathJaxEditor
