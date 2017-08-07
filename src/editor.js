@@ -161,7 +161,7 @@ export default class Editor {
    */
   insert($el) {
     if (!this.cursor) {
-      this.$math.appendChild($el)
+      this.$math.insertBefore($el, this.$math.firstChild)
     }
     else {
       this.cursor.parentNode.insertBefore($el, this.cursor.nextSibling)
