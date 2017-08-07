@@ -53,6 +53,21 @@ export default class Editor {
     })
   }
 
+  attachClickEvents() {
+    this.renderedElements.forEach(element => {
+      const { $el, $rendered } = element
+      const { clientWidth } = $rendered
+      $rendered.addEventListener('click', e => {
+        const { offsetX } = e
+        this.cursor = $el
+        if (offsetX > clientWidth / 2) {
+          return this.updateCursor()
+        }
+        this.moveCursorLeft()
+      })
+    })
+  }
+
   updateCursor() {
     if (!this.cursor) {
       this.$display.appendChild(this.$cursor)
@@ -78,6 +93,7 @@ export default class Editor {
     if (!this.jaxElement) {return}
     this.jaxElement.Text(this.$math.outerHTML, () => {
       this.renderedElements = new RenderedElements(this.$math, this.$display)
+      this.attachClickEvents()
       this.updateCursor()
     })
   }
