@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>MathJax Editor Next</title>
+  <style>
+    body {
+      font-size: 24px;
+    }
+
+    .mathjax-editor-display {
+      position: relative;
+    }
+
+    .mathjax-editor-cursor {
+      background-color: #000;
+      position: absolute;
+      width: 1px;
+    }
+  </style>
+</head>
+<body>
+  <textarea id="targetNode"></textarea>
+  <hr>
+  <div id="keyboardNode"></div>
+
+  <script type="text/javascript" async
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+  </script>
+  <script src="MathJaxEditor.js"></script>
+  <script>
+    window.onload = function () {
+      const $keyboard = document.getElementById('keyboardNode')
+      window.editor = new MathJaxEditor('#targetNode')
+
+      for (let i = 0; i < 10; i++) {
+        const $button = document.createElement('button')
+        $button.textContent = i
+        $button.addEventListener('click', () => editor.insertNumber(i))
+        $keyboard.appendChild($button)
+      }
+    }
+  </script>
+</body>
+</html>
