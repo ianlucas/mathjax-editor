@@ -51,4 +51,19 @@ export default class RenderedElements {
     }
     return null
   }
+
+  /**
+   * @callback iteratorCallback
+   * @param {*} currentValue
+   * @param {Number} index
+   * @param {Array} array
+   */
+  /**
+   * @param {iteratorCallback} callback
+   * 
+   * @return {Void}
+   */
+  forEach(callback) {
+    return this.elements.forEach(callback)
+  }
 }
