@@ -30,6 +30,7 @@ export default class Editor {
 
     this.$cursor = document.createElement('div')
     this.$cursor.className = 'mathjax-editor-cursor'
+    this.$cursor.style.display = 'none'
 
     this.$display.appendChild(this.$math)
     this.$container.appendChild(this.$display)
@@ -43,6 +44,8 @@ export default class Editor {
     this.cursor = null
     /** @type {EventEmitter} */
     this.eventEmitter = new EventEmitter
+    /** @type {Boolean} */
+    this.isFocused = false
     /** @type {JaxElement} */
     this.jaxElement = null
     /** @type {Array} */
@@ -58,7 +61,14 @@ export default class Editor {
       this.updateJaxElement()
     })
 
+    this.blinkingInterval = setInterval(() => {
+      this.$cursor.style.opacity = this.$cursor.style.opacity === '0'
+        ? '1'
+        : '0'
+    }, 500)
+
     document.addEventListener('keydown', e => {
+      if (!this.isFocused) {return}
       switch (e.which) {
       case 37: return this.moveCursorLeft()
       case 39: return this.moveCursorRight()
@@ -68,12 +78,23 @@ export default class Editor {
       }
     })
 
-    this.$display.addEventListener('click', e => {
-      this.$input.focus()
-    })
-
+    this.$display.addEventListener('click', () => this.$input.focus())
     this.$input.addEventListener('keyup', this.handleInput.bind(this))
     this.$input.addEventListener('keydown', this.handleInput.bind(this))
+    this.$input.addEventListener('focus', this.handleFocus.bind(this))
+    this.$input.addEventListener('blur', this.handleBlur.bind(this))
+  }
+
+  handleFocus() {
+    this.isFocused = true
+    this.$display.classList.add('is-focused')
+    this.$cursor.style.display = 'block'
+  }
+
+  handleBlur() {
+    this.isFocused = false
+    this.$display.classList.remove('is-focused')
+    this.$cursor.style.display = 'none'
   }
 
   handleInput() {
