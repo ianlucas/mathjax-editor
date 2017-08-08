@@ -272,7 +272,6 @@ export default class Editor {
 
   flattenMathTree() {
     const nodes = [null]
-    const cursorPath = [{ $el: null }]
     let $el = this.$math.firstElementChild
 
     while ($el) {
@@ -281,7 +280,6 @@ export default class Editor {
       }
 
       nodes.push($el)
-      cursorPath.push({ $el })
 
       if ($el.firstElementChild) {
         $el = $el.firstElementChild
@@ -291,9 +289,6 @@ export default class Editor {
       }
       else {
         let $parent = $el.parentNode
-
-        cursorPath.push({ $el: $parent })
-        
         while ($parent) {
           if ($parent.nextElementSibling) {
             $el = $parent.nextElementSibling
@@ -309,7 +304,6 @@ export default class Editor {
     nodes.push(this.$math)
 
     this.flatMathTree = nodes
-    this.cursorPath = cursorPath
   }
 
   /**
