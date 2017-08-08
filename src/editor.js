@@ -65,7 +65,7 @@ export default class Editor {
   attachClickEvents() {
     this.renderedElements.forEach(element => {
       const { $el, $rendered } = element
-      if ($el.tagName === 'MROW') {return}
+      if (inArray(['MROW', 'MATH'], $el.tagName)) {return}
       const { clientWidth } = $rendered
       $rendered.addEventListener('click', e => {
         const { offsetX } = e
