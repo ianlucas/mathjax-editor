@@ -2,6 +2,7 @@ import RenderedElements from './rendered-elements'
 
 import CURSOR_SKIP from './constants/cursor-skip'
 
+import EventEmitter from './utils/event-emitter'
 import findTextarea from './utils/find-textarea'
 import getJaxElement from './utils/get-jax-element'
 import inArray from './utils/in-array'
@@ -18,6 +19,9 @@ export default class Editor {
     this.$math = document.createElement('math')
     this.$math.setAttribute('id', 'e0')
 
+    this.$input = document.createElement('input')
+    this.$input.className = 'mathjax-editor-input'
+
     this.$container = document.createElement('div')
     this.$container.className = 'mathjax-editor-container'
 
@@ -29,6 +33,7 @@ export default class Editor {
 
     this.$display.appendChild(this.$math)
     this.$container.appendChild(this.$display)
+    this.$container.appendChild(this.$input)
     this.$display.appendChild(this.$cursor)
 
     this.$el.parentNode.insertBefore(this.$container, this.$el.nextSibling)
@@ -36,6 +41,8 @@ export default class Editor {
 
     /** @type {Null|Node} */
     this.cursor = null
+    /** @type {EventEmitter} */
+    this.eventEmitter = new EventEmitter
     /** @type {JaxElement} */
     this.jaxElement = null
     /** @type {Array} */
@@ -60,6 +67,21 @@ export default class Editor {
       // default: console.log(e.which)
       }
     })
+
+    this.$display.addEventListener('click', e => {
+      this.$input.focus()
+    })
+
+    this.$input.addEventListener('keyup', this.handleInput.bind(this))
+    this.$input.addEventListener('keydown', this.handleInput.bind(this))
+  }
+
+  handleInput() {
+    const input = this.$input.value.trim()
+    if (input.length) {
+      this.eventEmitter.emit('@input', input)
+    }
+    this.$input.value = ''
   }
 
   attachClickEvents() {
@@ -243,5 +265,13 @@ export default class Editor {
     nodes.push(this.$math)
 
     this.flatMathTree = nodes
+  }
+
+  /**
+   * @param {String} type 
+   * @param {Function} callback 
+   */
+  on(type, callback) {
+    this.eventEmitter.on(type, callback)
   }
 }

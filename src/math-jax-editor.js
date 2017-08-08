@@ -7,6 +7,8 @@ export default class MathJaxEditor {
    */
   constructor(selectors, options) {
     this.editor = new Editor(selectors, options)
+
+    this.editor.on('@input', this.insert.bind(this))
   }
 
   /**
@@ -46,5 +48,18 @@ export default class MathJaxEditor {
     $mfrac.appendChild($mrowDen)
 
     this.editor.insert($mfrac)
+  }
+
+  /**
+   * @param {*} what 
+   */
+  insert(what) {
+    if (what.match(/^[0-9]$/)) {
+      return this.insertNumber(parseInt(what, 10))
+    }
+    if (what.match(/^[a-zA-Z]$/)) {
+      return this.insertVariable(what)
+    }
+    console.warn(`MathjaxEditor: insert: unknown "${what}"`)
   }
 }
