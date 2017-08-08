@@ -1,16 +1,18 @@
 export default class RenderedElements {
   /**
-   * @param {Node} $math  
+   * @param {Array} flatMathTree
    * @param {Node} $display 
    */
-  constructor($math, $display) {
+  constructor(flatMathTree, $display) {
     this.elements = []
 
-    const cache = {}
+    const cache = {
+      '.mjx-mrow': 1
+    }
 
-    let $el = $math.firstChild
+    for (const $el of flatMathTree) {
+      if (!$el) {continue}
 
-    while ($el) {
       const tagName = $el.tagName.toLowerCase()
       const mjxClass = `.mjx-${tagName}`
 
@@ -29,13 +31,6 @@ export default class RenderedElements {
         $el,
         $rendered
       })
-
-      if ($el.nextSibling) {
-        $el = $el.nextSibling
-      }
-      else {
-        $el = $el.parentNode.nextSibling
-      }
     }
   }
 

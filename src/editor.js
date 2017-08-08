@@ -1,7 +1,10 @@
 import RenderedElements from './rendered-elements'
 
+import CURSOR_SKIP from './constants/cursor-skip'
+
 import findTextarea from './utils/find-textarea'
 import getJaxElement from './utils/get-jax-element'
+import inArray from './utils/in-array'
 import px from './utils/px'
 
 export default class Editor {
@@ -32,7 +35,10 @@ export default class Editor {
 
     /** @type {Null|Node} */
     this.cursor = null
+    /** @type {JaxElement} */
     this.jaxElement = null
+    /** @type {Array} */
+    this.flatMathTree = []
     /** @type {RenderedElements} */
     this.renderedElements = null
 
@@ -56,6 +62,7 @@ export default class Editor {
   attachClickEvents() {
     this.renderedElements.forEach(element => {
       const { $el, $rendered } = element
+      if ($el.tagName === 'MROW') {return}
       const { clientWidth } = $rendered
       $rendered.addEventListener('click', e => {
         const { offsetX } = e
@@ -77,9 +84,18 @@ export default class Editor {
       return
     }
 
-    const $rendered = this.renderedElements.findRendered(this.cursor)
+    let $rendered
+
+    // TODO: When we enable multiline we gotta find a way to deal with this.
+    if (this.cursor.tagName === 'MATH') {
+      $rendered = this.$display.querySelector('.mjx-chtml')
+    }
+    else {
+      $rendered = this.renderedElements.findRendered(this.cursor)
+    }
 
     if (!$rendered) {
+      console.log(this.cursor)
       return console.warn('MathjaxEditor: Rendered element not found.')
     }
 
@@ -91,34 +107,47 @@ export default class Editor {
 
   updateJaxElement() {
     if (!this.jaxElement) {return}
+    this.flattenMathTree()
     this.jaxElement.Text(this.$math.outerHTML, () => {
-      this.renderedElements = new RenderedElements(this.$math, this.$display)
+      this.renderedElements = new RenderedElements(this.flatMathTree, this.$display)
       this.attachClickEvents()
       this.updateCursor()
     })
   }
 
   moveCursorLeft() {
+    
     if (!this.cursor) {return}
 
-    this.cursor = this.cursor.previousSibling
-      ? this.cursor.previousSibling
-      : this.cursor.parentNode.previousSibling
+    const index = this.flatMathTree.indexOf(this.cursor)
+    if (this.flatMathTree[index - 1] !== undefined) {
+      this.cursor = this.flatMathTree[index - 1]
+    }
+
+    if (this.cursor && inArray(CURSOR_SKIP, this.cursor.tagName)) {
+      return this.moveCursorLeft()
+    }
 
     this.updateCursor()
   }
 
   moveCursorRight() {
+    
     if (!this.cursor) {
-      this.cursor = this.$math.firstChild
+      this.cursor = this.flatMathTree[1] || null
     }
-    else if (!this.cursor.nextSibling && !this.cursor.parentNode.nextSibling) {
-      return
+    else  {
+      const index = this.flatMathTree.indexOf(this.cursor)
+      const $next = this.flatMathTree[index + 1]
+      if ($next) {
+        if (!($next.tagName === 'MATH' && this.cursor.parentNode === $next)) {
+          this.cursor = $next
+        }
+      }
     }
-    else {
-      this.cursor = this.cursor.nextSibling
-        ? this.cursor.nextSibling
-        : this.cursor.parentNode.nextSibling
+      
+    if (inArray(CURSOR_SKIP, this.cursor.tagName)) {
+      return this.moveCursorRight()
     }
 
     this.updateCursor()
@@ -163,10 +192,49 @@ export default class Editor {
     if (!this.cursor) {
       this.$math.insertBefore($el, this.$math.firstChild)
     }
+    else if (this.cursor.tagName === 'MROW') {
+      this.cursor.insertBefore($el, this.cursor.firstChild)
+    }
+    else if (this.cursor.tagName === 'MATH') {
+      this.$math.appendChild($el)
+    }
     else {
       this.cursor.parentNode.insertBefore($el, this.cursor.nextSibling)
     }
     this.cursor = $el
+
     this.updateJaxElement()
+  }
+
+  flattenMathTree() {
+    const nodes = [null]
+    let $el = this.$math.firstElementChild
+
+    while ($el) {
+      nodes.push($el)
+
+      if ($el.firstElementChild) {
+        $el = $el.firstElementChild
+      }
+      else if ($el.nextElementSibling) {
+        $el = $el.nextElementSibling
+      }
+      else {
+        let $parent = $el.parentNode
+        while ($parent) {
+          if ($parent.nextElementSibling) {
+            $el = $parent.nextElementSibling
+            break
+          }
+          $parent = $parent.parentNode
+        }
+
+        if (!$parent) {break}
+      }
+    }
+
+    nodes.push(this.$math)
+
+    this.flatMathTree = nodes
   }
 }

@@ -36,6 +36,7 @@
   <script src="MathJaxEditor.js"></script>
   <script>
     window.onload = function () {
+      const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('')
       const $keyboard = document.getElementById('keyboardNode')
       window.editor = new MathJaxEditor('#targetNode')
 
@@ -43,6 +44,13 @@
         const $button = document.createElement('button')
         $button.textContent = i
         $button.addEventListener('click', () => editor.insertNumber(i))
+        $keyboard.appendChild($button)
+      }
+
+      for (let letter of alphabet) {
+        const $button = document.createElement('button')
+        $button.textContent = letter
+        $button.addEventListener('click', () => editor.insertVariable(letter))
         $keyboard.appendChild($button)
       }
     }
