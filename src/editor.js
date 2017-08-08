@@ -7,6 +7,7 @@ import findTextarea from './utils/find-textarea'
 import getJaxElement from './utils/get-jax-element'
 import inArray from './utils/in-array'
 import px from './utils/px'
+import toArray from './utils/to-array'
 
 export default class Editor {
   /**
@@ -154,11 +155,28 @@ export default class Editor {
   updateJaxElement() {
     if (!this.jaxElement) {return}
     this.flattenMathTree()
-    this.jaxElement.Text(this.$math.outerHTML, () => {
+
+    const math = this.getMarkupWithHelpers(this.$math)
+    
+    this.jaxElement.Text(math, () => {
       this.renderedElements = new RenderedElements(this.flatMathTree, this.$display)
       this.attachClickEvents()
       this.updateCursor()
     })
+  }
+
+  getMarkupWithHelpers($math) {
+    const $cloneMath = $math.cloneNode(true)
+    toArray($cloneMath.querySelectorAll('mrow'))
+      .forEach($mrow => {
+        if (!$mrow.childNodes.length) {
+          const $mo = document.createElement('mo')
+          $mo.className = 'mathjax-editor-placeholder'
+          $mo.innerHTML = '?'
+          $mrow.appendChild($mo)
+        }
+      })
+    return $cloneMath.outerHTML
   }
 
   moveCursorLeft() {
@@ -254,6 +272,7 @@ export default class Editor {
 
   flattenMathTree() {
     const nodes = [null]
+    const cursorPath = [{ $el: null }]
     let $el = this.$math.firstElementChild
 
     while ($el) {
@@ -262,6 +281,7 @@ export default class Editor {
       }
 
       nodes.push($el)
+      cursorPath.push({ $el })
 
       if ($el.firstElementChild) {
         $el = $el.firstElementChild
@@ -271,6 +291,9 @@ export default class Editor {
       }
       else {
         let $parent = $el.parentNode
+
+        cursorPath.push({ $el: $parent })
+        
         while ($parent) {
           if ($parent.nextElementSibling) {
             $el = $parent.nextElementSibling
@@ -286,6 +309,7 @@ export default class Editor {
     nodes.push(this.$math)
 
     this.flatMathTree = nodes
+    this.cursorPath = cursorPath
   }
 
   /**
