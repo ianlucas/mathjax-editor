@@ -16,6 +16,7 @@ export default class Editor {
     this.$el = findTextarea(selectors)
 
     this.$math = document.createElement('math')
+    this.$math.setAttribute('id', 'e0')
 
     this.$container = document.createElement('div')
     this.$container.className = 'mathjax-editor-container'
@@ -41,6 +42,8 @@ export default class Editor {
     this.flatMathTree = []
     /** @type {RenderedElements} */
     this.renderedElements = null
+    /** @type {Number} */
+    this.nextElementId = 1
 
     getJaxElement(this.$display, (jaxElement, minHeight) => {
       this.jaxElement = jaxElement
@@ -211,6 +214,10 @@ export default class Editor {
     let $el = this.$math.firstElementChild
 
     while ($el) {
+      if (!$el.hasAttribute('id')) {
+        $el.setAttribute('id', `e${this.nextElementId++}`)
+      }
+
       nodes.push($el)
 
       if ($el.firstElementChild) {

@@ -6,25 +6,14 @@ export default class RenderedElements {
   constructor(flatMathTree, $display) {
     this.elements = []
 
-    const cache = {
-      '.mjx-mrow': 1
-    }
-
     for (const $el of flatMathTree) {
       if (!$el) {continue}
 
-      const tagName = $el.tagName.toLowerCase()
-      const mjxClass = `.mjx-${tagName}`
-
-      if (!cache[mjxClass]) {
-        cache[mjxClass] = 0
-      }
-
-      const index = cache[mjxClass]++
-      const $rendered = $display.querySelectorAll(mjxClass)[index]
+      const id = $el.getAttribute('id')
+      const $rendered = $display.querySelector(`#${id}`)
 
       if (!$rendered) {
-        throw new Error(`MathjaxEditor: Rendered element not found. (class: ${mjxClass}, index: ${index}).`)
+        throw new Error(`MathjaxEditor: Rendered element not found. (id: ${id}).`)
       }
 
       this.elements.push({
