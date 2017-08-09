@@ -78,7 +78,7 @@ export default class MathJaxEditor {
   }
 
   /**
-   * @param {*} what 
+   * @param {String} what 
    */
   insert(what) {
     if (what.match(/^[0-9]$/)) {
