@@ -209,31 +209,41 @@ export default class Editor {
   backspaceRemove() {
     if (!this.cursor) {return}
 
-    const previousSibling = this.cursor.previousSibling
-      ? this.cursor.previousSibling
-      : this.cursor.parentNode.previousSibling
+    if (this.cursor.tagName === 'MROW') {
+      const $parent = this.cursor.parentNode
+      $parent.parentNode.removeChild($parent)
+      this.cursor = $parent.previousSibling
+    }
+    else {
+      const previousSibling = this.cursor.previousSibling
+        ? this.cursor.previousSibling
+        : this.cursor.parentNode.previousSibling
 
-    this.cursor.parentNode.removeChild(this.cursor)
-    this.cursor = previousSibling
-
+      this.cursor.parentNode.removeChild(this.cursor)
+      this.cursor = previousSibling
+    }
+    
     this.updateJaxElement()
   }
 
   deleteRemove() {
-    let nextSibling
     if (!this.cursor) {
-      nextSibling = this.$math.firstChild
+      console.log(this.$math.firstElementChild)
+      this.$math.removeChild(this.$math.firstElementChild)
     }
-    else if (!this.cursor.nextSibling && !this.cursor.parentNode.nextSibling) {
-      return
+    else if (!this.cursor.nextSibling) {
+      const $parent = this.cursor.parentNode
+      if ($parent.tagName === 'MROW') {
+        this.cursor = $parent.parentNode.previousElementSibling
+        $parent.parentNode.parentNode.removeChild($parent.parentNode)
+      }
+      else {
+        $parent.parentNode.removeChild($parent)
+      }
     }
     else {
-      nextSibling = this.cursor.nextSibling
-        ? this.cursor.nextSibling
-        : this.cursor.parentNode.nextSibling
+      this.cursor.parentNode.removeChild(this.cursor.nextElementSibling)
     }
-    if (!nextSibling) {return}
-    nextSibling.parentNode.removeChild(nextSibling)
 
     this.updateJaxElement()
   }
