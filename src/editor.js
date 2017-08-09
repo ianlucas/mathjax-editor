@@ -149,7 +149,9 @@ export default class Editor {
     $rendered.parentNode.appendChild(this.$cursor)
     this.$cursor.style.height = px($rendered.clientHeight)
     this.$cursor.style.top = px($rendered.offsetTop)
-    this.$cursor.style.left = px($rendered.offsetLeft + $rendered.clientWidth)
+    this.$cursor.style.left = $rendered.classList.contains('mjx-mrow')
+      ? px($rendered.offsetLeft)
+      : px($rendered.offsetLeft + $rendered.clientWidth)
   }
 
   updateJaxElement() {
