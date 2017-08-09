@@ -1,5 +1,6 @@
 import RenderedElements from './rendered-elements'
 
+import ATTACH_SKIP from './constants/attach-skip'
 import CURSOR_SKIP from './constants/cursor-skip'
 
 import EventEmitter from './utils/event-emitter'
@@ -109,7 +110,7 @@ export default class Editor {
   attachClickEvents() {
     this.renderedElements.forEach(element => {
       const { $el, $rendered } = element
-      if (inArray(['MROW', 'MATH'], $el.tagName)) {return}
+      if (inArray(ATTACH_SKIP, $el.tagName)) {return}
       const { clientWidth } = $rendered
       $rendered.addEventListener('click', e => {
         const { offsetX } = e
