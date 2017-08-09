@@ -85,7 +85,7 @@ export default class MathJaxEditor {
       return this.insertNumber(parseInt(what, 10))
     }
     if (what.match(/^[a-zA-Z]$/)) {
-      return this.insertVariable(what)
+      return this.insertIdentifier(what)
     }
     if (OPERATOR_LIST[what]) {
       return this.insertOperator(what)
