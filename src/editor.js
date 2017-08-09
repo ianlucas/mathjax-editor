@@ -180,38 +180,24 @@ export default class Editor {
   }
 
   moveCursorLeft() {
-    
     if (!this.cursor) {return}
 
     const index = this.flatMathTree.indexOf(this.cursor)
-    if (this.flatMathTree[index - 1] !== undefined) {
-      this.cursor = this.flatMathTree[index - 1]
-    }
-
-    if (this.cursor && inArray(CURSOR_SKIP, this.cursor.tagName)) {
-      return this.moveCursorLeft()
-    }
+    this.cursor = this.flatMathTree[index - 1]
 
     this.updateCursor()
   }
 
   moveCursorRight() {
-    
     if (!this.cursor) {
       this.cursor = this.flatMathTree[1] || null
     }
-    else  {
+    else {
       const index = this.flatMathTree.indexOf(this.cursor)
       const $next = this.flatMathTree[index + 1]
-      if ($next) {
-        if (!($next.tagName === 'MATH' && this.cursor.parentNode === $next)) {
-          this.cursor = $next
-        }
+      if (!($next.tagName === 'MATH' && this.cursor.parentNode === $next)) {
+        this.cursor = $next
       }
-    }
-      
-    if (inArray(CURSOR_SKIP, this.cursor.tagName)) {
-      return this.moveCursorRight()
     }
 
     this.updateCursor()
@@ -272,34 +258,27 @@ export default class Editor {
 
   flattenMathTree() {
     const nodes = [null]
-    let $el = this.$math.firstElementChild
 
-    while ($el) {
+    const walk = $el => {
+      const children = toArray($el.children)
+
       if (!$el.hasAttribute('id')) {
         $el.setAttribute('id', `e${this.nextElementId++}`)
       }
 
       nodes.push($el)
 
-      if ($el.firstElementChild) {
-        $el = $el.firstElementChild
-      }
-      else if ($el.nextElementSibling) {
-        $el = $el.nextElementSibling
-      }
-      else {
-        let $parent = $el.parentNode
-        while ($parent) {
-          if ($parent.nextElementSibling) {
-            $el = $parent.nextElementSibling
-            break
-          }
-          $parent = $parent.parentNode
-        }
+      children.forEach($child => walk($child))
 
-        if (!$parent) {break}
+      if (children.length && $el.tagName !== 'MROW') {
+        const index = nodes.indexOf($el)
+        nodes.splice(index, 1)
+        nodes.push($el)
       }
     }
+
+    toArray(this.$math.children)
+      .forEach($child => walk($child))
 
     nodes.push(this.$math)
 
