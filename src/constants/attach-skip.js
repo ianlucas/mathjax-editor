@@ -1,5 +1,6 @@
 export default [
   'MROW',
   'MATH',
-  'MSQRT'
+  'MSQRT',
+  'MFRAC'
 ]
