@@ -1,14 +1,18 @@
 import Editor from './editor'
 
+import OPERATOR_LIST from './constants/operator-list'
+
+import inArray from './utils/in-array'
+
 export default class MathJaxEditor {
   /**
    * @param {String|Node} selectors 
    * @param {Object} [options] 
    */
   constructor(selectors, options) {
-    this.editor = new Editor(selectors, options)
+    this.core = new Editor(selectors, options)
 
-    this.editor.on('@input', this.insert.bind(this))
+    this.core.on('@input', this.insert.bind(this))
   }
 
   /**
@@ -22,13 +26,13 @@ export default class MathJaxEditor {
     const $mn = document.createElement('mn')
     $mn.innerHTML = n
 
-    this.editor.insert($mn)
+    this.core.insert($mn)
   }
 
   /**
    * @param {String} i
    */
-  insertVariable(i) {
+  insertIdentifier(i) {
     if (typeof i !== 'string' && !i.match(/^[a-zA-Z]$/)) {
       throw new RangeError('MathjaxEditor: A single letter must be provided.')
     }
@@ -36,7 +40,7 @@ export default class MathJaxEditor {
     const $mi = document.createElement('mi')
     $mi.innerHTML = i
 
-    this.editor.insert($mi)
+    this.core.insert($mi)
   }
 
   insertFraction() {
@@ -47,7 +51,30 @@ export default class MathJaxEditor {
     $mfrac.appendChild($mrowNum)
     $mfrac.appendChild($mrowDen)
 
-    this.editor.insert($mfrac)
+    this.core.insert($mfrac)
+  }
+
+  insertSqrt() {
+    const $msqrt = document.createElement('msqrt')
+    const $mrow = document.createElement('mrow')
+
+    $msqrt.appendChild($mrow)
+
+    this.core.insert($msqrt)
+  }
+
+  /**
+   * @param {String} o 
+   */
+  insertOperator(o) {
+    if (!OPERATOR_LIST[o]) {
+      throw new TypeError(`MathjaxEditor: Unknown operator "${o}"`)
+    }
+
+    const $mo = document.createElement('mo')
+    $mo.innerHTML = OPERATOR_LIST[o]
+
+    this.core.insert($mo)
   }
 
   /**
@@ -59,6 +86,9 @@ export default class MathJaxEditor {
     }
     if (what.match(/^[a-zA-Z]$/)) {
       return this.insertVariable(what)
+    }
+    if (OPERATOR_LIST[what]) {
+      return this.insertOperator(what)
     }
     console.warn(`MathjaxEditor: insert: unknown "${what}"`)
   }
