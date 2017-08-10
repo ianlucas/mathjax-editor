@@ -1,7 +1,5 @@
 import RenderedElements from './rendered-elements'
-
-import ATTACH_SKIP from './constants/attach-skip'
-import CURSOR_SKIP from './constants/cursor-skip'
+import CursorMover from './cursor-mover'
 
 import EventEmitter from './utils/event-emitter'
 import findTextarea from './utils/find-textarea'
@@ -44,6 +42,8 @@ export default class Editor {
 
     /** @type {Null|Node} */
     this.cursor = null
+    /** @type {CursorMover} */
+    this.cursorMover = null
     /** @type {EventEmitter} */
     this.eventEmitter = new EventEmitter
     /** @type {Boolean} */
@@ -80,11 +80,22 @@ export default class Editor {
       }
     })
 
-    this.$display.addEventListener('click', () => this.$input.focus())
+    this.$display.addEventListener('click', this.handleClick.bind(this))
     this.$input.addEventListener('keyup', this.handleInput.bind(this))
     this.$input.addEventListener('keydown', this.handleInput.bind(this))
     this.$input.addEventListener('focus', this.handleFocus.bind(this))
     this.$input.addEventListener('blur', this.handleBlur.bind(this))
+  }
+
+  handleClick({ clientX, clientY }) {
+    this.$input.focus()
+    if (this.cursorMover) {
+      this.cursorMover.click(clientX, clientY, (to, moveLeft) => {
+        this.cursor = to
+        if (moveLeft) {this.moveCursorLeft()}
+        else {this.updateCursor()}
+      })
+    }
   }
 
   handleFocus() {
@@ -105,22 +116,6 @@ export default class Editor {
       this.eventEmitter.emit('@input', input)
     }
     this.$input.value = ''
-  }
-
-  attachClickEvents() {
-    this.renderedElements.forEach(element => {
-      const { $el, $rendered } = element
-      if (inArray(ATTACH_SKIP, $el.tagName)) {return}
-      const { clientWidth } = $rendered
-      $rendered.addEventListener('click', e => {
-        const { offsetX } = e
-        this.cursor = $el
-        if (offsetX > clientWidth / 2) {
-          return this.updateCursor()
-        }
-        this.moveCursorLeft()
-      })
-    })
   }
 
   updateCursor() {
@@ -166,7 +161,7 @@ export default class Editor {
     
     this.jaxElement.Text(math, () => {
       this.renderedElements = new RenderedElements(this.flatMathTree, this.$display)
-      this.attachClickEvents()
+      this.cursorMover = new CursorMover(this.renderedElements)
       this.updateCursor()
     })
   }
@@ -196,12 +191,15 @@ export default class Editor {
 
   moveCursorRight() {
     if (!this.cursor) {
-      this.cursor = this.flatMathTree[1] || null
+      const $next = this.flatMathTree[1]
+      if ($next.tagName !== 'MATH') {
+        this.cursor = $next
+      }
     }
     else {
       const index = this.flatMathTree.indexOf(this.cursor)
       const $next = this.flatMathTree[index + 1]
-      if (!($next.tagName === 'MATH' && this.cursor.parentNode === $next)) {
+      if ($next && !($next.tagName === 'MATH' && this.cursor.parentNode === $next)) {
         this.cursor = $next
       }
     }
@@ -231,7 +229,6 @@ export default class Editor {
 
   deleteRemove() {
     if (!this.cursor) {
-      console.log(this.$math.firstElementChild)
       this.$math.removeChild(this.$math.firstElementChild)
     }
     else if (!this.cursor.nextSibling) {
