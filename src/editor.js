@@ -250,8 +250,9 @@ export default class Editor {
 
   /**
    * @param {Node} $el  
+   * @param {Null|Node} $setCursor
    */
-  insert($el) {
+  insert($el, $setCursor = null) {
     if (!this.cursor) {
       this.$math.insertBefore($el, this.$math.firstChild)
     }
@@ -264,8 +265,8 @@ export default class Editor {
     else {
       this.cursor.parentNode.insertBefore($el, this.cursor.nextSibling)
     }
-    this.cursor = $el
-
+    
+    this.cursor = $setCursor || $el
     this.updateJaxElement()
   }
 
