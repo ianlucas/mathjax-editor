@@ -94,6 +94,7 @@ export default class Element {
    * @return {Boolean}
    */
   isLeftSide(x) {
+    if (this.isTag('mrow')) {return false}
     return this.cx > x
   }
 }
