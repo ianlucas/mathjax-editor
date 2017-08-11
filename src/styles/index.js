@@ -5,9 +5,18 @@ export default {
     'top': '-100%'
   },
 
-  '.mathjax-editor-display': {
-    'cursor': 'text',
+  '.mathjax-editor-container': {
     'position': 'relative'
+  },
+
+  '.mathjax-editor-display': {
+    'background-color': '#fff',
+    'cursor': 'text',
+    // 'position': 'relative',
+    '-moz-user-select': 'none',
+    '-webkit-user-select': 'none',
+    '-ms-user-select': 'none',
+    'user-select': 'none'
   },
 
   '.mathjax-editor-display .mjx-chtml': {
@@ -18,5 +27,13 @@ export default {
     'background-color': '#000',
     'position': 'absolute',
     'width': '1px'
+  },
+
+  '.mathjax-editor-newline-empty': {
+    'opacity': 0.2
+  },
+
+  '.mathjax-editor-placeholder': {
+    'color': '#ccc'
   }
 }

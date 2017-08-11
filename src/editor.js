@@ -1,9 +1,12 @@
 import RenderedElements from './rendered-elements'
 import CursorMover from './cursor-mover'
 
+import NEWLINE from './constants/newline'
+
 import EventEmitter from './utils/event-emitter'
 import findTextarea from './utils/find-textarea'
 import getJaxElement from './utils/get-jax-element'
+import getMarkupWithHelpers from './utils/get-markup-with-helpers'
 import inArray from './utils/in-array'
 import px from './utils/px'
 import toArray from './utils/to-array'
@@ -54,6 +57,8 @@ export default class Editor {
     this.renderedElements = new RenderedElements(this.$display)
     /** @type {Number} */
     this.nextElementId = 1
+    /** @type {String} */
+    this.placeholder = '<mtext class="mathjax-editor-placeholder">Start typing...</mtext>'
     /** @type {CursorMover} */
     this.cursorMover = new CursorMover(this.renderedElements)
 
@@ -70,9 +75,9 @@ export default class Editor {
         : '0'
     }, 500)
 
-    document.addEventListener('keydown', e => {
-      if (!this.isFocused) {return}
+    this.$input.addEventListener('keydown', e => {
       switch (e.which) {
+      case 13: return this.insertNewLine()
       case 37: return this.moveCursorLeft()
       case 39: return this.moveCursorRight()
       case 8: return this.backspaceRemove()
@@ -88,6 +93,9 @@ export default class Editor {
     this.$input.addEventListener('blur', this.handleBlur.bind(this))
   }
 
+  /**
+   * @param {ClickEvent} e
+   */
   handleClick({ clientX, clientY }) {
     this.$input.focus()
     if (this.cursorMover) {
@@ -120,22 +128,30 @@ export default class Editor {
   }
 
   updateCursor() {
+    let $rendered
+    let sumWidth = true
+
     if (!this.cursor) {
-      this.$display.appendChild(this.$cursor)
-      this.$cursor.style.height = px(this.$display.clientHeight)
-      this.$cursor.style.top = 0;
+      // (?): if padding is added to .mathjax-editor-display, the cursor
+      //      probably will be misplaced.
+      const line = this.renderedElements.getLines()[0]
+      this.$cursor.style.top = 0
+      this.$cursor.style.height = px(line.height)
       this.$cursor.style.left = 0
       return
     }
 
-    let $rendered
-
-    // TODO: When we enable multiline we gotta find a way to deal with this.
-    if (this.cursor.tagName === 'MATH') {
-      $rendered = this.$display.querySelector('.mjx-chtml')
-    }
-    else {
-      $rendered = this.renderedElements.findRendered(this.cursor)
+    if (!$rendered) {
+      if (inArray(NEWLINE, this.cursor.tagName)) {
+        const line = this.renderedElements.findLine(this.cursor)
+        const nextLine = this.renderedElements.findNextLine(line)
+        $rendered = nextLine.getRendered()
+        sumWidth = false
+      }
+      else {
+        $rendered = this.renderedElements.findRendered(this.cursor)
+        sumWidth = !$rendered.classList.contains('mjx-mrow')
+      }
     }
 
     if (!$rendered) {
@@ -148,9 +164,7 @@ export default class Editor {
     this.$cursor.style.top = px($rendered.offsetTop)
     this.$cursor.style.left = px(
       $rendered.offsetLeft +
-      ($rendered.classList.contains('mjx-mrow')
-        ? 0 : $rendered.clientWidth
-      )
+      (sumWidth ? $rendered.clientWidth : 0)
     )
   }
 
@@ -158,26 +172,12 @@ export default class Editor {
     if (!this.jaxElement) {return}
     this.flattenMathTree()
 
-    const math = this.getMarkupWithHelpers(this.$math)
+    const math = getMarkupWithHelpers(this.$math, this.placeholder)
     
     this.jaxElement.Text(math, () => {
       this.renderedElements.update(this.flatMathTree)
       this.updateCursor()
     })
-  }
-
-  getMarkupWithHelpers($math) {
-    const $cloneMath = $math.cloneNode(true)
-    toArray($cloneMath.querySelectorAll('mrow'))
-      .forEach($mrow => {
-        if (!$mrow.childNodes.length) {
-          const $mo = document.createElement('mo')
-          $mo.className = 'mathjax-editor-placeholder'
-          $mo.innerHTML = '?'
-          $mrow.appendChild($mo)
-        }
-      })
-    return $cloneMath.outerHTML
   }
 
   moveCursorLeft() {
@@ -265,9 +265,21 @@ export default class Editor {
     else {
       this.cursor.parentNode.insertBefore($el, this.cursor.nextSibling)
     }
-    
+
     this.cursor = $setCursor || $el
     this.updateJaxElement()
+  }
+
+  insertNewLine() {
+    if (
+      this.cursor &&
+      this.cursor.tagName !== 'MATH' && 
+      this.cursor.parentNode.tagName !== 'MATH'
+    ) {return}
+
+    const $mspace = document.createElement('mspace')
+    $mspace.setAttribute('linebreak', 'newline')
+    this.insert($mspace)
   }
 
   flattenMathTree() {

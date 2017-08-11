@@ -1,4 +1,9 @@
 import Element from './element'
+import Line from './line'
+
+import NEWLINE from './constants/newline'
+
+import toArray from './utils/to-array'
 
 export default class RenderedElements {
   /**
@@ -9,10 +14,16 @@ export default class RenderedElements {
     this.$display = $display
     /** @type {Array} */
     this.elements = []
+    this.lines = []
   }
 
-  update(flatMathTree) {
-    this.elements = []
+  /**
+   * @param {Array} flatMathTree 
+   * 
+   * @return {Array}
+   */
+  findElements(flatMathTree) {
+    const elements = []
     
     for (const $el of flatMathTree) {
       if (!$el) {continue}
@@ -24,18 +35,86 @@ export default class RenderedElements {
         throw new Error(`MathjaxEditor: Rendered element not found. (id: ${id}).`)
       }
 
-      this.elements.push(new Element($el, $rendered))
+      elements.push(new Element($el, $rendered))
     }
+
+    return elements
   }
 
   /**
-   * @param {Node} $el
+   * @param {Array} flatMathTree 
    * 
-   * @return {Null|Node}
+   * @return {Array}
+   */
+  findLines(flatMathTree) {
+    const mspaces = flatMathTree.filter($el => $el && $el.tagName === 'MSPACE')
+    const blocks = toArray(this.$display.querySelectorAll('.mjx-block'))
+    const lines = []
+    const $math = flatMathTree[flatMathTree.lenght - 1]
+
+    if (!mspaces.length) {
+      const line = new Line($math, this.$display)
+      line.$firstEl = null
+      line.$lastEl = flatMathTree[flatMathTree.length - 2] 
+      lines.push(line)
+    }
+    else {
+      const len = blocks.length
+      for (let i = 0; i < len; i++) {
+        const $block = blocks[i]
+        const $current = mspaces[i]
+        const $previous = mspaces[i - 1]
+        const line = new Line($current || $math, $block.firstElementChild)
+        
+
+        line.$firstEl = ($previous ? $previous.previousElementSibling : null)
+        line.$lastEl = ($current
+          ? $current.previousElementSibling
+          : flatMathTree[flatMathTree.length - 2] 
+        )
+        lines.push(line)
+      }
+    }
+
+    return lines
+  }
+
+  /**
+   * @param {Array} flatMathTree 
+   */
+  update(flatMathTree) {
+    this.lines = this.findLines(flatMathTree)
+    this.elements = this.findElements(flatMathTree)
+  }
+
+  /**
+   * @param {HTMLElement} $el
+   * 
+   * @return {Null|HTMLElement}
    */
   findRendered($el) {
     const element = this.elements.find(element => element.getNode() === $el)
-    return element ? element.$rendered : null
+    return element ? element.getRendered() : null
+  }
+
+  /**
+   * @param {HTMLElement}
+   * 
+   * @return {Line}
+   */
+  findLine($el) {
+    const line = this.lines.find(line => line.getNode() === $el)
+    return line ? line : null
+  }
+
+  /**
+   * @param {Line} line 
+   * 
+   * @return {Line}
+   */
+  findNextLine(line) {
+    const index = this.lines.indexOf(line)
+    return this.lines[index + 1] || null
   }
 
   /**
@@ -58,5 +137,12 @@ export default class RenderedElements {
    */
   getElements() {
     return this.elements
+  }
+
+  /**
+   * @return {Array}
+   */
+  getLines() {
+    return this.lines
   }
 }

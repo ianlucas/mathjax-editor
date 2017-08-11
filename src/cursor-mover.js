@@ -24,6 +24,14 @@ export default class CursorMover {
     let candidate = null
     let shortest = Infinity
 
+    for (let line of this.renderedElements.getLines()) {
+      if (!line.betweenYAxis(y)) {continue}
+      if (!line.betweenXAxis(x)) {
+        if (x > line.x2) {return callback(line.$lastEl, false)}
+        else {return callback(line.$firstEl, true)}
+      }
+    }
+
     for (let element of this.renderedElements.getElements()) {
       if (inArray(MOVER_SKIP, element.getTag())) {continue}
 
