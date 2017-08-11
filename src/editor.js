@@ -42,8 +42,6 @@ export default class Editor {
 
     /** @type {Null|Node} */
     this.cursor = null
-    /** @type {CursorMover} */
-    this.cursorMover = null
     /** @type {EventEmitter} */
     this.eventEmitter = new EventEmitter
     /** @type {Boolean} */
@@ -53,9 +51,11 @@ export default class Editor {
     /** @type {Array} */
     this.flatMathTree = []
     /** @type {RenderedElements} */
-    this.renderedElements = null
+    this.renderedElements = new RenderedElements(this.$display)
     /** @type {Number} */
     this.nextElementId = 1
+    /** @type {CursorMover} */
+    this.cursorMover = new CursorMover(this.renderedElements)
 
     getJaxElement(this.$display, (jaxElement, minHeight) => {
       this.jaxElement = jaxElement
@@ -63,6 +63,9 @@ export default class Editor {
       this.updateJaxElement()
     })
 
+    /** @type {Number} */
+    this.stopBlinkingInterval = null
+    /** @type {Number} */
     this.blinkingInterval = setInterval(() => {
       this.$cursor.style.opacity = this.$cursor.style.opacity === '0'
         ? '1'
@@ -160,8 +163,7 @@ export default class Editor {
     const math = this.getMarkupWithHelpers(this.$math)
     
     this.jaxElement.Text(math, () => {
-      this.renderedElements = new RenderedElements(this.flatMathTree, this.$display)
-      this.cursorMover = new CursorMover(this.renderedElements)
+      this.renderedElements.update(this.flatMathTree)
       this.updateCursor()
     })
   }

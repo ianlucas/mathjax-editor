@@ -1,25 +1,30 @@
+import Element from './element'
+
 export default class RenderedElements {
   /**
-   * @param {Array} flatMathTree
-   * @param {Node} $display 
+   * @param {HTMLElement} $display 
    */
-  constructor(flatMathTree, $display) {
+  constructor($display) {
+    /** @type {HTMLElement} */
+    this.$display = $display
+    /** @type {Array} */
     this.elements = []
+  }
 
+  update(flatMathTree) {
+    this.elements = []
+    
     for (const $el of flatMathTree) {
       if (!$el) {continue}
 
       const id = $el.getAttribute('id')
-      const $rendered = $display.querySelector(`#${id}`)
+      const $rendered = this.$display.querySelector(`#${id}`)
 
       if (!$rendered) {
         throw new Error(`MathjaxEditor: Rendered element not found. (id: ${id}).`)
       }
 
-      this.elements.push({
-        $el,
-        $rendered
-      })
+      this.elements.push(new Element($el, $rendered))
     }
   }
 
@@ -29,11 +34,8 @@ export default class RenderedElements {
    * @return {Null|Node}
    */
   findRendered($el) {
-    const element = this.elements.find(element => element.$el === $el)
-    if (element) {
-      return element.$rendered
-    }
-    return null
+    const element = this.elements.find(element => element.getNode() === $el)
+    return element ? element.$rendered : null
   }
 
   /**
@@ -49,5 +51,12 @@ export default class RenderedElements {
    */
   forEach(callback) {
     return this.elements.forEach(callback)
+  }
+
+  /**
+   * @return {Array}
+   */
+  getElements() {
+    return this.elements
   }
 }

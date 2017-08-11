@@ -7,21 +7,7 @@ export default class CursorMover {
    * @param {RenderedElements} renderedElements
    */
   constructor(renderedElements) {
-    this.boxes = []
-
-    renderedElements.forEach(element => {
-      const { $el, $rendered } = element
-
-      if (inArray(MOVER_SKIP, $el.tagName)) {return}
-
-      const bounding = $rendered.getBoundingClientRect()
-
-      this.boxes.push({
-        $el,
-        cx: bounding.left + ($rendered.clientWidth / 2),
-        cy: bounding.top + ($rendered.clientHeight / 2)
-      })
-    })
+    this.renderedElements = renderedElements
   }
 
   /**
@@ -35,21 +21,34 @@ export default class CursorMover {
    * @param {resultCallback} callback 
    */
   click(x, y, callback) {
-    let candidate = { $el: null }
+    let candidate = null
     let shortest = Infinity
 
-    for (const box of this.boxes) {
-      if (box.$el.tagName === 'MROW'
-        && box.$el.childNodes.length) {continue}
+    for (let element of this.renderedElements.getElements()) {
+      if (inArray(MOVER_SKIP, element.getTag())) {continue}
 
-      const dist = Math.sqrt(Math.pow(y - box.cy, 2) + Math.pow(x - box.cx, 2))
+      if (element.isTag('mrow')) {
+        if (element.hasChildren()) {
+          continue
+        }
+        else if (element.pointIn(x, y)) {
+          candidate = element
+          break
+        }
+        continue
+      }
 
-      if (shortest > dist) {
-        shortest = dist
-        candidate = box
+      const distance = element.distanceTo(x, y)
+
+      if (shortest > distance) {
+        shortest = distance
+        candidate = element
       }
     }
 
-    callback(candidate.$el, x < candidate.cx)
+    if (candidate) {
+      callback(candidate.getNode(), candidate.isLeftSide(x))
+    }
+    else {callback(null)}
   }
 }
