@@ -64,8 +64,6 @@ export default class Editor {
     })
 
     /** @type {Number} */
-    this.stopBlinkingInterval = null
-    /** @type {Number} */
     this.blinkingInterval = setInterval(() => {
       this.$cursor.style.opacity = this.$cursor.style.opacity === '0'
         ? '1'
