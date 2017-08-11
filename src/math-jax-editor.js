@@ -51,7 +51,7 @@ export default class MathJaxEditor {
     $mfrac.appendChild($mrowNum)
     $mfrac.appendChild($mrowDen)
 
-    this.core.insert($mfrac)
+    this.core.insert($mfrac, $mrowNum)
   }
 
   insertSqrt() {
@@ -75,6 +75,17 @@ export default class MathJaxEditor {
     $mo.innerHTML = OPERATOR_LIST[o]
 
     this.core.insert($mo)
+  }
+
+  insertSuperscript() {
+    const $msup = document.createElement('msup')
+    const $mrowBase = document.createElement('mrow')
+    const $mrowPower = document.createElement('mrow')
+
+    $msup.appendChild($mrowBase)
+    $msup.appendChild($mrowPower)
+
+    this.core.insert($msup, $mrowBase)
   }
 
   /**
