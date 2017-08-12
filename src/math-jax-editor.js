@@ -60,7 +60,7 @@ export default class MathJaxEditor {
 
     $msqrt.appendChild($mrow)
 
-    this.core.insert($msqrt)
+    this.core.insert($msqrt, $mrow)
   }
 
   /**
