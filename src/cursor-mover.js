@@ -7,7 +7,10 @@ export default class CursorMover {
    * @param {RenderedElements} renderedElements
    */
   constructor(renderedElements) {
+    /** @type {RenderedElements} */
     this.renderedElements = renderedElements
+    /** @type {Null|Element} */
+    this.lastCandidate = null
   }
 
   /**
@@ -23,6 +26,7 @@ export default class CursorMover {
   click(x, y, callback) {
     let candidate = null
     let shortest = Infinity
+    let count = 1
 
     for (let line of this.renderedElements.getLines()) {
       if (!line.betweenYAxis(y)) {continue}
@@ -54,8 +58,16 @@ export default class CursorMover {
       }
     }
 
+    // I'm using this strategy in order to the user jump out
+    // of, say, a sqrt when click twice on the same spot.
+    if (candidate === this.lastCandidate) {
+      count = 2
+      this.lastCandidate = null
+    }
+    else {this.lastCandidate = candidate}
+    
     if (candidate) {
-      callback(candidate.getNode(), candidate.isLeftSide(x))
+      callback(candidate.getNode(), candidate.isLeftSide(x), count)
     }
     else {callback(null)}
   }

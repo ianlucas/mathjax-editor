@@ -97,14 +97,20 @@ export default class Editor {
    * @param {ClickEvent} e
    */
   handleClick({ clientX, clientY }) {
-    this.$input.focus()
-    if (this.cursorMover) {
-      this.cursorMover.click(clientX, clientY, (to, moveLeft) => {
-        this.cursor = to
-        if (moveLeft) {this.moveCursorLeft()}
-        else {this.updateCursor()}
-      })
-    }
+    this.focus()
+    this.cursorMover.click(clientX, clientY, (to, moveLeft, moveCount = 1) => {
+      this.cursor = to
+
+      if (moveLeft) {this.moveCursorLeft()}
+      if (moveCount > 1) {
+        moveCount--
+        while (moveCount--) {
+          if (moveLeft) {this.moveCursorLeft()}
+          else {this.moveCursorRight()}
+        }
+      }
+      else {this.updateCursor()}
+    })
   }
 
   handleFocus() {
