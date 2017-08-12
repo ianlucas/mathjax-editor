@@ -135,6 +135,7 @@ export default class Editor {
       // (?): if padding is added to .mathjax-editor-display, the cursor
       //      probably will be misplaced.
       const line = this.renderedElements.getLines()[0]
+      this.$display.appendChild(this.$cursor)
       this.$cursor.style.top = 0
       this.$cursor.style.height = px(line.height)
       this.$cursor.style.left = 0

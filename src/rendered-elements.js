@@ -53,7 +53,7 @@ export default class RenderedElements {
     const $math = flatMathTree[flatMathTree.lenght - 1]
 
     if (!mspaces.length) {
-      const line = new Line($math, this.$display)
+      const line = new Line($math, this.$display.querySelector('.mjx-math'))
       line.$firstEl = null
       line.$lastEl = flatMathTree[flatMathTree.length - 2] 
       lines.push(line)
