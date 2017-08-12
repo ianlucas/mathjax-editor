@@ -1,4 +1,14 @@
 const path = require('path')
+const webpack = require('webpack')
+
+const banner =
+`
+MathJax Editor
+http://github.com/ianlucas/mathjax-editor
+
+by Ian Lucas
+Released under the MIT license.
+`
 
 module.exports = {
   entry: './src/index',
@@ -26,5 +36,7 @@ module.exports = {
   devServer: {
     contentBase: path.resolve(__dirname, 'test'),
     compress: false
-  }
+  },
+
+  plugins: [new webpack.BannerPlugin(banner)]
 }
