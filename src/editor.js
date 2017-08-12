@@ -268,6 +268,7 @@ export default class Editor {
 
     this.cursor = $setCursor || $el
     this.updateJaxElement()
+    this.focus()
   }
 
   insertNewLine() {
@@ -317,5 +318,9 @@ export default class Editor {
    */
   on(type, callback) {
     this.eventEmitter.on(type, callback)
+  }
+
+  focus() {
+    this.$input.focus()
   }
 }
