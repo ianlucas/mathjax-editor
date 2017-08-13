@@ -10,6 +10,10 @@ export default class Line {
     /** @type {HTMLElement} */
     this.$rendered = $rendered
     /** @type {Number} */
+    this.top = $rendered.offsetTop
+    /** @type {Number} */
+    this.left = $rendered.offsetLeft
+    /** @type {Number} */
     this.width = bounding.width
     /** @type {Number} */
     this.height = bounding.height
@@ -25,6 +29,8 @@ export default class Line {
     this.$firstEl = null
     /** @type {HTMLElement} */
     this.$lastEl = null
+    /** @type {Array} */
+    this.elements = []
   }
 
   /** @type {HTMLElement} */

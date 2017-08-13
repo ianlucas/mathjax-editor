@@ -1,8 +1,9 @@
 import Element from './element'
 import Line from './line'
 
-import NEWLINE from './constants/newline'
+import NEWLINES from './constants/newlines'
 
+import inArray from './utils/in-array'
 import toArray from './utils/to-array'
 
 export default class RenderedElements {
@@ -14,6 +15,7 @@ export default class RenderedElements {
     this.$display = $display
     /** @type {Array} */
     this.elements = []
+    /** @type {Array} */
     this.lines = []
   }
 
@@ -42,18 +44,35 @@ export default class RenderedElements {
   }
 
   /**
-   * @param {Array} flatMathTree 
+   * @param {Array} flatMathTree
+   * @param {HTMLElement} $cursor
    * 
    * @return {Array}
    */
-  findLines(flatMathTree) {
-    const mspaces = flatMathTree.filter($el => $el && $el.tagName === 'MSPACE')
+  findLines(flatMathTree, $cursor) {
+    const mspaces = []
     const blocks = toArray(this.$display.querySelectorAll('.mjx-block'))
     const lines = []
+    const elementsInLines = []
     const $math = flatMathTree[flatMathTree.lenght - 1]
+    
+    let elements = []
+    for (let $el of flatMathTree) {
+      if ($el && inArray(NEWLINES, $el.tagName)) {
+        if ($el.tagName === 'MSPACE') {
+          mspaces.push($el)
+        }
+        elementsInLines.push(elements)
+        elements = [$el]
+      }
+      else {
+        elements.push($el)
+      }
+    }
 
     if (!mspaces.length) {
       const line = new Line($math, this.$display.querySelector('.mjx-math'))
+      line.elements = elementsInLines[0]
       line.$firstEl = null
       line.$lastEl = flatMathTree[flatMathTree.length - 2] 
       lines.push(line)
@@ -65,8 +84,8 @@ export default class RenderedElements {
         const $current = mspaces[i]
         const $previous = mspaces[i - 1]
         const line = new Line($current || $math, $block.firstElementChild)
-        
 
+        line.elements = elementsInLines[i]
         line.$firstEl = ($previous ? $previous.previousElementSibling : null)
         line.$lastEl = ($current
           ? $current.previousElementSibling
@@ -81,9 +100,10 @@ export default class RenderedElements {
 
   /**
    * @param {Array} flatMathTree 
+   * @param {HTMLElement} $cursor
    */
-  update(flatMathTree) {
-    this.lines = this.findLines(flatMathTree)
+  update(flatMathTree, $cursor) {
+    this.lines = this.findLines(flatMathTree, $cursor)
     this.elements = this.findElements(flatMathTree)
   }
 
