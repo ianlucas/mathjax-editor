@@ -141,7 +141,6 @@ export default class Editor {
       // (?): if padding is added to .mathjax-editor-display, the cursor
       //      probably will be misplaced.
       const line = this.renderedElements.getLines()[0]
-      console.log(line)
       line.getRendered().parentNode.appendChild(this.$caret)
       this.$caret.style.top = px(line.top)
       this.$caret.style.height = px(line.height)
@@ -220,16 +219,22 @@ export default class Editor {
 
     if (this.$cursor.tagName === 'MROW') {
       const $parent = this.$cursor.parentNode
+      const $previous = $parent.previousElementSibling
       $parent.parentNode.removeChild($parent)
-      this.$cursor = $parent.previousSibling
+      this.$cursor = $previous
     }
     else {
-      const previousSibling = this.$cursor.previousSibling
-        ? this.$cursor.previousSibling
-        : this.$cursor.parentNode.previousSibling
-
-      this.$cursor.parentNode.removeChild(this.$cursor)
-      this.$cursor = previousSibling
+      const $remove = this.$cursor
+      if (this.$cursor.previousElementSibling) {
+        this.$cursor = this.$cursor.previousElementSibling
+      }
+      else if (this.$cursor.parentNode.tagName === 'MROW') {
+        this.$cursor = this.$cursor.parentNode
+      }
+      else {
+        this.$cursor = this.$cursor.parentNode.previousElementSibling
+      }
+      $remove.parentNode.removeChild($remove)
     }
     
     this.updateJaxElement()
