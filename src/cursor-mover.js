@@ -4,71 +4,80 @@ import inArray from './utils/in-array'
 
 export default class CursorMover {
   /**
-   * @param {RenderedElements} renderedElements
+   * @param {Rendered} rendered
    */
-  constructor(renderedElements) {
-    /** @type {RenderedElements} */
-    this.renderedElements = renderedElements
-    /** @type {Null|Element} */
-    this.lastCandidate = null
+  constructor(rendered) {
+    /** @type {Rendered} */
+    this.rendered = rendered
   }
 
   /**
-   * @callback
-   * @param {Node} $node
-   * @param {Boolean} isLeft
-   */
-  /**
    * @param {Number} x 
-   * @param {Number} y 
-   * @param {resultCallback} callback 
+   * @param {Number} y
+   * 
+   * @return {Promise} 
    */
-  click(x, y, callback) {
-    let candidate = null
-    let shortest = Infinity
-    let count = 1
+  click(x, y) {
+    return new Promise(resolve => {
+      let candidate = null
+      let shortest = Infinity
 
-    for (let line of this.renderedElements.getLines()) {
-      if (!line.betweenYAxis(y)) {continue}
-      if (!line.betweenXAxis(x)) {
-        if (x > line.x2) {return callback(line.$lastEl, false)}
-        else {return callback(line.$firstEl, true)}
+      for (let line of this.rendered.getLines()) {
+        if (!line.betweenYAxis(y)) {continue}
+        if (!line.betweenXAxis(x)) {
+          if (x > line.x2) {
+            return resolve({
+              $to: line.getLastElement().getElement(),
+              moveLeft: false
+            })
+          }
+          else {
+            return resolve({
+              $to: line.getFirstElement().getElement(),
+              moveLeft: true
+            })
+          }
+        }
       }
-    }
 
-    for (let element of this.renderedElements.getElements()) {
-      if (inArray(MOVER_SKIP, element.getTag())) {continue}
-
-      if (element.isTag('mrow')) {
-        if (element.hasChildren()) {
+      for (let element of this.rendered.getElements()) {
+        if (
+          !element.getElement() || 
+          inArray(MOVER_SKIP, element.getTagName())
+        ) {
           continue
         }
-        else if (element.pointIn(x, y)) {
-          candidate = element
-          break
+
+        if (element.isTagName('MROW')) {
+          if (element.hasChildren()) {
+            continue
+          }
+          else if (element.pointIn(x, y)) {
+            candidate = element
+            break
+          }
+          continue
         }
-        continue
+
+        const distance = element.distanceTo(x, y)
+
+        if (shortest > distance) {
+          shortest = distance
+          candidate = element
+        }
       }
-
-      const distance = element.distanceTo(x, y)
-
-      if (shortest > distance) {
-        shortest = distance
-        candidate = element
+      
+      if (candidate) {
+        resolve({
+          $to: candidate.getElement(), 
+          moveLeft: candidate.isLeftSide(x)
+        })
       }
-    }
-
-    // I'm using this strategy in order to the user jump out
-    // of, say, a sqrt when click twice on the same spot.
-    if (candidate === this.lastCandidate) {
-      count = 2
-      this.lastCandidate = null
-    }
-    else {this.lastCandidate = candidate}
-    
-    if (candidate) {
-      callback(candidate.getNode(), candidate.isLeftSide(x), count)
-    }
-    else {callback(null)}
+      else {
+        resolve({
+          $to: null
+        })
+      }
+    })
   }
 }

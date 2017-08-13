@@ -1,253 +1,149 @@
-import RenderedElements from './rendered-elements'
+import Cursor from './cursor'
 import CursorMover from './cursor-mover'
+import EventEmitter from './event-emitter'
+import Rendered from './rendered'
+import Tree from './tree'
 
-import NEWLINES from './constants/newlines'
-
-import EventEmitter from './utils/event-emitter'
+import addClass from './utils/add-class'
+import appendElement from './utils/append-element'
+import appendElementAfter from './utils/append-element-after'
+import createElement from './utils/create-element'
 import findTextarea from './utils/find-textarea'
 import getJaxElement from './utils/get-jax-element'
-import getMarkupWithHelpers from './utils/get-markup-with-helpers'
-import inArray from './utils/in-array'
-import px from './utils/px'
-import toArray from './utils/to-array'
+import hideElement from './utils/hide-element'
+import listenElement from './utils/listen-element'
+import removeClass from './utils/remove-class'
+import showElement from './utils/show-element'
+import toDisplay from './utils/to-display'
 
 export default class Editor {
-  /**
-   * @param {String|Node} selectors 
-   * @param {Object} [options] 
-   */
-  constructor(selectors, options) {
+  constructor(selectors, options = {}) {
     this.$el = findTextarea(selectors)
+    this.$value = createElement('math')
+    this.$input = createElement('input', 'mathjax-editor-input')
+    this.$container = createElement('div', 'mathjax-editor-container')
+    this.$display = createElement('div', 'mathjax-editor-display')
+    this.$caret = createElement('div', 'mathjax-editor-caret')
+    this.focused = false
+    this.emitter = new EventEmitter
+    this.tree = new Tree(this.$value)
+    this.rendered = new Rendered(this.$display, this.tree)
+    this.cursor = new Cursor(this.tree, this.rendered, this.$caret)
+    this.cursorMover = new CursorMover(this.rendered)
+    this.placeholder = 'Start typing...'
+    
+    hideElement(this.$caret)
+    hideElement(this.$el)
+    appendElement(this.$display, this.$value)
+    appendElement(this.$container, this.$display)
+    appendElement(this.$container, this.$input)
+    appendElement(this.$display, this.$caret)
+    appendElementAfter(this.$el, this.$container)
+    getJaxElement(this.$display)
+      .then(jaxElement => {
+        this.jaxElement = jaxElement
+        this.update()
+      })
 
-    this.$math = document.createElement('math')
-    this.$math.setAttribute('id', 'e0')
-
-    this.$input = document.createElement('input')
-    this.$input.className = 'mathjax-editor-input'
-
-    this.$container = document.createElement('div')
-    this.$container.className = 'mathjax-editor-container'
-
-    this.$display = document.createElement('div')
-    this.$display.className = 'mathjax-editor-display'
-
-    this.$caret = document.createElement('div')
-    this.$caret.className = 'mathjax-editor-caret'
-    this.$caret.style.display = 'none'
-
-    this.$display.appendChild(this.$math)
-    this.$container.appendChild(this.$display)
-    this.$container.appendChild(this.$input)
-    this.$display.appendChild(this.$caret)
-
-    this.$el.parentNode.insertBefore(this.$container, this.$el.nextSibling)
-    this.$el.style.display = 'none'
-
-    /** @type {Null|HTMLElemnt} */
-    this.$cursor = null
-    /** @type {EventEmitter} */
-    this.eventEmitter = new EventEmitter
-    /** @type {Boolean} */
-    this.isFocused = false
-    /** @type {JaxElement} */
-    this.jaxElement = null
-    /** @type {Array} */
-    this.flatMathTree = []
-    /** @type {RenderedElements} */
-    this.renderedElements = new RenderedElements(this.$display)
-    /** @type {Number} */
-    this.nextElementId = 1
-    /** @type {String} */
-    this.placeholder = '<mtext class="mathjax-editor-placeholder">Start typing...</mtext>'
-    /** @type {CursorMover} */
-    this.cursorMover = new CursorMover(this.renderedElements)
-
-    getJaxElement(this.$display, (jaxElement, minHeight) => {
-      this.jaxElement = jaxElement
-      this.$display.style.minHeight = px(minHeight)
-      this.updateJaxElement()
-    })
-
-    /** @type {Number} */
-    this.blinkingInterval = setInterval(() => {
-      this.$caret.style.opacity = this.$caret.style.opacity === '0'
-        ? '1'
-        : '0'
-    }, 500)
-
-    this.$input.addEventListener('keydown', e => {
-      switch (e.which) {
-      case 13: return this.insertNewLine()
-      case 37: return this.moveCursorLeft()
-      case 39: return this.moveCursorRight()
-      case 8: return this.backspaceRemove()
-      case 46: return this.deleteRemove()
-      // default: console.log(e.which)
-      }
-    })
-
-    this.$display.addEventListener('click', this.handleClick.bind(this))
-    this.$input.addEventListener('keyup', this.handleInput.bind(this))
-    this.$input.addEventListener('keydown', this.handleInput.bind(this))
-    this.$input.addEventListener('focus', this.handleFocus.bind(this))
-    this.$input.addEventListener('blur', this.handleBlur.bind(this))
+    listenElement(this.$display, 'click', this.handleClick.bind(this))
+    listenElement(this.$input, 'keyup', this.handleInput.bind(this))
+    listenElement(this.$input, 'keydown', this.handleInput.bind(this))
+    listenElement(this.$input, 'keydown', this.handleKeydown.bind(this))
+    listenElement(this.$input, 'focus', this.handleFocus.bind(this))
+    listenElement(this.$input, 'blur', this.handleBlur.bind(this))
   }
 
   /**
-   * @param {ClickEvent} e
+   * @param {e} ClickEvent
    */
   handleClick({ clientX, clientY }) {
     this.focus()
-    this.cursorMover.click(clientX, clientY, (to, moveLeft, moveCount = 1) => {
-      this.$cursor = to
-
-      if (moveLeft) {this.moveCursorLeft()}
-      if (moveCount > 1) {
-        moveCount--
-        while (moveCount--) {
-          if (moveLeft) {this.moveCursorLeft()}
-          else {this.moveCursorRight()}
-        }
-      }
-      else {this.updateCursor()}
-    })
+    this.cursorMover.click(clientX, clientY)
+      .then(({ $to, moveLeft, moveCount = 1 }) => {
+        this.cursor.setPosition($to)
+        if (moveLeft) {this.moveCursorLeft()}
+        else {this.cursor.update()}
+      })
   }
 
   handleFocus() {
-    this.isFocused = true
-    this.$display.classList.add('is-focused')
-    this.$caret.style.display = 'block'
+    this.focused = true
+    addClass(this.$display, 'is-focused')
+    showElement(this.$caret)
   }
 
   handleBlur() {
-    this.isFocused = false
-    this.$display.classList.remove('is-focused')
-    this.$caret.style.display = 'none'
+    this.focused = false
+    removeClass(this.$display, 'is-focused')
+    hideElement(this.$caret)
   }
 
   handleInput() {
     const input = this.$input.value.trim()
-    if (input.length) {
-      this.eventEmitter.emit('@input', input)
-    }
     this.$input.value = ''
+    if (input.length) {
+      this.emitter.emit('@input', input)
+    }
   }
 
-  updateCursor() {
-    let $rendered
-    let sumWidth = true
-
-    if (!this.$cursor) {
-      // (?): if padding is added to .mathjax-editor-display, the cursor
-      //      probably will be misplaced.
-      const line = this.renderedElements.getLines()[0]
-      line.getRendered().parentNode.appendChild(this.$caret)
-      this.$caret.style.top = px(line.top)
-      this.$caret.style.height = px(line.height)
-      this.$caret.style.left = 0
-      return
+  handleKeydown(e) {
+    switch (e.which) {
+    case 8: return this.backspaceRemove()
+    case 13: return this.insertNewline()
+    case 37: return this.moveCursorLeft()
+    case 39: return this.moveCursorRight()
+    case 46: return this.deleteRemove()
+    // default: console.log(e.which)
     }
-
-    if (!$rendered) {
-      if (inArray(NEWLINES, this.$cursor.tagName)) {
-        const line = this.renderedElements.findLine(this.$cursor)
-        const nextLine = this.renderedElements.findNextLine(line)
-        $rendered = nextLine.getRendered()
-        sumWidth = false
-      }
-      else {
-        $rendered = this.renderedElements.findRendered(this.$cursor)
-        sumWidth = !$rendered.classList.contains('mjx-mrow')
-      }
-    }
-
-    if (!$rendered) {
-      console.log(this.$cursor)
-      return console.warn('MathjaxEditor: Rendered element not found.')
-    }
-
-    $rendered.parentNode.appendChild(this.$caret)
-    this.$caret.style.height = px($rendered.clientHeight)
-    this.$caret.style.top = px($rendered.offsetTop)
-    this.$caret.style.left = px(
-      $rendered.offsetLeft +
-      (sumWidth ? $rendered.clientWidth : 0)
-    )
   }
 
-  updateJaxElement() {
+  update() {
     if (!this.jaxElement) {return}
-    this.flattenMathTree()
-
-    const math = getMarkupWithHelpers(this.$math, this.placeholder)
-    
-    this.jaxElement.Text(math, () => {
-      this.renderedElements.update(this.flatMathTree, this.$cursor)
-      this.updateCursor()
-    })
-  }
-
-  moveCursorLeft() {
-    if (!this.$cursor) {return}
-
-    const index = this.flatMathTree.indexOf(this.$cursor)
-    this.$cursor = this.flatMathTree[index - 1]
-
-    this.updateCursor()
-  }
-
-  moveCursorRight() {
-    if (!this.$cursor) {
-      const $next = this.flatMathTree[1]
-      if ($next.tagName !== 'MATH') {
-        this.$cursor = $next
-      }
-    }
-    else {
-      const index = this.flatMathTree.indexOf(this.$cursor)
-      const $next = this.flatMathTree[index + 1]
-      if ($next && !($next.tagName === 'MATH' && this.$cursor.parentNode === $next)) {
-        this.$cursor = $next
-      }
-    }
-
-    this.updateCursor()
+    this.tree.update()
+    this.jaxElement
+      .setValue(toDisplay(this.$value, this.placeholder))
+      .update()
+      .then(() => {
+        this.rendered.update()
+        this.cursor.update()
+      })
   }
 
   backspaceRemove() {
-    if (!this.$cursor) {return}
+    const $position = this.cursor.getPosition()
 
-    if (this.$cursor.tagName === 'MROW') {
-      const $parent = this.$cursor.parentNode
+    if (!$position) {return}
+    if ($position.tagName === 'MROW') {
+      const $parent = $position.parentNode
       const $previous = $parent.previousElementSibling
       $parent.parentNode.removeChild($parent)
-      this.$cursor = $previous
+      this.cursor.setPosition($previous)
     }
     else {
-      const $remove = this.$cursor
-      if (this.$cursor.previousElementSibling) {
-        this.$cursor = this.$cursor.previousElementSibling
+      if ($position.previousElementSibling) {
+        this.cursor.setPosition($position.previousElementSibling)
       }
-      else if (this.$cursor.parentNode.tagName === 'MROW') {
-        this.$cursor = this.$cursor.parentNode
+      else if ($position.parentNode.tagName === 'MROW') {
+        this.cursor.setPosition($position.parentNode)
       }
       else {
-        this.$cursor = this.$cursor.parentNode.previousElementSibling
+        this.cursor.setPosition($position.parentNode.previousElementSibling)
       }
-      $remove.parentNode.removeChild($remove)
+      $position.parentNode.removeChild($position)
     }
     
-    this.updateJaxElement()
+    this.update()
   }
 
   deleteRemove() {
-    if (!this.$cursor) {
-      this.$math.removeChild(this.$math.firstElementChild)
+    const $position = this.cursor.getPosition()
+    if (!$position) {
+      this.$value.removeChild(this.$value.firstElementChild)
     }
-    else if (!this.$cursor.nextSibling) {
-      const $parent = this.$cursor.parentNode
+    else if (!$position.nextElementSibling) {
+      const $parent = $position.parentNode
       if ($parent.tagName === 'MROW') {
-        this.$cursor = $parent.parentNode.previousElementSibling
+        this.cursor.setPosition($parent.parentNode.previousElementSibling)
         $parent.parentNode.parentNode.removeChild($parent.parentNode)
       }
       else {
@@ -255,40 +151,41 @@ export default class Editor {
       }
     }
     else {
-      this.$cursor.parentNode.removeChild(this.$cursor.nextElementSibling)
+      $position.parentNode.removeChild($position.nextElementSibling)
     }
 
-    this.updateJaxElement()
+    this.update()
   }
 
   /**
-   * @param {Node} $el  
-   * @param {Null|Node} $setCursor
+   * @param {HTMLElement} $el  
+   * @param {HTMLElement} [$moveTo]
    */
-  insert($el, $setCursor = null) {
-    if (!this.$cursor) {
-      this.$math.insertBefore($el, this.$math.firstChild)
-    }
-    else if (this.$cursor.tagName === 'MROW') {
-      this.$cursor.insertBefore($el, this.$cursor.firstChild)
-    }
-    else if (this.$cursor.tagName === 'MATH') {
-      this.$math.appendChild($el)
+  insert($el, $moveTo = null) {
+    const $position = this.cursor.getPosition()
+
+    if (!$position) {
+      this.$value.insertBefore($el, this.$value.firstElementChild)
     }
     else {
-      this.$cursor.parentNode.insertBefore($el, this.$cursor.nextSibling)
+      switch ($position.tagName) {
+      case 'MROW': $position.insertBefore($el, $position.firstElementChild); break
+      case 'MATH': this.$value.appendChild($el); break
+      default: $position.parentNode.insertBefore($el, $position.nextSibling)
+      }
     }
 
-    this.$cursor = $setCursor || $el
-    this.updateJaxElement()
+    this.cursor.setPosition($moveTo || $el)
     this.focus()
+    this.update()
   }
 
-  insertNewLine() {
+  insertNewline() {
+    const $position = this.cursor.getPosition()
     if (
-      this.$cursor &&
-      this.$cursor.tagName !== 'MATH' && 
-      this.$cursor.parentNode.tagName !== 'MATH'
+      $position &&
+      $position.tagName !== 'MATH' && 
+      $position.parentNode.tagName !== 'MATH'
     ) {return}
 
     const $mspace = document.createElement('mspace')
@@ -296,44 +193,23 @@ export default class Editor {
     this.insert($mspace)
   }
 
-  flattenMathTree() {
-    const nodes = [null]
+  moveCursorLeft() {
+    return this.cursor.moveLeft()
+  }
 
-    const walk = $el => {
-      const children = toArray($el.children)
-
-      if (!$el.hasAttribute('id')) {
-        $el.setAttribute('id', `e${this.nextElementId++}`)
-      }
-
-      nodes.push($el)
-
-      children.forEach($child => walk($child))
-
-      if (children.length && $el.tagName !== 'MROW') {
-        const index = nodes.indexOf($el)
-        nodes.splice(index, 1)
-        nodes.push($el)
-      }
-    }
-
-    toArray(this.$math.children)
-      .forEach($child => walk($child))
-
-    nodes.push(this.$math)
-
-    this.flatMathTree = nodes
+  moveCursorRight() {
+    return this.cursor.moveRight()
   }
 
   /**
    * @param {String} type 
-   * @param {Function} callback 
+   * @param {Function} listener
    */
-  on(type, callback) {
-    this.eventEmitter.on(type, callback)
+  on(type, listener) {
+    return this.emitter.on(type, listener)
   }
 
   focus() {
-    this.$input.focus()
+    return this.$input.focus()
   }
 }

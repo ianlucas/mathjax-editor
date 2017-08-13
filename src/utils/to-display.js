@@ -1,17 +1,17 @@
 import toArray from './to-array'
 
 /**
- * @param {HTMLElement} $math
+ * @param {HTMLElement} $value
  * @param {String} [placeholder] 
  */
-export default function getMarkupWithHelpers($math, placeholder = '') {
-  const $cloneMath = $math.cloneNode(true)
+export default function toDisplay($value, placeholder = '') {
+  const $clone = $value.cloneNode(true)
 
-  if (!$cloneMath.children.length) {
-    $cloneMath.innerHTML = placeholder
+  if (!$clone.children.length) {
+    $clone.innerHTML = `<mtext class="mathjax-editor-placeholder">${placeholder}</mtext>`
   }
 
-  toArray($cloneMath.querySelectorAll('mrow'))
+  toArray($clone.querySelectorAll('mrow'))
     .forEach($mrow => {
       if (!$mrow.children.length) {
         const $mo = document.createElement('mo')
@@ -21,7 +21,7 @@ export default function getMarkupWithHelpers($math, placeholder = '') {
       }
     })
 
-  toArray($cloneMath.querySelectorAll('mspace'))
+  toArray($clone.querySelectorAll('mspace'))
     .forEach($mspace => {
       const $previous = $mspace.previousElementSibling
       const $next = $mspace.nextElementSibling
@@ -42,5 +42,6 @@ export default function getMarkupWithHelpers($math, placeholder = '') {
 
       $mspace.parentNode.insertBefore($mo.cloneNode(true), $mspace)
     })
-  return $cloneMath.outerHTML
+    
+  return $clone.outerHTML
 }
