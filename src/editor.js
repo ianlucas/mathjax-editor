@@ -1,7 +1,7 @@
 import RenderedElements from './rendered-elements'
 import CursorMover from './cursor-mover'
 
-import NEWLINE from './constants/newline'
+import NEWLINES from './constants/newlines'
 
 import EventEmitter from './utils/event-emitter'
 import findTextarea from './utils/find-textarea'
@@ -31,20 +31,20 @@ export default class Editor {
     this.$display = document.createElement('div')
     this.$display.className = 'mathjax-editor-display'
 
-    this.$cursor = document.createElement('div')
-    this.$cursor.className = 'mathjax-editor-cursor'
-    this.$cursor.style.display = 'none'
+    this.$caret = document.createElement('div')
+    this.$caret.className = 'mathjax-editor-caret'
+    this.$caret.style.display = 'none'
 
     this.$display.appendChild(this.$math)
     this.$container.appendChild(this.$display)
     this.$container.appendChild(this.$input)
-    this.$display.appendChild(this.$cursor)
+    this.$display.appendChild(this.$caret)
 
     this.$el.parentNode.insertBefore(this.$container, this.$el.nextSibling)
     this.$el.style.display = 'none'
 
-    /** @type {Null|Node} */
-    this.cursor = null
+    /** @type {Null|HTMLElemnt} */
+    this.$cursor = null
     /** @type {EventEmitter} */
     this.eventEmitter = new EventEmitter
     /** @type {Boolean} */
@@ -70,7 +70,7 @@ export default class Editor {
 
     /** @type {Number} */
     this.blinkingInterval = setInterval(() => {
-      this.$cursor.style.opacity = this.$cursor.style.opacity === '0'
+      this.$caret.style.opacity = this.$caret.style.opacity === '0'
         ? '1'
         : '0'
     }, 500)
@@ -99,7 +99,7 @@ export default class Editor {
   handleClick({ clientX, clientY }) {
     this.focus()
     this.cursorMover.click(clientX, clientY, (to, moveLeft, moveCount = 1) => {
-      this.cursor = to
+      this.$cursor = to
 
       if (moveLeft) {this.moveCursorLeft()}
       if (moveCount > 1) {
@@ -116,13 +116,13 @@ export default class Editor {
   handleFocus() {
     this.isFocused = true
     this.$display.classList.add('is-focused')
-    this.$cursor.style.display = 'block'
+    this.$caret.style.display = 'block'
   }
 
   handleBlur() {
     this.isFocused = false
     this.$display.classList.remove('is-focused')
-    this.$cursor.style.display = 'none'
+    this.$caret.style.display = 'none'
   }
 
   handleInput() {
@@ -137,39 +137,40 @@ export default class Editor {
     let $rendered
     let sumWidth = true
 
-    if (!this.cursor) {
+    if (!this.$cursor) {
       // (?): if padding is added to .mathjax-editor-display, the cursor
       //      probably will be misplaced.
       const line = this.renderedElements.getLines()[0]
-      this.$display.appendChild(this.$cursor)
-      this.$cursor.style.top = 0
-      this.$cursor.style.height = px(line.height)
-      this.$cursor.style.left = 0
+      console.log(line)
+      line.getRendered().parentNode.appendChild(this.$caret)
+      this.$caret.style.top = px(line.top)
+      this.$caret.style.height = px(line.height)
+      this.$caret.style.left = 0
       return
     }
 
     if (!$rendered) {
-      if (inArray(NEWLINE, this.cursor.tagName)) {
-        const line = this.renderedElements.findLine(this.cursor)
+      if (inArray(NEWLINES, this.$cursor.tagName)) {
+        const line = this.renderedElements.findLine(this.$cursor)
         const nextLine = this.renderedElements.findNextLine(line)
         $rendered = nextLine.getRendered()
         sumWidth = false
       }
       else {
-        $rendered = this.renderedElements.findRendered(this.cursor)
+        $rendered = this.renderedElements.findRendered(this.$cursor)
         sumWidth = !$rendered.classList.contains('mjx-mrow')
       }
     }
 
     if (!$rendered) {
-      console.log(this.cursor)
+      console.log(this.$cursor)
       return console.warn('MathjaxEditor: Rendered element not found.')
     }
 
-    $rendered.parentNode.appendChild(this.$cursor)
-    this.$cursor.style.height = px($rendered.clientHeight)
-    this.$cursor.style.top = px($rendered.offsetTop)
-    this.$cursor.style.left = px(
+    $rendered.parentNode.appendChild(this.$caret)
+    this.$caret.style.height = px($rendered.clientHeight)
+    this.$caret.style.top = px($rendered.offsetTop)
+    this.$caret.style.left = px(
       $rendered.offsetLeft +
       (sumWidth ? $rendered.clientWidth : 0)
     )
@@ -182,32 +183,32 @@ export default class Editor {
     const math = getMarkupWithHelpers(this.$math, this.placeholder)
     
     this.jaxElement.Text(math, () => {
-      this.renderedElements.update(this.flatMathTree)
+      this.renderedElements.update(this.flatMathTree, this.$cursor)
       this.updateCursor()
     })
   }
 
   moveCursorLeft() {
-    if (!this.cursor) {return}
+    if (!this.$cursor) {return}
 
-    const index = this.flatMathTree.indexOf(this.cursor)
-    this.cursor = this.flatMathTree[index - 1]
+    const index = this.flatMathTree.indexOf(this.$cursor)
+    this.$cursor = this.flatMathTree[index - 1]
 
     this.updateCursor()
   }
 
   moveCursorRight() {
-    if (!this.cursor) {
+    if (!this.$cursor) {
       const $next = this.flatMathTree[1]
       if ($next.tagName !== 'MATH') {
-        this.cursor = $next
+        this.$cursor = $next
       }
     }
     else {
-      const index = this.flatMathTree.indexOf(this.cursor)
+      const index = this.flatMathTree.indexOf(this.$cursor)
       const $next = this.flatMathTree[index + 1]
-      if ($next && !($next.tagName === 'MATH' && this.cursor.parentNode === $next)) {
-        this.cursor = $next
+      if ($next && !($next.tagName === 'MATH' && this.$cursor.parentNode === $next)) {
+        this.$cursor = $next
       }
     }
 
@@ -215,33 +216,33 @@ export default class Editor {
   }
 
   backspaceRemove() {
-    if (!this.cursor) {return}
+    if (!this.$cursor) {return}
 
-    if (this.cursor.tagName === 'MROW') {
-      const $parent = this.cursor.parentNode
+    if (this.$cursor.tagName === 'MROW') {
+      const $parent = this.$cursor.parentNode
       $parent.parentNode.removeChild($parent)
-      this.cursor = $parent.previousSibling
+      this.$cursor = $parent.previousSibling
     }
     else {
-      const previousSibling = this.cursor.previousSibling
-        ? this.cursor.previousSibling
-        : this.cursor.parentNode.previousSibling
+      const previousSibling = this.$cursor.previousSibling
+        ? this.$cursor.previousSibling
+        : this.$cursor.parentNode.previousSibling
 
-      this.cursor.parentNode.removeChild(this.cursor)
-      this.cursor = previousSibling
+      this.$cursor.parentNode.removeChild(this.$cursor)
+      this.$cursor = previousSibling
     }
     
     this.updateJaxElement()
   }
 
   deleteRemove() {
-    if (!this.cursor) {
+    if (!this.$cursor) {
       this.$math.removeChild(this.$math.firstElementChild)
     }
-    else if (!this.cursor.nextSibling) {
-      const $parent = this.cursor.parentNode
+    else if (!this.$cursor.nextSibling) {
+      const $parent = this.$cursor.parentNode
       if ($parent.tagName === 'MROW') {
-        this.cursor = $parent.parentNode.previousElementSibling
+        this.$cursor = $parent.parentNode.previousElementSibling
         $parent.parentNode.parentNode.removeChild($parent.parentNode)
       }
       else {
@@ -249,7 +250,7 @@ export default class Editor {
       }
     }
     else {
-      this.cursor.parentNode.removeChild(this.cursor.nextElementSibling)
+      this.$cursor.parentNode.removeChild(this.$cursor.nextElementSibling)
     }
 
     this.updateJaxElement()
@@ -260,29 +261,29 @@ export default class Editor {
    * @param {Null|Node} $setCursor
    */
   insert($el, $setCursor = null) {
-    if (!this.cursor) {
+    if (!this.$cursor) {
       this.$math.insertBefore($el, this.$math.firstChild)
     }
-    else if (this.cursor.tagName === 'MROW') {
-      this.cursor.insertBefore($el, this.cursor.firstChild)
+    else if (this.$cursor.tagName === 'MROW') {
+      this.$cursor.insertBefore($el, this.$cursor.firstChild)
     }
-    else if (this.cursor.tagName === 'MATH') {
+    else if (this.$cursor.tagName === 'MATH') {
       this.$math.appendChild($el)
     }
     else {
-      this.cursor.parentNode.insertBefore($el, this.cursor.nextSibling)
+      this.$cursor.parentNode.insertBefore($el, this.$cursor.nextSibling)
     }
 
-    this.cursor = $setCursor || $el
+    this.$cursor = $setCursor || $el
     this.updateJaxElement()
     this.focus()
   }
 
   insertNewLine() {
     if (
-      this.cursor &&
-      this.cursor.tagName !== 'MATH' && 
-      this.cursor.parentNode.tagName !== 'MATH'
+      this.$cursor &&
+      this.$cursor.tagName !== 'MATH' && 
+      this.$cursor.parentNode.tagName !== 'MATH'
     ) {return}
 
     const $mspace = document.createElement('mspace')

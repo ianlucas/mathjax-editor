@@ -23,7 +23,7 @@ export default {
     'outline': 'none !important'
   },
 
-  '.mathjax-editor-cursor': {
+  '.mathjax-editor-caret': {
     'background-color': '#000',
     'position': 'absolute',
     'width': '1px'
