@@ -79,7 +79,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -110,13 +110,13 @@ function toArray(obj) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = inArray;
+exports.default = addClass;
 /**
- * @param {Array} array 
- * @param {*} subject 
+ * @param {HTMLElement} $el  
+ * @param {String} name 
  */
-function inArray(array, subject) {
-  return array.indexOf(subject) !== -1;
+function addClass($el, name) {
+  return $el.classList.add(name);
 }
 
 /***/ }),
@@ -126,15 +126,17 @@ function inArray(array, subject) {
 "use strict";
 
 
-var _mathJaxEditor = __webpack_require__(3);
-
-var _mathJaxEditor2 = _interopRequireDefault(_mathJaxEditor);
-
-__webpack_require__(26);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-module.exports = _mathJaxEditor2.default;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = removeClass;
+/**
+ * @param {HTMLElement} $el  
+ * @param {String} name 
+ */
+function removeClass($el, name) {
+  return $el.classList.remove(name);
+}
 
 /***/ }),
 /* 3 */
@@ -147,17 +149,38 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _mathJaxEditor = __webpack_require__(4);
+
+var _mathJaxEditor2 = _interopRequireDefault(_mathJaxEditor);
+
+__webpack_require__(29);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = _mathJaxEditor2.default;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _editor = __webpack_require__(4);
+var _editor = __webpack_require__(5);
 
 var _editor2 = _interopRequireDefault(_editor);
 
-var _operatorList = __webpack_require__(25);
+var _operatorList = __webpack_require__(27);
 
 var _operatorList2 = _interopRequireDefault(_operatorList);
 
-var _inArray = __webpack_require__(1);
+var _inArray = __webpack_require__(28);
 
 var _inArray2 = _interopRequireDefault(_inArray);
 
@@ -290,7 +313,7 @@ var MathJaxEditor = function () {
 exports.default = MathJaxEditor;
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -302,67 +325,79 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _cursor = __webpack_require__(5);
+var _blinker = __webpack_require__(6);
+
+var _blinker2 = _interopRequireDefault(_blinker);
+
+var _cursor = __webpack_require__(7);
 
 var _cursor2 = _interopRequireDefault(_cursor);
 
-var _cursorMover = __webpack_require__(7);
+var _cursorMover = __webpack_require__(9);
 
 var _cursorMover2 = _interopRequireDefault(_cursorMover);
 
-var _eventEmitter = __webpack_require__(9);
+var _eventEmitter = __webpack_require__(10);
 
 var _eventEmitter2 = _interopRequireDefault(_eventEmitter);
 
-var _rendered = __webpack_require__(10);
+var _rendered = __webpack_require__(11);
 
 var _rendered2 = _interopRequireDefault(_rendered);
 
-var _tree = __webpack_require__(13);
+var _tree = __webpack_require__(15);
 
 var _tree2 = _interopRequireDefault(_tree);
 
-var _addClass = __webpack_require__(14);
+var _addClass = __webpack_require__(1);
 
 var _addClass2 = _interopRequireDefault(_addClass);
 
-var _appendElement = __webpack_require__(15);
+var _appendElement = __webpack_require__(16);
 
 var _appendElement2 = _interopRequireDefault(_appendElement);
 
-var _appendElementAfter = __webpack_require__(16);
+var _appendElementAfter = __webpack_require__(17);
 
 var _appendElementAfter2 = _interopRequireDefault(_appendElementAfter);
 
-var _createElement = __webpack_require__(17);
+var _applyDelete = __webpack_require__(18);
+
+var _applyDelete2 = _interopRequireDefault(_applyDelete);
+
+var _applyBackspace = __webpack_require__(19);
+
+var _applyBackspace2 = _interopRequireDefault(_applyBackspace);
+
+var _createElement = __webpack_require__(20);
 
 var _createElement2 = _interopRequireDefault(_createElement);
 
-var _findTextarea = __webpack_require__(18);
+var _findTextarea = __webpack_require__(21);
 
 var _findTextarea2 = _interopRequireDefault(_findTextarea);
 
-var _getJaxElement = __webpack_require__(19);
+var _getJaxElement = __webpack_require__(22);
 
 var _getJaxElement2 = _interopRequireDefault(_getJaxElement);
 
-var _hideElement = __webpack_require__(20);
+var _hideElement = __webpack_require__(23);
 
 var _hideElement2 = _interopRequireDefault(_hideElement);
 
-var _listenElement = __webpack_require__(21);
+var _listenElement = __webpack_require__(24);
 
 var _listenElement2 = _interopRequireDefault(_listenElement);
 
-var _removeClass = __webpack_require__(22);
+var _removeClass = __webpack_require__(2);
 
 var _removeClass2 = _interopRequireDefault(_removeClass);
 
-var _showElement = __webpack_require__(23);
+var _showElement = __webpack_require__(25);
 
 var _showElement2 = _interopRequireDefault(_showElement);
 
-var _toDisplay = __webpack_require__(24);
+var _toDisplay = __webpack_require__(26);
 
 var _toDisplay2 = _interopRequireDefault(_toDisplay);
 
@@ -385,11 +420,13 @@ var Editor = function () {
     this.$display = (0, _createElement2.default)('div', 'mathjax-editor-display');
     this.$caret = (0, _createElement2.default)('div', 'mathjax-editor-caret');
     this.focused = false;
+    this.mouseAtDisplay = false;
     this.emitter = new _eventEmitter2.default();
     this.tree = new _tree2.default(this.$value);
     this.rendered = new _rendered2.default(this.$display, this.tree);
     this.cursor = new _cursor2.default(this.tree, this.rendered, this.$caret);
-    this.cursorMover = new _cursorMover2.default(this.rendered);
+    this.cursorMover = new _cursorMover2.default(this.tree, this.rendered, this.cursor);
+    this.blinker = new _blinker2.default(this.$caret);
     this.placeholder = 'Start typing...';
 
     (0, _hideElement2.default)(this.$caret);
@@ -410,6 +447,8 @@ var Editor = function () {
     (0, _listenElement2.default)(this.$input, 'keydown', this.handleKeydown.bind(this));
     (0, _listenElement2.default)(this.$input, 'focus', this.handleFocus.bind(this));
     (0, _listenElement2.default)(this.$input, 'blur', this.handleBlur.bind(this));
+    (0, _listenElement2.default)(this.$display, 'mouseenter', this.handleMouseenter.bind(this));
+    (0, _listenElement2.default)(this.$display, 'mouseleave', this.handleMouseleave.bind(this));
   }
 
   /**
@@ -420,25 +459,12 @@ var Editor = function () {
   _createClass(Editor, [{
     key: 'handleClick',
     value: function handleClick(_ref) {
-      var _this2 = this;
-
       var clientX = _ref.clientX,
           clientY = _ref.clientY;
 
       this.focus();
-      this.cursorMover.click(clientX, clientY).then(function (_ref2) {
-        var $to = _ref2.$to,
-            moveLeft = _ref2.moveLeft,
-            _ref2$moveCount = _ref2.moveCount,
-            moveCount = _ref2$moveCount === undefined ? 1 : _ref2$moveCount;
-
-        _this2.cursor.setPosition($to);
-        if (moveLeft) {
-          _this2.moveCursorLeft();
-        } else {
-          _this2.cursor.update();
-        }
-      });
+      this.cursorMover.click(clientX, clientY);
+      this.blinker.freeze();
     }
   }, {
     key: 'handleFocus',
@@ -450,6 +476,9 @@ var Editor = function () {
   }, {
     key: 'handleBlur',
     value: function handleBlur() {
+      if (this.mouseAtDisplay) {
+        return;
+      }
       this.focused = false;
       (0, _removeClass2.default)(this.$display, 'is-focused');
       (0, _hideElement2.default)(this.$caret);
@@ -462,6 +491,16 @@ var Editor = function () {
       if (input.length) {
         this.emitter.emit('@input', input);
       }
+    }
+  }, {
+    key: 'handleMouseenter',
+    value: function handleMouseenter() {
+      this.mouseAtDisplay = true;
+    }
+  }, {
+    key: 'handleMouseleave',
+    value: function handleMouseleave() {
+      this.mouseAtDisplay = false;
     }
   }, {
     key: 'handleKeydown',
@@ -483,61 +522,27 @@ var Editor = function () {
   }, {
     key: 'update',
     value: function update() {
-      var _this3 = this;
+      var _this2 = this;
 
       if (!this.jaxElement) {
         return;
       }
       this.tree.update();
       this.jaxElement.setValue((0, _toDisplay2.default)(this.$value, this.placeholder)).update().then(function () {
-        _this3.rendered.update();
-        _this3.cursor.update();
+        _this2.rendered.update();
+        _this2.cursor.update();
       });
     }
   }, {
     key: 'backspaceRemove',
     value: function backspaceRemove() {
-      var $position = this.cursor.getPosition();
-
-      if (!$position) {
-        return;
-      }
-      if ($position.tagName === 'MROW') {
-        var $parent = $position.parentNode;
-        var $previous = $parent.previousElementSibling;
-        $parent.parentNode.removeChild($parent);
-        this.cursor.setPosition($previous);
-      } else {
-        if ($position.previousElementSibling) {
-          this.cursor.setPosition($position.previousElementSibling);
-        } else if ($position.parentNode.tagName === 'MROW') {
-          this.cursor.setPosition($position.parentNode);
-        } else {
-          this.cursor.setPosition($position.parentNode.previousElementSibling);
-        }
-        $position.parentNode.removeChild($position);
-      }
-
+      (0, _applyBackspace2.default)(this.$value, this.cursor);
       this.update();
     }
   }, {
     key: 'deleteRemove',
     value: function deleteRemove() {
-      var $position = this.cursor.getPosition();
-      if (!$position) {
-        this.$value.removeChild(this.$value.firstElementChild);
-      } else if (!$position.nextElementSibling) {
-        var $parent = $position.parentNode;
-        if ($parent.tagName === 'MROW') {
-          this.cursor.setPosition($parent.parentNode.previousElementSibling);
-          $parent.parentNode.parentNode.removeChild($parent.parentNode);
-        } else {
-          $parent.parentNode.removeChild($parent);
-        }
-      } else {
-        $position.parentNode.removeChild($position.nextElementSibling);
-      }
-
+      (0, _applyDelete2.default)(this.$value, this.cursor);
       this.update();
     }
 
@@ -616,7 +621,7 @@ var Editor = function () {
 exports.default = Editor;
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -628,7 +633,78 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _px = __webpack_require__(6);
+var _addClass = __webpack_require__(1);
+
+var _addClass2 = _interopRequireDefault(_addClass);
+
+var _removeClass = __webpack_require__(2);
+
+var _removeClass2 = _interopRequireDefault(_removeClass);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Blinker = function () {
+  /**
+   * @param {HTMLElement} $caret  
+   */
+  function Blinker($caret) {
+    var _this = this;
+
+    _classCallCheck(this, Blinker);
+
+    this.$caret = $caret;
+    this.freezeDuration = 500;
+    this.blinkDuration = 500;
+
+    this.id = setInterval(function () {
+      if (_this.$caret.style.display !== 'block') {
+        return;
+      }
+      _this.$caret.style.opacity = _this.$caret.style.opacity === '0' ? '1' : '0';
+    }, this.blinkDuration);
+
+    this.prevFreezeId = null;
+  }
+
+  _createClass(Blinker, [{
+    key: 'destroy',
+    value: function destroy() {
+      clearInterval(this.id);
+    }
+  }, {
+    key: 'freeze',
+    value: function freeze() {
+      var _this2 = this;
+
+      clearInterval(this.prevFreezeId);
+      (0, _addClass2.default)(this.$caret, 'is-freezed');
+      this.prevFreezeId = setTimeout(function () {
+        (0, _removeClass2.default)(_this2.$caret, 'is-freezed');
+      }, this.freezeDuration);
+    }
+  }]);
+
+  return Blinker;
+}();
+
+exports.default = Blinker;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _px = __webpack_require__(8);
 
 var _px2 = _interopRequireDefault(_px);
 
@@ -656,11 +732,21 @@ var Cursor = function () {
   }
 
   /**
-   * @return {HTMLElement}
+   * @return {ClientRect}
    */
 
 
   _createClass(Cursor, [{
+    key: 'getCaretBounding',
+    value: function getCaretBounding() {
+      return this.$caret.getBoundingClientRect();
+    }
+
+    /**
+     * @return {HTMLElement}
+     */
+
+  }, {
     key: 'getPosition',
     value: function getPosition() {
       return this.$position;
@@ -668,18 +754,21 @@ var Cursor = function () {
 
     /**
      * @param {HTMLElement} $position  
+     * 
+     * @return {this}
      */
 
   }, {
     key: 'setPosition',
     value: function setPosition($position) {
       this.$position = $position;
+      return this;
     }
   }, {
     key: 'moveLeft',
     value: function moveLeft() {
       if (!this.$position) {
-        return;
+        return this.update();
       }
       var path = this.tree.getPath();
       var index = path.indexOf(this.$position);
@@ -724,7 +813,7 @@ var Cursor = function () {
 exports.default = Cursor;
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -742,7 +831,7 @@ function px(value) {
 }
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -754,141 +843,100 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _moverSkip = __webpack_require__(8);
-
-var _moverSkip2 = _interopRequireDefault(_moverSkip);
-
-var _inArray = __webpack_require__(1);
-
-var _inArray2 = _interopRequireDefault(_inArray);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var CursorMover = function () {
-  /**
-   * @param {Rendered} rendered
-   */
-  function CursorMover(rendered) {
+  function CursorMover(tree, rendered, cursor) {
     _classCallCheck(this, CursorMover);
 
+    /** @type {Tree} */
+    this.tree = tree;
     /** @type {Rendered} */
     this.rendered = rendered;
+    /** @type {Cursor} */
+    this.cursor = cursor;
   }
-
-  /**
-   * @param {Number} x 
-   * @param {Number} y
-   * 
-   * @return {Promise} 
-   */
-
 
   _createClass(CursorMover, [{
     key: 'click',
     value: function click(x, y) {
-      var _this = this;
+      var shortest = Infinity;
+      var $set = null;
 
-      return new Promise(function (resolve) {
-        var candidate = null;
-        var shortest = Infinity;
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
 
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
+      try {
+        for (var _iterator = this.rendered.getLines()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var line = _step.value;
 
+          if (!line.betweenYAxis(y)) {
+            continue;
+          }
+          if (!line.betweenXAxis(x)) {
+            if (x > line.x2) {
+              return this.cursor.setPosition(line.getLastElement().getElement()).update();
+            } else {
+              return this.cursor.setPosition(line.getFirstElement().getElement()).update();
+            }
+          }
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
         try {
-          for (var _iterator = _this.rendered.getLines()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var line = _step.value;
-
-            if (!line.betweenYAxis(y)) {
-              continue;
-            }
-            if (!line.betweenXAxis(x)) {
-              if (x > line.x2) {
-                return resolve({
-                  $to: line.getLastElement().getElement(),
-                  moveLeft: false
-                });
-              } else {
-                return resolve({
-                  $to: line.getFirstElement().getElement(),
-                  moveLeft: true
-                });
-              }
-            }
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
           }
-        } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
         } finally {
-          try {
-            if (!_iteratorNormalCompletion && _iterator.return) {
-              _iterator.return();
-            }
-          } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
-            }
+          if (_didIteratorError) {
+            throw _iteratorError;
           }
         }
+      }
 
-        var _iteratorNormalCompletion2 = true;
-        var _didIteratorError2 = false;
-        var _iteratorError2 = undefined;
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
 
+      try {
+        for (var _iterator2 = this.tree.getPath()[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var $el = _step2.value;
+
+          if ($el && $el.tagName === 'MATH') {
+            continue;
+          }
+
+          this.cursor.setPosition($el).update();
+
+          var bounding = this.cursor.getCaretBounding();
+          var cx = bounding.left + bounding.width / 2;
+          var cy = bounding.top + bounding.height / 2;
+          var dist = Math.sqrt(Math.pow(x - cx, 2) + Math.pow(y - cy, 2));
+
+          if (shortest > dist) {
+            shortest = dist;
+            $set = $el;
+          }
+        }
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
         try {
-          for (var _iterator2 = _this.rendered.getElements()[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-            var element = _step2.value;
-
-            if (!element.getElement() || (0, _inArray2.default)(_moverSkip2.default, element.getTagName())) {
-              continue;
-            }
-
-            if (element.isTagName('MROW')) {
-              if (element.hasChildren()) {
-                continue;
-              } else if (element.pointIn(x, y)) {
-                candidate = element;
-                break;
-              }
-              continue;
-            }
-
-            var distance = element.distanceTo(x, y);
-
-            if (shortest > distance) {
-              shortest = distance;
-              candidate = element;
-            }
+          if (!_iteratorNormalCompletion2 && _iterator2.return) {
+            _iterator2.return();
           }
-        } catch (err) {
-          _didIteratorError2 = true;
-          _iteratorError2 = err;
         } finally {
-          try {
-            if (!_iteratorNormalCompletion2 && _iterator2.return) {
-              _iterator2.return();
-            }
-          } finally {
-            if (_didIteratorError2) {
-              throw _iteratorError2;
-            }
+          if (_didIteratorError2) {
+            throw _iteratorError2;
           }
         }
+      }
 
-        if (candidate) {
-          resolve({
-            $to: candidate.getElement(),
-            moveLeft: candidate.isLeftSide(x)
-          });
-        } else {
-          resolve({
-            $to: null
-          });
-        }
-      });
+      this.cursor.setPosition($set).update();
     }
   }]);
 
@@ -898,19 +946,7 @@ var CursorMover = function () {
 exports.default = CursorMover;
 
 /***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = ['MATH', 'MSQRT', 'MFRAC'];
-
-/***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -974,7 +1010,7 @@ var EventEmitter = function () {
 exports.default = EventEmitter;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -986,11 +1022,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _element = __webpack_require__(11);
+var _element = __webpack_require__(12);
 
 var _element2 = _interopRequireDefault(_element);
 
-var _line = __webpack_require__(12);
+var _line = __webpack_require__(14);
 
 var _line2 = _interopRequireDefault(_line);
 
@@ -1146,7 +1182,7 @@ var Rendered = function () {
 exports.default = Rendered;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1157,6 +1193,12 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _hasClass = __webpack_require__(13);
+
+var _hasClass2 = _interopRequireDefault(_hasClass);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -1245,49 +1287,23 @@ var Element = function () {
   }, {
     key: 'hasChildren',
     value: function hasChildren() {
-      return !!this.$el.children;
+      return !!this.$el.children.length;
     }
 
     /**
-     * @param {Number} x
-     * @param {Number} y
-     * 
-     * @return {Boolean}
+     * @return {Null|HTMLElement}
      */
 
   }, {
-    key: 'pointIn',
-    value: function pointIn(x, y) {
-      return x > this.x1 && x < this.x2 && y > this.y1 && y < this.y2;
+    key: 'getLastChild',
+    value: function getLastChild() {
+      return this.$el.children[this.$el.children.length - 1];
     }
 
     /**
-     * @param {Number} x 
-     * @param {Number} y 
-     * 
-     * @return {Number}
+     * @return {Object}
      */
 
-  }, {
-    key: 'distanceTo',
-    value: function distanceTo(x, y) {
-      return Math.sqrt(Math.pow(x - this.cx, 2) + Math.pow(y - this.cy, 2));
-    }
-
-    /**
-     * @param {Number} x
-     * 
-     * @return {Boolean}
-     */
-
-  }, {
-    key: 'isLeftSide',
-    value: function isLeftSide(x) {
-      if (this.$el.tagName === 'MROW') {
-        return false;
-      }
-      return this.cx > x;
-    }
   }, {
     key: 'getCaretPosition',
     value: function getCaretPosition() {
@@ -1307,8 +1323,8 @@ var Element = function () {
         height = parent.$rendered.clientHeight;
       }
       return {
-        top: this.top - Math.max(height - this.height, 0),
-        left: this.left + (this.$el.tagName !== 'MROW' ? this.width : 0),
+        top: Math.max(this.top - Math.max(height - this.height, 0), 0),
+        left: this.left + (!this.isTagName('MROW') ? this.width : 0),
         height: height,
         $parent: this.$rendered.parentNode
       };
@@ -1321,7 +1337,26 @@ var Element = function () {
 exports.default = Element;
 
 /***/ }),
-/* 12 */
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = hasClass;
+/**
+ * @param {HTMLElement} $el  
+ * @param {String} name 
+ */
+function hasClass($el, name) {
+  return $el.classList.contains(name);
+}
+
+/***/ }),
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1435,7 +1470,7 @@ var Line = function () {
 exports.default = Line;
 
 /***/ }),
-/* 13 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1529,26 +1564,7 @@ var Tree = function () {
 exports.default = Tree;
 
 /***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = addClass;
-/**
- * @param {HTMLElement} $el  
- * @param {String} name 
- */
-function addClass($el, name) {
-  return $el.classList.add(name);
-}
-
-/***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1563,7 +1579,7 @@ function append($parent, $child) {
 }
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1582,7 +1598,77 @@ function appendElementAfter($ref, $new) {
 }
 
 /***/ }),
-/* 17 */
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = applyDelete;
+/**
+ * @param {HTMLElement}  
+ * @param {Cursor} cursor 
+ */
+function applyDelete($value, cursor) {
+  var $position = cursor.getPosition();
+  if (!$position) {
+    $value.removeChild($value.firstElementChild);
+  } else if (!$position.nextElementSibling) {
+    var $parent = $position.parentNode;
+    if ($parent.tagName === 'MROW') {
+      cursor.setPosition($parent.parentNode.previousElementSibling);
+      $parent.parentNode.parentNode.removeChild($parent.parentNode);
+    } else {
+      $parent.parentNode.removeChild($parent);
+    }
+  } else {
+    $position.parentNode.removeChild($position.nextElementSibling);
+  }
+}
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = applyBackspace;
+/**
+ * @param {HTMLElement}  
+ * @param {Cursor} cursor 
+ */
+function applyBackspace($value, cursor) {
+  var $position = cursor.getPosition();
+
+  if (!$position) {
+    return;
+  }
+  if ($position.tagName === 'MROW') {
+    var $parent = $position.parentNode;
+    var $previous = $parent.previousElementSibling;
+    $parent.parentNode.removeChild($parent);
+    cursor.setPosition($previous);
+  } else {
+    if ($position.previousElementSibling) {
+      cursor.setPosition($position.previousElementSibling);
+    } else if ($position.parentNode.tagName === 'MROW') {
+      cursor.setPosition($position.parentNode);
+    } else {
+      cursor.setPosition($position.parentNode.previousElementSibling);
+    }
+    $position.parentNode.removeChild($position);
+  }
+}
+
+/***/ }),
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1601,7 +1687,7 @@ function createElement(tagName) {
 }
 
 /***/ }),
-/* 18 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1631,7 +1717,7 @@ function findTextarea(selectors) {
 }
 
 /***/ }),
-/* 19 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1719,7 +1805,7 @@ function getJaxElement($node, callback) {
 }
 
 /***/ }),
-/* 20 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1734,7 +1820,7 @@ function hideElement($el) {
 }
 
 /***/ }),
-/* 21 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1754,26 +1840,7 @@ function listenElement($el, type, listener) {
 }
 
 /***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = removeClass;
-/**
- * @param {HTMLElement} $el  
- * @param {String} name 
- */
-function removeClass($el, name) {
-  return $el.classList.remove(name);
-}
-
-/***/ }),
-/* 23 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1791,7 +1858,7 @@ function showElement($el) {
 }
 
 /***/ }),
-/* 24 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1822,7 +1889,14 @@ function toDisplay($value) {
   }
 
   (0, _toArray2.default)($clone.querySelectorAll('mrow')).forEach(function ($mrow) {
-    if (!$mrow.children.length) {
+    if ($mrow.children.length) {
+      if ($mrow.parentNode.tagName === 'MSQRT') {
+        var $mspace = document.createElement('mspace');
+        $mspace.setAttribute('width', 'thinmathspace');
+        $mspace.className = 'mathjax-editor-helper';
+        $mrow.appendChild($mspace);
+      }
+    } else {
       var $mo = document.createElement('mo');
       $mo.className = 'mathjax-editor-placeholder';
       $mo.innerHTML = '?';
@@ -1831,6 +1905,10 @@ function toDisplay($value) {
   });
 
   (0, _toArray2.default)($clone.querySelectorAll('mspace')).forEach(function ($mspace) {
+    if ($mspace.getAttribute('linebreak') !== 'newline') {
+      return;
+    }
+
     var $previous = $mspace.previousElementSibling;
     var $next = $mspace.nextElementSibling;
     var $mo = document.createElement('mo');
@@ -1844,7 +1922,6 @@ function toDisplay($value) {
     if (!(!$previous || $previous.tagName === 'MSPACE')) {
       return;
     }
-
     $mspace.parentNode.insertBefore($mo.cloneNode(true), $mspace);
   });
 
@@ -1852,7 +1929,7 @@ function toDisplay($value) {
 }
 
 /***/ }),
-/* 25 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1874,13 +1951,32 @@ exports.default = {
 };
 
 /***/ }),
-/* 26 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _styles = __webpack_require__(27);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = inArray;
+/**
+ * @param {Array} array 
+ * @param {*} subject 
+ */
+function inArray(array, subject) {
+  return array.indexOf(subject) !== -1;
+}
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _styles = __webpack_require__(30);
 
 var _styles2 = _interopRequireDefault(_styles);
 
@@ -1896,7 +1992,7 @@ window.addEventListener('load', function () {
 });
 
 /***/ }),
-/* 27 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1919,7 +2015,6 @@ exports.default = {
   '.mathjax-editor-display': {
     'background-color': '#fff',
     'cursor': 'text',
-    // 'position': 'relative',
     '-moz-user-select': 'none',
     '-webkit-user-select': 'none',
     '-ms-user-select': 'none',
@@ -1936,6 +2031,10 @@ exports.default = {
     'width': '1px'
   },
 
+  '.mathjax-editor-caret.is-freezed': {
+    'opacity': '1 !important'
+  },
+
   '.mathjax-editor-newline-empty': {
     'opacity': 0.2
   },
@@ -1946,5 +2045,5 @@ exports.default = {
 };
 
 /***/ })
-/******/ ]);
+/******/ ])["default"];
 });
