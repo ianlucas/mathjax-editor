@@ -1,4 +1,4 @@
-export default class CursorMover2 {
+export default class CursorMover {
   constructor(tree, rendered, cursor) {
     /** @type {Tree} */
     this.tree = tree
