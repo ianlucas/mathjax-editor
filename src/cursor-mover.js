@@ -1,83 +1,49 @@
-import MOVER_SKIP from './constants/mover-skip'
-
-import inArray from './utils/in-array'
-
-export default class CursorMover {
-  /**
-   * @param {Rendered} rendered
-   */
-  constructor(rendered) {
+export default class CursorMover2 {
+  constructor(tree, rendered, cursor) {
+    /** @type {Tree} */
+    this.tree = tree
     /** @type {Rendered} */
     this.rendered = rendered
+    /** @type {Cursor} */
+    this.cursor = cursor
   }
 
-  /**
-   * @param {Number} x 
-   * @param {Number} y
-   * 
-   * @return {Promise} 
-   */
   click(x, y) {
-    return new Promise(resolve => {
-      let candidate = null
-      let shortest = Infinity
+    let shortest = Infinity
+    let $set = null
 
-      for (let line of this.rendered.getLines()) {
-        if (!line.betweenYAxis(y)) {continue}
-        if (!line.betweenXAxis(x)) {
-          if (x > line.x2) {
-            return resolve({
-              $to: line.getLastElement().getElement(),
-              moveLeft: false
-            })
-          }
-          else {
-            return resolve({
-              $to: line.getFirstElement().getElement(),
-              moveLeft: true
-            })
-          }
+    for (let line of this.rendered.getLines()) {
+      if (!line.betweenYAxis(y)) {continue}
+      if (!line.betweenXAxis(x)) {
+        if (x > line.x2) {
+          return this.cursor
+            .setPosition(line.getLastElement().getElement())
+            .update()
+        }
+        else {
+          return this.cursor
+            .setPosition(line.getFirstElement().getElement())
+            .update()
         }
       }
+    }
 
-      for (let element of this.rendered.getElements()) {
-        if (
-          !element.getElement() || 
-          inArray(MOVER_SKIP, element.getTagName())
-        ) {
-          continue
-        }
+    for (const $el of this.tree.getPath()) {
+      if ($el && $el.tagName === 'MATH') {continue}
 
-        if (element.isTagName('MROW')) {
-          if (element.hasChildren()) {
-            continue
-          }
-          else if (element.pointIn(x, y)) {
-            candidate = element
-            break
-          }
-          continue
-        }
+      this.cursor.setPosition($el).update()
 
-        const distance = element.distanceTo(x, y)
-
-        if (shortest > distance) {
-          shortest = distance
-          candidate = element
-        }
-      }
+      const bounding = this.cursor.getCaretBounding()
+      const cx = bounding.left + (bounding.width / 2)
+      const cy = bounding.top + (bounding.height / 2)
+      const dist = Math.sqrt(Math.pow(x - cx, 2) + Math.pow(y - cy, 2))
       
-      if (candidate) {
-        resolve({
-          $to: candidate.getElement(), 
-          moveLeft: candidate.isLeftSide(x)
-        })
+      if (shortest > dist) {
+        shortest = dist
+        $set = $el
       }
-      else {
-        resolve({
-          $to: null
-        })
-      }
-    })
+    }
+
+    this.cursor.setPosition($set).update()
   }
 }

@@ -12,7 +12,6 @@ export default {
   '.mathjax-editor-display': {
     'background-color': '#fff',
     'cursor': 'text',
-    // 'position': 'relative',
     '-moz-user-select': 'none',
     '-webkit-user-select': 'none',
     '-ms-user-select': 'none',
@@ -27,6 +26,10 @@ export default {
     'background-color': '#000',
     'position': 'absolute',
     'width': '1px'
+  },
+
+  '.mathjax-editor-caret.is-freezed': {
+    'opacity': '1 !important'
   },
 
   '.mathjax-editor-newline-empty': {

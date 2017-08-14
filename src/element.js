@@ -1,3 +1,5 @@
+import hasClass from './utils/has-class'
+
 export default class Element {
   /**
    * @param {HTMLElement}  $el
@@ -66,43 +68,19 @@ export default class Element {
    * @return {Boolean}
    */
   hasChildren() {
-    return !!this.$el.children
+    return !!this.$el.children.length
   }
 
   /**
-   * @param {Number} x
-   * @param {Number} y
-   * 
-   * @return {Boolean}
+   * @return {Null|HTMLElement}
    */
-  pointIn(x, y) {
-    return x > this.x1 && x < this.x2 &&
-           y > this.y1 && y < this.y2
+  getLastChild() {
+    return this.$el.children[this.$el.children.length - 1]
   }
 
   /**
-   * @param {Number} x 
-   * @param {Number} y 
-   * 
-   * @return {Number}
+   * @return {Object}
    */
-  distanceTo(x, y) {
-    return Math.sqrt(
-      Math.pow(x - this.cx, 2) + 
-      Math.pow(y - this.cy, 2)
-    )
-  }
-
-  /**
-   * @param {Number} x
-   * 
-   * @return {Boolean}
-   */
-  isLeftSide(x) {
-    if (this.$el.tagName === 'MROW') {return false}
-    return this.cx > x
-  }
-
   getCaretPosition() {
     if (!this.$el) {
       return {
@@ -121,8 +99,8 @@ export default class Element {
       height = parent.$rendered.clientHeight
     }
     return {
-      top: this.top - Math.max(height - this.height, 0),
-      left: this.left + (this.$el.tagName !== 'MROW' ? this.width : 0),
+      top: Math.max(this.top - Math.max(height - this.height, 0), 0),
+      left: this.left + (!this.isTagName('MROW') ? this.width : 0),
       height,
       $parent: this.$rendered.parentNode
     }

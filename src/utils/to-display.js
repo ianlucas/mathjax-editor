@@ -13,7 +13,15 @@ export default function toDisplay($value, placeholder = '') {
 
   toArray($clone.querySelectorAll('mrow'))
     .forEach($mrow => {
-      if (!$mrow.children.length) {
+      if ($mrow.children.length) {
+        if ($mrow.parentNode.tagName === 'MSQRT') {
+          const $mspace = document.createElement('mspace')
+          $mspace.setAttribute('width', 'thinmathspace')
+          $mspace.className = 'mathjax-editor-helper'
+          $mrow.appendChild($mspace)
+        }
+      }
+      else {
         const $mo = document.createElement('mo')
         $mo.className = 'mathjax-editor-placeholder'
         $mo.innerHTML = '?'
@@ -23,6 +31,8 @@ export default function toDisplay($value, placeholder = '') {
 
   toArray($clone.querySelectorAll('mspace'))
     .forEach($mspace => {
+      if ($mspace.getAttribute('linebreak') !== 'newline') {return}
+
       const $previous = $mspace.previousElementSibling
       const $next = $mspace.nextElementSibling
       const $mo = document.createElement('mo')
@@ -33,13 +43,7 @@ export default function toDisplay($value, placeholder = '') {
         $mspace.parentNode.insertBefore($mo, $mspace.nextSibling)
       }
 
-      if (
-        !(
-          !$previous || 
-          $previous.tagName === 'MSPACE'
-        )
-      ) {return}
-
+      if (!(!$previous || $previous.tagName === 'MSPACE')) {return}
       $mspace.parentNode.insertBefore($mo.cloneNode(true), $mspace)
     })
     

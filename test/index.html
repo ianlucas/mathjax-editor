@@ -12,6 +12,7 @@
 
     .mathjax-editor-display {
       border: 1px solid #ccc;
+      padding: 0 0.5em;
     }
 
     .mathjax-editor-display.is-focused {
@@ -22,6 +23,8 @@
 <body>
   <h1>MathJax Editor</h1>
   <textarea id="targetNode"></textarea>
+  <hr>
+  <div id="panel"></div>
 
   <script type='text/x-mathjax-config'>
     MathJax.Hub.Config({
@@ -34,8 +37,22 @@
   </script>
   <script src="MathJaxEditor.js"></script>
   <script>
+    const $panel = document.getElementById('panel')
     window.onload = function () {
       window.editor = new MathJaxEditor('#targetNode')
+      const buttons = [
+        { label: '$$\\frac{a}{b}$$', click() {window.editor.insertFraction()} },
+        { label: '$$\\sqrt{a}$$', click() {window.editor.insertSqrt()} },
+        { label: '$$\\pm$$', click() {window.editor.insertOperator('pm')} },
+        { label: '$$a^b$$', click() {window.editor.insertSuperscript()} }
+      ]
+
+      buttons.forEach(button => {
+        const $button = document.createElement('button')
+        $button.innerHTML = button.label
+        $button.onclick = button.click
+        $panel.appendChild($button)
+      })
     }
   </script>
 </body>

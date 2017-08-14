@@ -18,6 +18,13 @@ export default class Cursor {
   }
 
   /**
+   * @return {ClientRect}
+   */
+  getCaretBounding() {
+    return this.$caret.getBoundingClientRect()
+  }
+
+  /**
    * @return {HTMLElement}
    */
   getPosition() {
@@ -26,13 +33,16 @@ export default class Cursor {
 
   /**
    * @param {HTMLElement} $position  
+   * 
+   * @return {this}
    */
   setPosition($position) {
     this.$position = $position
+    return this
   }
 
   moveLeft() {
-    if (!this.$position) {return}
+    if (!this.$position) {return this.update()}
     const path = this.tree.getPath()
     const index = path.indexOf(this.$position)
     this.$position = path[index - 1]
