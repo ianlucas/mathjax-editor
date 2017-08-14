@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "dev": "webpack-dev-server",
+    "dev": "webpack-dev-server --host 0.0.0.0",
     "build": "webpack && uglifyjs ./dist/MathJaxEditor.js -c -m -o ./dist/MathJaxEditor.min.js"
   },
   "devDependencies": {

@@ -17,7 +17,8 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: 'MathJaxEditor.js',
     library: 'MathJaxEditor',
-    libraryTarget: 'umd'
+    libraryTarget: 'umd',
+    libraryExport: 'default'
   },
 
   module: {
@@ -35,7 +36,8 @@ module.exports = {
 
   devServer: {
     contentBase: path.resolve(__dirname, 'test'),
-    compress: false
+    compress: false,
+    disableHostCheck: true
   },
 
   plugins: [new webpack.BannerPlugin(banner)]
