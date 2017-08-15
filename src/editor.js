@@ -12,7 +12,7 @@ import applyDelete from './utils/apply-delete'
 import applyBackspace from './utils/apply-backspace'
 import createElement from './utils/create-element'
 import findTextarea from './utils/find-textarea'
-import getJaxElement from './utils/get-jax-element'
+import getElementJax from './utils/get-element-jax'
 import hideElement from './utils/hide-element'
 import listenElement from './utils/listen-element'
 import removeClass from './utils/remove-class'
@@ -44,9 +44,9 @@ export default class Editor {
     appendElement(this.$container, this.$input)
     appendElement(this.$display, this.$caret)
     appendElementAfter(this.$el, this.$container)
-    getJaxElement(this.$display)
-      .then(jaxElement => {
-        this.jaxElement = jaxElement
+    getElementJax(this.$display)
+      .then(elementJax => {
+        this.elementJax = elementJax
         this.update()
       })
 
@@ -110,9 +110,9 @@ export default class Editor {
   }
 
   update() {
-    if (!this.jaxElement) {return}
+    if (!this.elementJax) {return}
     this.tree.update()
-    this.jaxElement
+    this.elementJax
       .setValue(toDisplay(this.$value, this.placeholder))
       .update()
       .then(() => {
