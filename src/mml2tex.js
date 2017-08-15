@@ -10,8 +10,9 @@ export default function mml2Tex($value) {
   
   /** @param {HTMLElement} $el */
   const walk = $el => {
-    const tagName = $el.tagName
+    const children = $el.children
     const innerValue = $el.innerHTML
+    const tagName = $el.tagName
 
     switch (tagName) {
     case 'math':
@@ -28,13 +29,19 @@ export default function mml2Tex($value) {
     case 'mrow':
       output = output.trim() + '{'
       break
+    case 'mspace':
+      switch ($el.getAttribute('linebreak')) {
+      case 'newline':
+        output += '\\\\'
+        break
+      }
+      break
     default:
       output += `\\${tagName.substr(1)} `
       break
     }
 
-    toArray($el.children)
-      .forEach($child => walk($child))
+    toArray(children).forEach($child => walk($child))
 
     switch (tagName) {
     case 'mrow':
