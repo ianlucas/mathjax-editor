@@ -1,35 +1,60 @@
+import OPERATOR_LIST from './constants/operator-list'
+
+import reverseObject from './utils/reverse-object'
 import toArray from './utils/to-array'
 
-export default function mml2Tex($math) {
+const REVERSE_OPERATOR_LIST = reverseObject(OPERATOR_LIST)
+
+export default function mml2Tex($value) {
   let output = ''
   
+  /** @param {HTMLElement} $el */
   const walk = $el => {
-    switch ($el.tagName) {
+    const tagName = $el.tagName
+    const innerValue = $el.innerHTML
+
+    switch (tagName) {
+    case 'math':
+    case 'msup':
+    case 'msub':
+      break
     case 'mn':
     case 'mi':
+      output += innerValue
+      break
     case 'mo':
-      output += $el.textContent
+      output += REVERSE_OPERATOR_LIST[innerValue] || '?'
       break
     case 'mrow':
       output = output.trim() + '{'
       break
     default:
-      output += `\\${$el.tagName.toLowerCase().substr(1)} `
+      output += `\\${tagName.substr(1)} `
       break
     }
 
     toArray($el.children)
       .forEach($child => walk($child))
 
-    switch ($el.tagName) {
+    switch (tagName) {
     case 'mrow':
       output = output.trim() + '}'
+      
+      if ($el.parentNode.firstElementChild === $el) {
+        switch ($el.parentNode.tagName) {
+        case 'msup':
+          output += '^'
+          break
+        case 'msub':
+          output += '_'
+          break
+        }
+      }
       break
     }
   }
 
-  toArray($math.children)
-    .forEach($child => walk($child))
+  walk($value)
 
   return output
 }
