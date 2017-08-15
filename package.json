@@ -1,12 +1,15 @@
 {
   "scripts": {
     "dev": "webpack-dev-server --host 0.0.0.0",
-    "build": "webpack && uglifyjs ./dist/MathJaxEditor.js -c -m -o ./dist/MathJaxEditor.min.js"
+    "build": "webpack && uglifyjs ./dist/MathJaxEditor.js -c -m -o ./dist/MathJaxEditor.min.js",
+    "test": "jest"
   },
   "devDependencies": {
     "babel-core": "^6.25.0",
+    "babel-jest": "^20.0.3",
     "babel-loader": "^7.1.1",
     "babel-preset-env": "^1.6.0",
+    "jest": "^20.0.4",
     "uglify-js": "^3.0.27",
     "webpack": "^3.4.1",
     "webpack-dev-server": "^2.6.1"
