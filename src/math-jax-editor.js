@@ -68,6 +68,7 @@ export default class MathJaxEditor {
    */
   insertOperator(o) {
     if (!EXTRA_OPERATOR_LIST[o]) {
+      if (o[0] !== '\\\\') {return this.insertOperator(`\\${o}`)}
       throw new TypeError(`MathjaxEditor: Unknown operator "${o}"`)
     }
 
