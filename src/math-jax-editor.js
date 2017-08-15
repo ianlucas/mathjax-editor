@@ -1,6 +1,6 @@
 import Editor from './editor'
 
-import OPERATOR_LIST from './constants/operator-list'
+import EXTRA_OPERATOR_LIST from './constants/extra-operator-list'
 
 import inArray from './utils/in-array'
 
@@ -67,12 +67,12 @@ export default class MathJaxEditor {
    * @param {String} o 
    */
   insertOperator(o) {
-    if (!OPERATOR_LIST[o]) {
+    if (!EXTRA_OPERATOR_LIST[o]) {
       throw new TypeError(`MathjaxEditor: Unknown operator "${o}"`)
     }
 
     const $mo = document.createElement('mo')
-    $mo.innerHTML = OPERATOR_LIST[o]
+    $mo.innerHTML = EXTRA_OPERATOR_LIST[o]
 
     this.core.insert($mo)
   }
@@ -98,7 +98,7 @@ export default class MathJaxEditor {
     if (what.match(/^[a-zA-Z]$/)) {
       return this.insertIdentifier(what)
     }
-    if (OPERATOR_LIST[what]) {
+    if (EXTRA_OPERATOR_LIST[what]) {
       return this.insertOperator(what)
     }
     console.warn(`MathjaxEditor: insert: unknown "${what}"`)
