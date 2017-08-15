@@ -89,6 +89,17 @@ export default class MathJaxEditor {
     this.core.insert($msup, $mrowBase)
   }
 
+  insertSubscript() {
+    const $msub = document.createElement('msub')
+    const $mrowBase = document.createElement('mrow')
+    const $mrowSequence = document.createElement('mrow')
+
+    $msub.appendChild($mrowBase)
+    $msub.appendChild($mrowSequence)
+
+    this.core.insert($msub, $mrowBase)
+  }
+
   /**
    * @param {String} what 
    */
