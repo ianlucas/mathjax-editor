@@ -1,20 +1,23 @@
 /**
- * @param {String|Node} selectors
+ * Find the textarea with the given selector. Just one textarea will be
+ * picked by this function, so the first found one.
  * 
- * @return {Node}
+ * @param {String|HTMLElement} selectors
+ * 
+ * @return {HTMLElement}
  */
 export default function findTextarea(selectors) {
-  const $node = typeof selectors === 'string'
+  const $el = typeof selectors === 'string'
     ? document.querySelector(selectors)
     : (selectors.nodeType === 1 ? selectors : null)
 
-  if (!$node) {
+  if (!$el) {
     throw new ReferenceError('MathjaxEditor: Target TEXTAREA was not found.')
   }
 
-  if ($node.tagName !== 'TEXTAREA') {
+  if ($el.tagName !== 'TEXTAREA') {
     throw new TypeError('MathjaxEditor: Target element must be a TEXTAREA.')
   }
 
-  return $node
+  return $el
 }

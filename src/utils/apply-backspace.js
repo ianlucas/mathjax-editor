@@ -1,6 +1,11 @@
 /**
- * @param {HTMLElement}  
+ * Perform the "backspace" deletion on the given value and
+ * current cursor position.
+ * 
+ * @param {HTMLElement} $value
  * @param {Cursor} cursor 
+ * 
+ * @return {Void}
  */
 export default function applyBackspace($value, cursor) {
   const $position = cursor.getPosition()

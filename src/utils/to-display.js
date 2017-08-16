@@ -1,8 +1,14 @@
 import toArray from './to-array'
 
 /**
+ * This function will add some visual stuff to the editor's current
+ * value after cloning it, then will return the final markup to be set
+ * on the display.
+ * 
  * @param {HTMLElement} $value
  * @param {String} [placeholder] 
+ * 
+ * @return {String}
  */
 export default function toDisplay($value, placeholder = '') {
   const $clone = $value.cloneNode(true)

@@ -6,20 +6,20 @@ import ElementJax from '../element-jax'
  * 
  * @see http://docs.mathjax.org/en/latest/api/elementjax.html
  * 
- * @param {Node} $node
+ * @param {HTMLElement} $el
  * @param {Function} callback
  * 
  * @return {Void}
  */
-export default function getElementJax($node, callback) {
+export default function getElementJax($el, callback) {
   const placeholder = '<math><mo>...</mo></math>'
 
   return new Promise(resolve => {
     MathJax.Hub.Config({
       displayAlign: "left"
     });
-    MathJax.Hub.Queue(['Typeset', MathJax.Hub, $node, () => {
-      const jax = MathJax.Hub.getAllJax($node)[0]
+    MathJax.Hub.Queue(['Typeset', MathJax.Hub, $el, () => {
+      const jax = MathJax.Hub.getAllJax($el)[0]
       jax.Text(placeholder, () => resolve(new ElementJax(jax)))
     }])
   })
