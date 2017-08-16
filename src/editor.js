@@ -1,3 +1,5 @@
+import debounce from 'debounce'
+
 import Blinker from './blinker'
 import Cursor from './cursor'
 import CursorMover from './cursor-mover'
@@ -19,9 +21,11 @@ import hideElement from './utils/hide-element'
 import listenElement from './utils/listen-element'
 import prependElement from './utils/prepend-element'
 import removeClass from './utils/remove-class'
+import removeElement from './utils/remove-element'
 import showElement from './utils/show-element'
 import toDisplay from './utils/to-display'
 import toDom from './utils/to-dom'
+import unlistenElement from './utils/unlisten-element'
 
 export default class Editor {
   /**
@@ -51,6 +55,7 @@ export default class Editor {
     this.blinker = new Blinker(this.$caret)
     this.placeholder = options.placeholder || 'Start typing...'
     this.allowNewlines = options.allowNewlines || false
+    this.handleResize = debounce(this.handleResize.bind(this), 25)
     
     hideElement(this.$caret)
     hideElement(this.$el)
@@ -73,6 +78,7 @@ export default class Editor {
     listenElement(this.$input, 'blur', this.handleBlur.bind(this))
     listenElement(this.$display, 'mouseenter', this.handleMouseenter.bind(this))
     listenElement(this.$display, 'mouseleave', this.handleMouseleave.bind(this))
+    listenElement(window, 'resize', this.handleResize)
   }
 
   /**
@@ -160,6 +166,15 @@ export default class Editor {
     case 46: return this.deleteRemove()
     // default: console.log(e.which)
     }
+  }
+
+  /**
+   * Update the editor when the window is resized.
+   * 
+   * @return {Void}
+   */
+  handleResize() {
+    this.update()
   }
 
   /**
@@ -316,5 +331,15 @@ export default class Editor {
     this.$value = $value
     this.cursor.setPosition(null)
     this.update()
+  }
+
+  /**
+   * Destroy the editor element and event listeners.
+   * 
+   * @return {Void}
+   */
+  destroy() {
+    removeElement(this.$container)
+    unlistenElement(window, 'resize', this.handleResize)
   }
 }
