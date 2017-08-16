@@ -1,9 +1,16 @@
 export default class EventEmitter {
+  /**
+   * This class is a simple event emitter.
+   * 
+   * @constructor
+   */
   constructor() {
     this.listeners = {}
   }
 
   /**
+   * Listen to an event.
+   * 
    * @param {String} type 
    * @param {Function} listener 
    */
@@ -15,9 +22,12 @@ export default class EventEmitter {
   }
 
   /**
+   * Emit an event.
    * 
    * @param {String} type 
-   * @param {...*} rest 
+   * @param {...*} rest
+   * 
+   * @return {Void}
    */
   emit(type, ...rest) {
     if (!this.listeners[type]) {return}
