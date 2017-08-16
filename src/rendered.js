@@ -5,8 +5,13 @@ import toArray from './utils/to-array'
 
 export default class Rendered {
   /**
+   * This class matches every element of the editor's value to its
+   * rendered element by MathJax.
+   * 
    * @param {HTMLElement} $display
    * @param {Tree} tree
+   * 
+   * @constructor
    */
   constructor($display, tree) {
     /** @type {HTMLElement} */
@@ -20,6 +25,8 @@ export default class Rendered {
   }
 
   /**
+   * Get the lines.
+   * 
    * @return {Array}
    */
   getLines() {
@@ -27,6 +34,8 @@ export default class Rendered {
   }
 
   /**
+   * Get the elements.
+   * 
    * @return {Array}
    */
   getElements() {
@@ -34,6 +43,8 @@ export default class Rendered {
   }
 
   /**
+   * Find the rendered line elements.
+   * 
    * @return {Array}
    */
   findRenderedLines() {
@@ -45,6 +56,8 @@ export default class Rendered {
   }
 
   /**
+   * Find a rendered element.
+   * 
    * @param {HTMLElement} $el
    * 
    * @return {HTMLElement}
@@ -56,6 +69,8 @@ export default class Rendered {
   }
 
   /**
+   * Find an element.
+   * 
    * @param {HTMLElement} $el
    * 
    * @return {Element}
@@ -64,6 +79,11 @@ export default class Rendered {
     return this.elements.find(element => element.$el === $el)
   }
 
+  /**
+   * Catch all rendered elements and lines of the display.
+   * 
+   * @return {Void}
+   */
   update() {
     let lineIndex = 0
     const renderedLines = this.findRenderedLines()

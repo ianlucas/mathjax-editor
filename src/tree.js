@@ -2,7 +2,13 @@ import toArray from './utils/to-array'
 
 export default class Tree {
   /**
-   * @param {HTMLElement} $value  
+   * This class walks through the editor's value and creates
+   * a path for the cursor. Also, it sets an id for each
+   * element of the value, so we can find them later on Rendered class.
+   * 
+   * @param {HTMLElement} $value 
+   * 
+   * @constructor
    */
   constructor($value) {
     this.$value = $value
@@ -13,6 +19,8 @@ export default class Tree {
   }
 
   /**
+   * Change the value of the tree.
+   * 
    * @param {HTMLElement} $value
    * 
    * @return {Tree}
@@ -23,12 +31,20 @@ export default class Tree {
   }
 
   /**
+   * Get the cursor path.
+   * 
    * @return {Array}
    */
   getPath() {
     return this.path
   }
 
+  /**
+   * Walk through the valeu and set an id to the elements
+   * that don't have one.
+   * 
+   * @return {Void}
+   */
   update() {
     this.path = [null]
 
