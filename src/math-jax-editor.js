@@ -1,6 +1,7 @@
 import Editor from './editor'
 
 import EXTRA_OPERATOR_LIST from './constants/extra-operator-list'
+import IDENTIFIER_LIST from './constants/identifier-list'
 
 export default class MathJaxEditor {
   /**
@@ -45,9 +46,14 @@ export default class MathJaxEditor {
    * @return {Void}
    */
   insertIdentifier(i) {
-    if (typeof i !== 'string' && !i.match(/^[a-zA-Z]$/)) {
-      throw new RangeError('MathjaxEditor: A single letter must be provided.')
+    if (typeof i !== 'string' && !i.match(/^[a-zA-Z\\]+$/)) {
+      throw new RangeError('MathjaxEditor: A string with alphabetic characters should be given.')
     }
+    if (!IDENTIFIER_LIST[i]) {
+      if (i[0] !== '\\') {return this.insertIdentifier(`\\${i}`)}
+      else {i = i.substr(1)}
+    }
+    else {i = IDENTIFIER_LIST[i]}
 
     const $mi = document.createElement('mi')
     $mi.innerHTML = i
@@ -149,7 +155,7 @@ export default class MathJaxEditor {
     if (what.match(/^[0-9]$/)) {
       return this.insertNumber(parseInt(what, 10))
     }
-    if (what.match(/^[a-zA-Z]$/)) {
+    if (what.match(/^[a-zA-Z\\]+$/)) {
       return this.insertIdentifier(what)
     }
     if (EXTRA_OPERATOR_LIST[what]) {
