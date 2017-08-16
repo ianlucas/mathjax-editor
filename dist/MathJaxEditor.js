@@ -506,6 +506,30 @@ var MathJaxEditor = function () {
     }
 
     /**
+     * Move the cursor to the left.
+     * 
+     * @return {Void}
+     */
+
+  }, {
+    key: 'moveCursorLeft',
+    value: function moveCursorLeft() {
+      return this.core.cursor.moveLeft();
+    }
+
+    /**
+     * Move the cursor to the right.
+     * 
+     * @return {Void}
+     */
+
+  }, {
+    key: 'moveCursorRight',
+    value: function moveCursorRight() {
+      return this.core.cursor.moveRight();
+    }
+
+    /**
      * Get the value of the editor as string.
      * 
      * @return {String}
@@ -863,6 +887,7 @@ var Editor = function () {
       var $cleanValue = this.getValue();
       this.$el.value = $cleanValue.outerHTML;
       this.emitter.emit('update', $cleanValue);
+      this.tree.setValue(this.$value);
       this.tree.update();
       this.elementJax.setValue((0, _toDisplay2.default)(this.$value, this.placeholder)).update().then(function () {
         _this2.rendered.update();
@@ -915,10 +940,10 @@ var Editor = function () {
       if (!$position) {
         (0, _prependElement2.default)(this.$value, $el);
       } else {
-        switch ($position.tagName) {
-          case 'MROW':
+        switch ($position.tagName.toLowerCase()) {
+          case 'mrow':
             (0, _prependElement2.default)($position, $el);break;
-          case 'MATH':
+          case 'math':
             (0, _appendElement2.default)(this.$value, $el);break;
           default:
             (0, _appendElementAfter2.default)($position, $el);
@@ -943,7 +968,7 @@ var Editor = function () {
         return;
       }
       var $position = this.cursor.getPosition();
-      if ($position && $position.tagName !== 'MATH' && $position.parentNode.tagName !== 'MATH') {
+      if ($position && $position.tagName.toLowerCase() !== 'math' && $position.parentNode.tagName.toLowerCase() !== 'math') {
         return;
       }
 
@@ -1031,8 +1056,8 @@ var Editor = function () {
       if (typeof $value === 'string') {
         $value = (0, _toDom2.default)($value);
       }
-      if ($value.nodeType !== 1 || $value.tagName !== 'MATH') {
-        throw new Exception('MathjaxEditor: the value must be an <math> element.');
+      if ($value.nodeType !== 1 || $value.tagName.toLowerCase() !== 'math') {
+        throw new Error('MathjaxEditor: the value must be an <math> element.');
       }
       this.$value = $value;
       this.cursor.setPosition(null);
@@ -1248,13 +1273,13 @@ var Cursor = function () {
       var path = this.tree.getPath();
       if (!this.$position) {
         var $first = path[1];
-        if ($first.tagName !== 'MATH') {
+        if ($first.tagName.toLowerCase() !== 'math') {
           this.$position = $first;
         }
       } else {
         var index = path.indexOf(this.$position);
         var $next = path[index + 1];
-        var isMath = $next.tagName === 'MATH';
+        var isMath = $next.tagName.toLowerCase() === 'math';
         var isParent = this.$position.parentNode === $next;
         if ($next && !(isMath && isParent)) {
           this.$position = $next;
@@ -1417,7 +1442,7 @@ var CursorMover = function () {
         for (var _iterator2 = this.tree.getPath()[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
           var $el = _step2.value;
 
-          if ($el && $el.tagName === 'MATH') {
+          if ($el && $el.tagName.toLowerCase() === 'math') {
             continue;
           }
 
@@ -1689,7 +1714,7 @@ var Rendered = function () {
           var $rendered = this.findRenderedElement($el);
           var element = new _element2.default($el, $rendered);
 
-          if ($el && $el.tagName === 'MSPACE') {
+          if ($el && $el.tagName.toLowerCase() === 'mspace') {
             line = new _line2.default();
             lineIndex += 1;
             line.setRendered(renderedLines[lineIndex]);
@@ -1810,9 +1835,9 @@ var Element = function () {
     key: 'getTagName',
     value: function getTagName() {
       if (!this.$el) {
-        return 'NULL';
+        return 'null';
       }
-      return this.$el.tagName;
+      return this.$el.tagName.toLowerCase();
     }
 
     /**
@@ -1872,15 +1897,15 @@ var Element = function () {
         };
       }
       var height = this.line.height;
-      if (this.isTagName('MROW')) {
+      if (this.isTagName('mrow')) {
         height = this.height;
-      } else if (this.$el.parentNode.tagName === 'MROW') {
+      } else if (this.$el.parentNode.tagName.toLowerCase() === 'mrow') {
         var parent = this.rendered.findElement(this.$el.parentNode);
         height = parent.$rendered.clientHeight;
       }
       return {
         top: Math.max(this.top - Math.max(height - this.height, 0), 0),
-        left: this.left + (!this.isTagName('MROW') ? this.width : 0),
+        left: this.left + (!this.isTagName('mrow') ? this.width : 0),
         height: height,
         $parent: this.$rendered.parentNode
       };
@@ -1986,7 +2011,7 @@ var Line = function () {
       var element = void 0;
       var i = this.elements.length - 1;
       while (element = this.elements[i--]) {
-        if (!element.isTagName('MATH')) {
+        if (!element.isTagName('math')) {
           return element;
         }
       }
@@ -2123,7 +2148,7 @@ var Tree = function () {
           return walk($child);
         });
 
-        if (children.length && $el.tagName !== 'MROW') {
+        if (children.length && $el.tagName.toLowerCase() !== 'mrow') {
           var index = _this.path.indexOf($el);
           _this.path.splice(index, 1);
           _this.path.push($el);
@@ -2360,7 +2385,7 @@ function applyDelete($value, cursor) {
     $value.removeChild($value.firstElementChild);
   } else if (!$position.nextElementSibling) {
     var $parent = $position.parentNode;
-    if ($parent.tagName === 'MROW') {
+    if ($parent.tagName.toLowerCase() === 'mrow') {
       cursor.setPosition($parent.parentNode.previousElementSibling);
       $parent.parentNode.parentNode.removeChild($parent.parentNode);
     } else {
@@ -2397,7 +2422,7 @@ function applyBackspace($value, cursor) {
   if (!$position) {
     return;
   }
-  if ($position.tagName === 'MROW') {
+  if ($position.tagName.toLowerCase() === 'mrow') {
     var $parent = $position.parentNode;
     var $previous = $parent.previousElementSibling;
     $parent.parentNode.removeChild($parent);
@@ -2405,7 +2430,7 @@ function applyBackspace($value, cursor) {
   } else {
     if ($position.previousElementSibling) {
       cursor.setPosition($position.previousElementSibling);
-    } else if ($position.parentNode.tagName === 'MROW') {
+    } else if ($position.parentNode.tagName.toLowerCase() === 'mrow') {
       cursor.setPosition($position.parentNode);
     } else {
       cursor.setPosition($position.parentNode.previousElementSibling);
@@ -2525,9 +2550,6 @@ function getElementJax($el, callback) {
   var placeholder = '<math><mo>...</mo></math>';
 
   return new _promise2.default(function (resolve) {
-    MathJax.Hub.Config({
-      displayAlign: "left"
-    });
     MathJax.Hub.Queue(['Typeset', MathJax.Hub, $el, function () {
       var jax = MathJax.Hub.getAllJax($el)[0];
       jax.Text(placeholder, function () {
@@ -3391,7 +3413,7 @@ function toDisplay($value) {
 
   (0, _toArray2.default)($clone.querySelectorAll('mrow')).forEach(function ($mrow) {
     if ($mrow.children.length) {
-      if ($mrow.parentNode.tagName === 'MSQRT') {
+      if ($mrow.parentNode.tagName.toLowerCase() === 'msqrt') {
         var $mspace = document.createElement('mspace');
         $mspace.setAttribute('width', 'thinmathspace');
         $mspace.className = 'mathjax-editor-helper';
@@ -3416,11 +3438,11 @@ function toDisplay($value) {
     $mo.className = 'mathjax-editor-newline-empty';
     $mo.innerHTML = '⏎';
 
-    if (!$next || $next.tagName === 'MATH') {
+    if (!$next || $next.tagName.toLowerCase() === 'math') {
       $mspace.parentNode.insertBefore($mo, $mspace.nextSibling);
     }
 
-    if (!(!$previous || $previous.tagName === 'MSPACE')) {
+    if (!(!$previous || $previous.tagName.toLowerCase() === 'mspace')) {
       return;
     }
     $mspace.parentNode.insertBefore($mo.cloneNode(true), $mspace);
