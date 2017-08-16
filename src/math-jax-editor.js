@@ -2,8 +2,6 @@ import Editor from './editor'
 
 import EXTRA_OPERATOR_LIST from './constants/extra-operator-list'
 
-import inArray from './utils/in-array'
-
 export default class MathJaxEditor {
   /**
    * The surface that interacts with the Editor class.

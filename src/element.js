@@ -1,5 +1,3 @@
-import hasClass from './utils/has-class'
-
 export default class Element {
   /**
    * This class makes a connection between an actual element
