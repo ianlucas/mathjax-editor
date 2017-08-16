@@ -20,6 +20,16 @@ import showElement from './utils/show-element'
 import toDisplay from './utils/to-display'
 
 export default class Editor {
+  /**
+   * This is the main class of the Editor. 
+   * 
+   * @param {String|HTMLElement} selectors 
+   * @param {Object} [options] 
+   * @param {Boolean} [options.newline=false]
+   * @param {String} [options.placeholder="Start typing..."]
+   * 
+   * @constructor
+   */
   constructor(selectors, options = {}) {
     this.$el = findTextarea(selectors)
     this.$value = createElement('math')
@@ -35,7 +45,8 @@ export default class Editor {
     this.cursor = new Cursor(this.tree, this.rendered, this.$caret)
     this.cursorMover = new CursorMover(this.tree, this.rendered, this.cursor)
     this.blinker = new Blinker(this.$caret)
-    this.placeholder = 'Start typing...'
+    this.placeholder = options.placeholder || 'Start typing...'
+    this.allowNewlines = options.allowNewlines || false
     
     hideElement(this.$caret)
     hideElement(this.$el)
@@ -61,7 +72,11 @@ export default class Editor {
   }
 
   /**
+   * Handle the click event on the display.
+   * 
    * @param {e} ClickEvent
+   * 
+   * @return {Void}
    */
   handleClick({ clientX, clientY }) {
     this.focus()
@@ -69,12 +84,22 @@ export default class Editor {
     this.blinker.freeze()
   }
 
+  /**
+   * Handle the focus event on the input.
+   * 
+   * @return {Void}
+   */
   handleFocus() {
     this.focused = true
     addClass(this.$display, 'is-focused')
     showElement(this.$caret)
   }
 
+  /**
+   * Handle the blur event on the input.
+   * 
+   * @return {Void}
+   */
   handleBlur() {
     if (this.mouseAtDisplay) {return}
     this.focused = false
@@ -82,6 +107,11 @@ export default class Editor {
     hideElement(this.$caret)
   }
 
+  /**
+   * Handle the keyup/keydown event on the input.
+   * 
+   * @return {Void}
+   */
   handleInput() {
     const input = this.$input.value.trim()
     this.$input.value = ''
@@ -90,25 +120,47 @@ export default class Editor {
     }
   }
 
+  /**
+   * Handle the mouseenter event on the display.
+   * 
+   * @return {Void}
+   */
   handleMouseenter() {
     this.mouseAtDisplay = true
   }
 
+  /**
+   * Handle the mouseleave event on the display.
+   * 
+   * @return {Void}
+   */
   handleMouseleave() {
     this.mouseAtDisplay = false
   }
 
+  /**
+   * Handle the keydown event in the input.
+   * 
+   * @param {KeyboardEvent} e
+   * 
+   * @return {Void}
+   */
   handleKeydown(e) {
     switch (e.which) {
     case 8: return this.backspaceRemove()
     case 13: return this.insertNewline()
-    case 37: return this.moveCursorLeft()
-    case 39: return this.moveCursorRight()
+    case 37: return this.cursor.moveLeft()
+    case 39: return this.cursor.moveRight()
     case 46: return this.deleteRemove()
     // default: console.log(e.which)
     }
   }
 
+  /**
+   * Update the editor tree, display, and cursor stuff.
+   * 
+   * @return {Void}
+   */
   update() {
     if (!this.elementJax) {return}
     this.tree.update()
@@ -121,19 +173,33 @@ export default class Editor {
       })
   }
 
+  /**
+   * Apply a "backspace" deletion.
+   * 
+   * @return {Void}
+   */
   backspaceRemove() {
     applyBackspace(this.$value, this.cursor)
     this.update()
   }
 
+  /**
+   * Apply a "delete" deletion.
+   * 
+   * @return {Void}
+   */
   deleteRemove() {
     applyDelete(this.$value, this.cursor)
     this.update()
   }
 
   /**
+   * Insert an element at current cursor position.
+   * 
    * @param {HTMLElement} $el  
    * @param {HTMLElement} [$moveTo]
+   * 
+   * @return {Void}
    */
   insert($el, $moveTo = null) {
     const $position = this.cursor.getPosition()
@@ -154,7 +220,13 @@ export default class Editor {
     this.update()
   }
 
+  /**
+   * Insert a newline in the editor.
+   * 
+   * @return {Void}
+   */
   insertNewline() {
+    if (!this.allowNewlines) {return}
     const $position = this.cursor.getPosition()
     if (
       $position &&
@@ -167,22 +239,23 @@ export default class Editor {
     this.insert($mspace)
   }
 
-  moveCursorLeft() {
-    return this.cursor.moveLeft()
-  }
-
-  moveCursorRight() {
-    return this.cursor.moveRight()
-  }
-
   /**
+   * Listen to an event of the editor.
+   * 
    * @param {String} type 
    * @param {Function} listener
+   * 
+   * @return {Void}
    */
   on(type, listener) {
     return this.emitter.on(type, listener)
   }
 
+  /**
+   * Focus the editor.
+   * 
+   * @return {Void}
+   */
   focus() {
     return this.$input.focus()
   }
