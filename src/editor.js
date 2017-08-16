@@ -4,6 +4,7 @@ import CursorMover from './cursor-mover'
 import EventEmitter from './event-emitter'
 import Rendered from './rendered'
 import Tree from './tree'
+import mml2Tex from './mml2tex'
 
 import addClass from './utils/add-class'
 import appendElement from './utils/append-element'
@@ -13,12 +14,14 @@ import applyBackspace from './utils/apply-backspace'
 import createElement from './utils/create-element'
 import findTextarea from './utils/find-textarea'
 import getElementJax from './utils/get-element-jax'
+import getCleanCopy from './utils/get-clean-copy'
 import hideElement from './utils/hide-element'
 import listenElement from './utils/listen-element'
 import prependElement from './utils/prepend-element'
 import removeClass from './utils/remove-class'
 import showElement from './utils/show-element'
 import toDisplay from './utils/to-display'
+import toDom from './utils/to-dom'
 
 export default class Editor {
   /**
@@ -166,7 +169,9 @@ export default class Editor {
    */
   update() {
     if (!this.elementJax) {return}
-    this.emitter.emit('update', this.$value)
+    const $cleanValue = this.getValue()
+    this.$el.value = $cleanValue.outerHTML
+    this.emitter.emit('update', $cleanValue)
     this.tree.update()
     this.elementJax
       .setValue(toDisplay(this.$value, this.placeholder))
@@ -264,5 +269,51 @@ export default class Editor {
    */
   focus() {
     return this.$input.focus()
+  }
+
+  /**
+   * Get the value of the editor as string.
+   * 
+   * @return {String}
+   */
+  toString() {
+    return this.getValue().outerHTML
+  }
+
+  /**
+   * Get the value of the editor as a tex string.
+   * 
+   * @return {String}
+   */
+  toTex() {
+    return mml2Tex(this.$value)
+  }
+
+  /**
+   * Get the value of the editor (a copy).
+   * 
+   * @return {HTMLElement}
+   */
+  getValue() {
+    return getCleanCopy(this.$value)
+  }
+
+  /**
+   * Set the value of the editor.
+   * 
+   * @param {HTMLElement} $value
+   * 
+   * @return {Void}
+   */
+  setValue($value) {
+    if (typeof $value === 'string') {
+      $value = toDom($value)
+    }
+    if ($value.nodeType !== 1 || $value.tagName !== 'MATH') {
+      throw new Exception('MathjaxEditor: the value must be an <math> element.')
+    }
+    this.$value = $value
+    this.cursor.setPosition(null)
+    this.update()
   }
 }
