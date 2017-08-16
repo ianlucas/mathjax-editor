@@ -2,8 +2,13 @@ import hasClass from './utils/has-class'
 
 export default class Element {
   /**
+   * This class makes a connection between an actual element
+   * of the editor's value and the rendered element by MathJax.
+   * 
    * @param {HTMLElement}  $el
    * @param {HTMLElement}  $rendered
+   * 
+   * @constructor
    */
   constructor($el, $rendered) {
     /** @type {HTMLElement} */
@@ -41,6 +46,8 @@ export default class Element {
   }
 
   /**
+   * Get the element.
+   * 
    * @return {HTMLElement}
    */
   getElement() {
@@ -48,6 +55,8 @@ export default class Element {
   }
 
   /**
+   * Get the tag name of the element.
+   * 
    * @return {String}
    */
   getTagName() {
@@ -56,6 +65,8 @@ export default class Element {
   }
 
   /**
+   * Check the element's tag name.
+   * 
    * @param {String} tag 
    * 
    * @return {Boolean}
@@ -65,6 +76,8 @@ export default class Element {
   }
 
   /**
+   * Check if the element has children.
+   * 
    * @return {Boolean}
    */
   hasChildren() {
@@ -72,6 +85,8 @@ export default class Element {
   }
 
   /**
+   * Get the last child of the element.
+   * 
    * @return {Null|HTMLElement}
    */
   getLastChild() {
@@ -79,6 +94,9 @@ export default class Element {
   }
 
   /**
+   * Determines the position of the caret on the display based
+   * on the position of this rendered element on the display.
+   * 
    * @return {Object}
    */
   getCaretPosition() {
