@@ -5,6 +5,13 @@ import toArray from './utils/to-array'
 
 const REVERSE_OPERATOR_LIST = reverseObject(OPERATOR_LIST)
 
+/**
+ * A basic basic basic MathML to Tex conversor.
+ * 
+ * @param {HTMLElement}  
+ * 
+ * @return {String}
+ */
 export default function mml2Tex($value) {
   let output = ''
   
