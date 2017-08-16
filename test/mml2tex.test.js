@@ -1,6 +1,7 @@
 import loadHtml from './load-html'
 import mml2Tex from '../src/mml2tex'
 
+const cotangentFunction = loadHtml('./cotangent-function.html')
 const findX = loadHtml('./find-x.html')
 const gravityFormula = loadHtml('./gravity-formula.html')
 const massEnergyEquivalence = loadHtml('./mass-energy-equivalence.html')
@@ -20,4 +21,8 @@ test('Gravity formula (frac, sup, sub)', () => {
 
 test('Find X (frac, newline)', () => {
   expect(mml2Tex(findX)).toBe('2x+10=20\\\\2x=20-10\\\\2x=10\\\\x=\\frac{10}{2}\\\\x=5')
+})
+
+test('Cotangent function', () => {
+  expect(mml2Tex(cotangentFunction)).toBe('\\cot\\theta=\\frac{\\cos\\theta}{\\sin\\theta}=\\tan(\\frac{\\pi}{2}-\\theta)=\\frac{1}{\\tan\\theta}')
 })

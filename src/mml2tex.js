@@ -1,9 +1,11 @@
+import IDENTIFIER_LIST from './constants/identifier-list'
 import OPERATOR_LIST from './constants/operator-list'
 
 import lc from './utils/lc'
 import reverseObject from './utils/reverse-object'
 import toArray from './utils/to-array'
 
+const REVERSE_IDENTIFIER_LIST = reverseObject(IDENTIFIER_LIST)
 const REVERSE_OPERATOR_LIST = reverseObject(OPERATOR_LIST)
 
 /**
@@ -28,8 +30,10 @@ export default function mml2Tex($value) {
     case 'msub':
       break
     case 'mn':
-    case 'mi':
       output += innerValue
+      break
+    case 'mi':
+      output += REVERSE_IDENTIFIER_LIST[innerValue] || innerValue
       break
     case 'mo':
       output += REVERSE_OPERATOR_LIST[innerValue] || '?'
