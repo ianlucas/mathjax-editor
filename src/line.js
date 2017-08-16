@@ -65,7 +65,7 @@ export default class Line {
     let element
     let i = this.elements.length - 1
     while (element = this.elements[i--]) {
-      if (!element.isTagName('MATH')) {
+      if (!element.isTagName('math')) {
         return element
       }
     }

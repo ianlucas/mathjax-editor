@@ -61,7 +61,7 @@ export default class CursorMover {
     // where it should be placed.
 
     for (const $el of this.tree.getPath()) {
-      if ($el && $el.tagName === 'MATH') {continue}
+      if ($el && $el.tagName.toLowerCase() === 'math') {continue}
 
       this.cursor.setPosition($el).update()
 

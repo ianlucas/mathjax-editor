@@ -98,7 +98,7 @@ export default class Rendered {
       const $rendered = this.findRenderedElement($el)
       const element = new Element($el, $rendered)
 
-      if ($el && $el.tagName === 'MSPACE') {
+      if ($el && $el.tagName.toLowerCase() === 'mspace') {
         line = new Line
         lineIndex += 1
         line.setRendered(renderedLines[lineIndex])

@@ -59,7 +59,7 @@ export default class Tree {
 
       children.forEach($child => walk($child))
 
-      if (children.length && $el.tagName !== 'MROW') {
+      if (children.length && $el.tagName.toLowerCase() !== 'mrow') {
         const index = this.path.indexOf($el)
         this.path.splice(index, 1)
         this.path.push($el)

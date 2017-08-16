@@ -73,14 +73,14 @@ export default class Cursor {
     const path = this.tree.getPath()
     if (!this.$position) {
       const $first = path[1]
-      if ($first.tagName !== 'MATH') {
+      if ($first.tagName.toLowerCase() !== 'math') {
         this.$position = $first
       }
     }
     else {
       const index = path.indexOf(this.$position)
       const $next = path[index + 1]
-      const isMath = ($next.tagName === 'MATH')
+      const isMath = ($next.tagName.toLowerCase() === 'math')
       const isParent = (this.$position.parentNode === $next)
       if ($next && !(isMath && isParent)) {
         this.$position = $next

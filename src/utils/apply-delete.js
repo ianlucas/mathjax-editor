@@ -14,7 +14,7 @@ export default function applyDelete($value, cursor) {
   }
   else if (!$position.nextElementSibling) {
     const $parent = $position.parentNode
-    if ($parent.tagName === 'MROW') {
+    if ($parent.tagName.toLowerCase() === 'mrow') {
       cursor.setPosition($parent.parentNode.previousElementSibling)
       $parent.parentNode.parentNode.removeChild($parent.parentNode)
     }

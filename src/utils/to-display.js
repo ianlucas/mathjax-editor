@@ -20,7 +20,7 @@ export default function toDisplay($value, placeholder = '') {
   toArray($clone.querySelectorAll('mrow'))
     .forEach($mrow => {
       if ($mrow.children.length) {
-        if ($mrow.parentNode.tagName === 'MSQRT') {
+        if ($mrow.parentNode.tagName.toLowerCase() === 'msqrt') {
           const $mspace = document.createElement('mspace')
           $mspace.setAttribute('width', 'thinmathspace')
           $mspace.className = 'mathjax-editor-helper'
@@ -45,11 +45,11 @@ export default function toDisplay($value, placeholder = '') {
       $mo.className = 'mathjax-editor-newline-empty'
       $mo.innerHTML = '⏎'
 
-      if (!$next || $next.tagName === 'MATH') {
+      if (!$next || $next.tagName.toLowerCase() === 'math') {
         $mspace.parentNode.insertBefore($mo, $mspace.nextSibling)
       }
 
-      if (!(!$previous || $previous.tagName === 'MSPACE')) {return}
+      if (!(!$previous || $previous.tagName.toLowerCase() === 'mspace')) {return}
       $mspace.parentNode.insertBefore($mo.cloneNode(true), $mspace)
     })
     

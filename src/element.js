@@ -58,8 +58,8 @@ export default class Element {
    * @return {String}
    */
   getTagName() {
-    if (!this.$el) {return 'NULL'}
-    return this.$el.tagName
+    if (!this.$el) {return 'null'}
+    return this.$el.tagName.toLowerCase()
   }
 
   /**
@@ -107,16 +107,16 @@ export default class Element {
       }
     }
     let height = this.line.height
-    if (this.isTagName('MROW')) {
+    if (this.isTagName('mrow')) {
       height = this.height
     }
-    else if (this.$el.parentNode.tagName === 'MROW') {
+    else if (this.$el.parentNode.tagName.toLowerCase() === 'mrow') {
       const parent = this.rendered.findElement(this.$el.parentNode)
       height = parent.$rendered.clientHeight
     }
     return {
       top: Math.max(this.top - Math.max(height - this.height, 0), 0),
-      left: this.left + (!this.isTagName('MROW') ? this.width : 0),
+      left: this.left + (!this.isTagName('mrow') ? this.width : 0),
       height,
       $parent: this.$rendered.parentNode
     }

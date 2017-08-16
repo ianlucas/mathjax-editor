@@ -172,6 +172,7 @@ export default class Editor {
     const $cleanValue = this.getValue()
     this.$el.value = $cleanValue.outerHTML
     this.emitter.emit('update', $cleanValue)
+    this.tree.setValue(this.$value)
     this.tree.update()
     this.elementJax
       .setValue(toDisplay(this.$value, this.placeholder))
@@ -217,9 +218,9 @@ export default class Editor {
       prependElement(this.$value, $el)
     }
     else {
-      switch ($position.tagName) {
-      case 'MROW': prependElement($position, $el); break
-      case 'MATH': appendElement(this.$value, $el); break
+      switch ($position.tagName.toLowerCase()) {
+      case 'mrow': prependElement($position, $el); break
+      case 'math': appendElement(this.$value, $el); break
       default: appendElementAfter($position, $el)
       }
     }
@@ -239,8 +240,8 @@ export default class Editor {
     const $position = this.cursor.getPosition()
     if (
       $position &&
-      $position.tagName !== 'MATH' && 
-      $position.parentNode.tagName !== 'MATH'
+      $position.tagName.toLowerCase() !== 'math' && 
+      $position.parentNode.tagName.toLowerCase() !== 'math'
     ) {return}
 
     const $mspace = createElement('mspace', {
@@ -309,8 +310,8 @@ export default class Editor {
     if (typeof $value === 'string') {
       $value = toDom($value)
     }
-    if ($value.nodeType !== 1 || $value.tagName !== 'MATH') {
-      throw new Exception('MathjaxEditor: the value must be an <math> element.')
+    if ($value.nodeType !== 1 || $value.tagName.toLowerCase() !== 'math') {
+      throw new Error('MathjaxEditor: the value must be an <math> element.')
     }
     this.$value = $value
     this.cursor.setPosition(null)

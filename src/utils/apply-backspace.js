@@ -11,7 +11,7 @@ export default function applyBackspace($value, cursor) {
   const $position = cursor.getPosition()
   
   if (!$position) {return}
-  if ($position.tagName === 'MROW') {
+  if ($position.tagName.toLowerCase() === 'mrow') {
     const $parent = $position.parentNode
     const $previous = $parent.previousElementSibling
     $parent.parentNode.removeChild($parent)
@@ -21,7 +21,7 @@ export default function applyBackspace($value, cursor) {
     if ($position.previousElementSibling) {
       cursor.setPosition($position.previousElementSibling)
     }
-    else if ($position.parentNode.tagName === 'MROW') {
+    else if ($position.parentNode.tagName.toLowerCase() === 'mrow') {
       cursor.setPosition($position.parentNode)
     }
     else {
