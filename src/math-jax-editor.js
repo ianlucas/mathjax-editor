@@ -10,10 +10,12 @@ export default class MathJaxEditor {
    * 
    * @param {String|Node} selectors 
    * @param {Object} [options]
+   * @param {Boolean} [options.newline=false]
+   * @param {String} [options.placeholder="Start typing..."]
    * 
    * @constructor
    */
-  constructor(selectors, options) {
+  constructor(selectors, options = {}) {
     this.core = new Editor(selectors, options)
 
     this.core.on('@input', this.insert.bind(this))
@@ -156,5 +158,43 @@ export default class MathJaxEditor {
       return this.insertOperator(what)
     }
     console.warn(`MathjaxEditor: insert: unknown "${what}"`)
+  }
+
+  /**
+   * Get the value of the editor as string.
+   * 
+   * @return {String}
+   */
+  toString() {
+    return this.core.toString()
+  }
+
+  /**
+   * Get the value of the editor as a tex string.
+   * 
+   * @return {String}
+   */
+  toTex() {
+    return this.core.toTex()
+  }
+
+  /**
+   * Get the value of the editor (a copy).
+   * 
+   * @return {HTMLElement}
+   */
+  getValue() {
+    return this.core.getValue()
+  }
+
+  /**
+   * Set the value of the editor.
+   * 
+   * @param {HTMLElement} $value
+   * 
+   * @return {Void}
+   */
+  setValue($value) {
+    this.core.setValue($value)
   }
 }
