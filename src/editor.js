@@ -15,6 +15,7 @@ import findTextarea from './utils/find-textarea'
 import getElementJax from './utils/get-element-jax'
 import hideElement from './utils/hide-element'
 import listenElement from './utils/listen-element'
+import prependElement from './utils/prepend-element'
 import removeClass from './utils/remove-class'
 import showElement from './utils/show-element'
 import toDisplay from './utils/to-display'
@@ -90,6 +91,7 @@ export default class Editor {
    * @return {Void}
    */
   handleFocus() {
+    this.emitter.emit('focus')
     this.focused = true
     addClass(this.$display, 'is-focused')
     showElement(this.$caret)
@@ -102,6 +104,7 @@ export default class Editor {
    */
   handleBlur() {
     if (this.mouseAtDisplay) {return}
+    this.emitter.emit('blur')
     this.focused = false
     removeClass(this.$display, 'is-focused')
     hideElement(this.$caret)
@@ -163,6 +166,7 @@ export default class Editor {
    */
   update() {
     if (!this.elementJax) {return}
+    this.emitter.emit('update', this.$value)
     this.tree.update()
     this.elementJax
       .setValue(toDisplay(this.$value, this.placeholder))
@@ -205,13 +209,13 @@ export default class Editor {
     const $position = this.cursor.getPosition()
 
     if (!$position) {
-      this.$value.insertBefore($el, this.$value.firstElementChild)
+      prependElement(this.$value, $el)
     }
     else {
       switch ($position.tagName) {
-      case 'MROW': $position.insertBefore($el, $position.firstElementChild); break
-      case 'MATH': this.$value.appendChild($el); break
-      default: $position.parentNode.insertBefore($el, $position.nextSibling)
+      case 'MROW': prependElement($position, $el); break
+      case 'MATH': appendElement(this.$value, $el); break
+      default: appendElementAfter($position, $el)
       }
     }
 
@@ -234,8 +238,10 @@ export default class Editor {
       $position.parentNode.tagName !== 'MATH'
     ) {return}
 
-    const $mspace = document.createElement('mspace')
-    $mspace.setAttribute('linebreak', 'newline')
+    const $mspace = createElement('mspace', {
+      linebreak: 'newline'
+    })
+
     this.insert($mspace)
   }
 
