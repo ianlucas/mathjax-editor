@@ -79,7 +79,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -94,7 +94,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = toArray;
 /**
- * @param {NodeList} obj 
+ * Convert an array-like object to an actual array.
+ * 
+ * @param {NodeList} obj
+ * 
+ * @return {Array}
  */
 function toArray(obj) {
   return Array.prototype.slice.call(obj);
@@ -112,8 +116,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = addClass;
 /**
+ * Add a class to an element.
+ * (IE>=10)
+ * 
  * @param {HTMLElement} $el  
- * @param {String} name 
+ * @param {String} name
+ * 
+ * @return {Void}
  */
 function addClass($el, name) {
   return $el.classList.add(name);
@@ -131,8 +140,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = removeClass;
 /**
+ * Remove a class of an element.
+ * (IE>=10)
+ * 
  * @param {HTMLElement} $el  
  * @param {String} name 
+ * 
+ * @return {Void}
  */
 function removeClass($el, name) {
   return $el.classList.remove(name);
@@ -149,15 +163,68 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _mathJaxEditor = __webpack_require__(4);
+var _$$$$$$$$$L;
 
-var _mathJaxEditor2 = _interopRequireDefault(_mathJaxEditor);
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-__webpack_require__(29);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = _mathJaxEditor2.default;
+exports.default = (_$$$$$$$$$L = {
+  '+': '+',
+  '-': '-',
+  '=': '=',
+  '<': '<',
+  '>': '>',
+  '|': '|',
+  '\%': '%',
+  ',': ',',
+  '.': '.',
+  '\\leq': '≤',
+  '\\geq': '≥',
+  '\\ll': '≪',
+  '\\gg': '≫',
+  '\\subset': '⊂',
+  '\\supset': '⊃',
+  '\\subseteq': '⊆',
+  '\\supseteq': '⊇',
+  '\\nsubseteq': '⊈',
+  '\\nsupseteq': '⊉',
+  '\\sqsubset': '⊏',
+  '\\sqsupset': '⊐',
+  '\\sqsubseteq': '⊑',
+  '\\sqsupseteq': '⊒',
+  '\\preceq': '⪯',
+  '\\succeq': '⪰',
+  '\\doteq': '≐',
+  '\\equiv': '≡',
+  '\\approx': '≈',
+  '\\cong': '≅',
+  '\\simeq': '≃',
+  '\\sim': '∼',
+  '\\propto': '∝',
+  '\\neq': '≠',
+  '\\parallel': '∥',
+  '\\asymp': '≍',
+  '\\vdash': '⊢',
+  '\\in': '∈',
+  '\\smile': '⌣',
+  '\\models': '⊨',
+  '\\perp': '⊥',
+  '\\prec': '≺',
+  '\\sphericalangle': '∢',
+  '\\nparallel': '∦',
+  '\\bowtie': '⋈',
+  '\\dashv': '⊣',
+  '\\ni': '∋',
+  '\\frown': '⌢',
+  '\\notin': '∉',
+  '\\mid': '∣',
+  '\\succ': '≻',
+  '\\measuredangle': '∡',
+  '\\pm': '±',
+  '\\div': '÷',
+  '\\times': '×',
+  '\\cdot': '⋅',
+  '\\mp': '∓'
+}, _defineProperty(_$$$$$$$$$L, '\\times', '×'), _defineProperty(_$$$$$$$$$L, '\\ast', '∗'), _defineProperty(_$$$$$$$$$L, '\\star', '⋆'), _defineProperty(_$$$$$$$$$L, '\\dagger', '†'), _defineProperty(_$$$$$$$$$L, '\\ddagger', '‡'), _defineProperty(_$$$$$$$$$L, '\\cap', '∩'), _defineProperty(_$$$$$$$$$L, '\\cup', '∪'), _defineProperty(_$$$$$$$$$L, '\\uplus', '⊎'), _defineProperty(_$$$$$$$$$L, '\\sqcap', '⊓'), _defineProperty(_$$$$$$$$$L, '\\sqcup', '⊔'), _defineProperty(_$$$$$$$$$L, '\\vee', '∨'), _defineProperty(_$$$$$$$$$L, '\\wedge', '∧'), _defineProperty(_$$$$$$$$$L, '\\diamond', '⋄'), _defineProperty(_$$$$$$$$$L, '\\bigtriangleup', '△'), _defineProperty(_$$$$$$$$$L, '\\bigtriangledown', '▽'), _defineProperty(_$$$$$$$$$L, '\\triangleleft', '◃'), _defineProperty(_$$$$$$$$$L, '\\triangleright', '▹'), _defineProperty(_$$$$$$$$$L, '\\bigcirc', '◯'), _defineProperty(_$$$$$$$$$L, '\\bullet', '∙'), _defineProperty(_$$$$$$$$$L, '\\wr', '≀'), _defineProperty(_$$$$$$$$$L, '\\oplus', '⊕'), _defineProperty(_$$$$$$$$$L, '\\ominus', '⊖'), _defineProperty(_$$$$$$$$$L, '\\otimes', '⊗'), _defineProperty(_$$$$$$$$$L, '\\odot', '⊙'), _defineProperty(_$$$$$$$$$L, '\\circ', '∘'), _defineProperty(_$$$$$$$$$L, '\\setminus', '∖'), _defineProperty(_$$$$$$$$$L, '\\amalg', '⨿'), _defineProperty(_$$$$$$$$$L, '\\exists', '∃'), _defineProperty(_$$$$$$$$$L, '\\nexists', '∄'), _defineProperty(_$$$$$$$$$L, '\\forall', '∀'), _defineProperty(_$$$$$$$$$L, '\\neg', '¬'), _defineProperty(_$$$$$$$$$L, '\\land', '∧'), _defineProperty(_$$$$$$$$$L, '\\lor', '∨'), _defineProperty(_$$$$$$$$$L, '\\rightarrow', '→'), _defineProperty(_$$$$$$$$$L, '\\leftarrow', '←'), _defineProperty(_$$$$$$$$$L, '\\mapsto', '↦'), _defineProperty(_$$$$$$$$$L, '\\implies', '⟹'), _defineProperty(_$$$$$$$$$L, '\\Rightarrow', '⇒'), _defineProperty(_$$$$$$$$$L, '\\leftrightarrow', '↔'), _defineProperty(_$$$$$$$$$L, '\\iff', '⟺'), _defineProperty(_$$$$$$$$$L, '\\Leftrightarrow', '⇔'), _defineProperty(_$$$$$$$$$L, '\\top', '⊤'), _defineProperty(_$$$$$$$$$L, '\\bot', '⊥'), _defineProperty(_$$$$$$$$$L, '\\emptyset', '∅'), _defineProperty(_$$$$$$$$$L, '\\varnothing', '∅'), _defineProperty(_$$$$$$$$$L, '\\{', '{'), _defineProperty(_$$$$$$$$$L, '\\uparrow', '↑'), _defineProperty(_$$$$$$$$$L, '\\downarrow', '↓'), _defineProperty(_$$$$$$$$$L, '\\|', '‖'), _defineProperty(_$$$$$$$$$L, '\\}', '}'), _defineProperty(_$$$$$$$$$L, '\\Uparrow', '⇑'), _defineProperty(_$$$$$$$$$L, '\\Downarrow', '⇓'), _defineProperty(_$$$$$$$$$L, '/', '/'), _defineProperty(_$$$$$$$$$L, '\\angle', '∠'), _defineProperty(_$$$$$$$$$L, '\\lceil', '⌈'), _defineProperty(_$$$$$$$$$L, '\\lfloor', '⌊'), _defineProperty(_$$$$$$$$$L, '\\backslash', '∖'), _defineProperty(_$$$$$$$$$L, '\\rangle', '⟩'), _defineProperty(_$$$$$$$$$L, '\\rceil', '⌉'), _defineProperty(_$$$$$$$$$L, '\\rfloor', '⌋'), _$$$$$$$$$L);
 
 /***/ }),
 /* 4 */
@@ -170,19 +237,82 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _promiscuous = __webpack_require__(28);
+
+var _promiscuous2 = _interopRequireDefault(_promiscuous);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = _promiscuous2.default;
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _mathJaxEditor = __webpack_require__(7);
+
+var _mathJaxEditor2 = _interopRequireDefault(_mathJaxEditor);
+
+__webpack_require__(41);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = _mathJaxEditor2.default;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _editor = __webpack_require__(5);
+var _editor = __webpack_require__(8);
 
 var _editor2 = _interopRequireDefault(_editor);
 
-var _operatorList = __webpack_require__(27);
+var _extraOperatorList = __webpack_require__(40);
 
-var _operatorList2 = _interopRequireDefault(_operatorList);
-
-var _inArray = __webpack_require__(28);
-
-var _inArray2 = _interopRequireDefault(_inArray);
+var _extraOperatorList2 = _interopRequireDefault(_extraOperatorList);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -190,10 +320,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var MathJaxEditor = function () {
   /**
+   * The surface that interacts with the Editor class.
+   * 
    * @param {String|Node} selectors 
-   * @param {Object} [options] 
+   * @param {Object} [options]
+   * @param {Boolean} [options.newline=false]
+   * @param {String} [options.placeholder="Start typing..."]
+   * 
+   * @constructor
    */
-  function MathJaxEditor(selectors, options) {
+  function MathJaxEditor(selectors) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
     _classCallCheck(this, MathJaxEditor);
 
     this.core = new _editor2.default(selectors, options);
@@ -202,7 +340,11 @@ var MathJaxEditor = function () {
   }
 
   /**
-   * @param {Number} n 
+   * Insert a number in the editor.
+   * 
+   * @param {Number} n
+   * 
+   * @return {Void}
    */
 
 
@@ -220,7 +362,11 @@ var MathJaxEditor = function () {
     }
 
     /**
+     * Insert a identifier in the editor.
+     * 
      * @param {String} i
+     * 
+     * @return {Void}
      */
 
   }, {
@@ -235,6 +381,13 @@ var MathJaxEditor = function () {
 
       this.core.insert($mi);
     }
+
+    /**
+     * Insert a fraction in the editor.
+     * 
+     * @return {Void}
+     */
+
   }, {
     key: 'insertFraction',
     value: function insertFraction() {
@@ -247,6 +400,13 @@ var MathJaxEditor = function () {
 
       this.core.insert($mfrac, $mrowNum);
     }
+
+    /**
+     * Insert a square root on the editor.
+     * 
+     * @return {Void}
+     */
+
   }, {
     key: 'insertSqrt',
     value: function insertSqrt() {
@@ -259,21 +419,35 @@ var MathJaxEditor = function () {
     }
 
     /**
-     * @param {String} o 
+     * Insert a operator in the editor.
+     * 
+     * @param {String} o
+     * 
+     * @return {Void}
      */
 
   }, {
     key: 'insertOperator',
     value: function insertOperator(o) {
-      if (!_operatorList2.default[o]) {
+      if (!_extraOperatorList2.default[o]) {
+        if (o[0] !== '\\\\') {
+          return this.insertOperator('\\' + o);
+        }
         throw new TypeError('MathjaxEditor: Unknown operator "' + o + '"');
       }
 
       var $mo = document.createElement('mo');
-      $mo.innerHTML = _operatorList2.default[o];
+      $mo.innerHTML = _extraOperatorList2.default[o];
 
       this.core.insert($mo);
     }
+
+    /**
+     * Insert a superscript in the editor.
+     * 
+     * @return {Void}
+     */
+
   }, {
     key: 'insertSuperscript',
     value: function insertSuperscript() {
@@ -288,7 +462,32 @@ var MathJaxEditor = function () {
     }
 
     /**
+     * Insert a subscript in the editor.
+     * 
+     * @return {Void}
+     */
+
+  }, {
+    key: 'insertSubscript',
+    value: function insertSubscript() {
+      var $msub = document.createElement('msub');
+      var $mrowBase = document.createElement('mrow');
+      var $mrowSequence = document.createElement('mrow');
+
+      $msub.appendChild($mrowBase);
+      $msub.appendChild($mrowSequence);
+
+      this.core.insert($msub, $mrowBase);
+    }
+
+    /**
+     * This method is not actually meant to be used, it is here to
+     * handle the @input event when the user types in the editor's
+     * input element.
+     * 
      * @param {String} what 
+     * 
+     * @return {Void}
      */
 
   }, {
@@ -300,10 +499,60 @@ var MathJaxEditor = function () {
       if (what.match(/^[a-zA-Z]$/)) {
         return this.insertIdentifier(what);
       }
-      if (_operatorList2.default[what]) {
+      if (_extraOperatorList2.default[what]) {
         return this.insertOperator(what);
       }
       console.warn('MathjaxEditor: insert: unknown "' + what + '"');
+    }
+
+    /**
+     * Get the value of the editor as string.
+     * 
+     * @return {String}
+     */
+
+  }, {
+    key: 'toString',
+    value: function toString() {
+      return this.core.toString();
+    }
+
+    /**
+     * Get the value of the editor as a tex string.
+     * 
+     * @return {String}
+     */
+
+  }, {
+    key: 'toTex',
+    value: function toTex() {
+      return this.core.toTex();
+    }
+
+    /**
+     * Get the value of the editor (a copy).
+     * 
+     * @return {HTMLElement}
+     */
+
+  }, {
+    key: 'getValue',
+    value: function getValue() {
+      return this.core.getValue();
+    }
+
+    /**
+     * Set the value of the editor.
+     * 
+     * @param {HTMLElement} $value
+     * 
+     * @return {Void}
+     */
+
+  }, {
+    key: 'setValue',
+    value: function setValue($value) {
+      this.core.setValue($value);
     }
   }]);
 
@@ -313,7 +562,7 @@ var MathJaxEditor = function () {
 exports.default = MathJaxEditor;
 
 /***/ }),
-/* 5 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -325,87 +574,113 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _blinker = __webpack_require__(6);
+var _blinker = __webpack_require__(9);
 
 var _blinker2 = _interopRequireDefault(_blinker);
 
-var _cursor = __webpack_require__(7);
+var _cursor = __webpack_require__(10);
 
 var _cursor2 = _interopRequireDefault(_cursor);
 
-var _cursorMover = __webpack_require__(9);
+var _cursorMover = __webpack_require__(12);
 
 var _cursorMover2 = _interopRequireDefault(_cursorMover);
 
-var _eventEmitter = __webpack_require__(10);
+var _eventEmitter = __webpack_require__(13);
 
 var _eventEmitter2 = _interopRequireDefault(_eventEmitter);
 
-var _rendered = __webpack_require__(11);
+var _rendered = __webpack_require__(14);
 
 var _rendered2 = _interopRequireDefault(_rendered);
 
-var _tree = __webpack_require__(15);
+var _tree = __webpack_require__(17);
 
 var _tree2 = _interopRequireDefault(_tree);
+
+var _mml2tex = __webpack_require__(18);
+
+var _mml2tex2 = _interopRequireDefault(_mml2tex);
 
 var _addClass = __webpack_require__(1);
 
 var _addClass2 = _interopRequireDefault(_addClass);
 
-var _appendElement = __webpack_require__(16);
+var _appendElement = __webpack_require__(20);
 
 var _appendElement2 = _interopRequireDefault(_appendElement);
 
-var _appendElementAfter = __webpack_require__(17);
+var _appendElementAfter = __webpack_require__(21);
 
 var _appendElementAfter2 = _interopRequireDefault(_appendElementAfter);
 
-var _applyDelete = __webpack_require__(18);
+var _applyDelete = __webpack_require__(22);
 
 var _applyDelete2 = _interopRequireDefault(_applyDelete);
 
-var _applyBackspace = __webpack_require__(19);
+var _applyBackspace = __webpack_require__(23);
 
 var _applyBackspace2 = _interopRequireDefault(_applyBackspace);
 
-var _createElement = __webpack_require__(20);
+var _createElement = __webpack_require__(24);
 
 var _createElement2 = _interopRequireDefault(_createElement);
 
-var _findTextarea = __webpack_require__(21);
+var _findTextarea = __webpack_require__(25);
 
 var _findTextarea2 = _interopRequireDefault(_findTextarea);
 
-var _getJaxElement = __webpack_require__(22);
+var _getElementJax = __webpack_require__(26);
 
-var _getJaxElement2 = _interopRequireDefault(_getJaxElement);
+var _getElementJax2 = _interopRequireDefault(_getElementJax);
 
-var _hideElement = __webpack_require__(23);
+var _getCleanCopy = __webpack_require__(33);
+
+var _getCleanCopy2 = _interopRequireDefault(_getCleanCopy);
+
+var _hideElement = __webpack_require__(34);
 
 var _hideElement2 = _interopRequireDefault(_hideElement);
 
-var _listenElement = __webpack_require__(24);
+var _listenElement = __webpack_require__(35);
 
 var _listenElement2 = _interopRequireDefault(_listenElement);
+
+var _prependElement = __webpack_require__(36);
+
+var _prependElement2 = _interopRequireDefault(_prependElement);
 
 var _removeClass = __webpack_require__(2);
 
 var _removeClass2 = _interopRequireDefault(_removeClass);
 
-var _showElement = __webpack_require__(25);
+var _showElement = __webpack_require__(37);
 
 var _showElement2 = _interopRequireDefault(_showElement);
 
-var _toDisplay = __webpack_require__(26);
+var _toDisplay = __webpack_require__(38);
 
 var _toDisplay2 = _interopRequireDefault(_toDisplay);
+
+var _toDom = __webpack_require__(39);
+
+var _toDom2 = _interopRequireDefault(_toDom);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Editor = function () {
+  /**
+   * This is the main class of the Editor. 
+   * 
+   * @param {String|HTMLElement} selectors 
+   * @param {Object} [options] 
+   * @param {Boolean} [options.newline=false]
+   * @param {String} [options.placeholder="Start typing..."]
+   * 
+   * @constructor
+   */
   function Editor(selectors) {
     var _this = this;
 
@@ -427,7 +702,8 @@ var Editor = function () {
     this.cursor = new _cursor2.default(this.tree, this.rendered, this.$caret);
     this.cursorMover = new _cursorMover2.default(this.tree, this.rendered, this.cursor);
     this.blinker = new _blinker2.default(this.$caret);
-    this.placeholder = 'Start typing...';
+    this.placeholder = options.placeholder || 'Start typing...';
+    this.allowNewlines = options.allowNewlines || false;
 
     (0, _hideElement2.default)(this.$caret);
     (0, _hideElement2.default)(this.$el);
@@ -436,8 +712,8 @@ var Editor = function () {
     (0, _appendElement2.default)(this.$container, this.$input);
     (0, _appendElement2.default)(this.$display, this.$caret);
     (0, _appendElementAfter2.default)(this.$el, this.$container);
-    (0, _getJaxElement2.default)(this.$display).then(function (jaxElement) {
-      _this.jaxElement = jaxElement;
+    (0, _getElementJax2.default)(this.$display).then(function (elementJax) {
+      _this.elementJax = elementJax;
       _this.update();
     });
 
@@ -452,7 +728,11 @@ var Editor = function () {
   }
 
   /**
+   * Handle the click event on the display.
+   * 
    * @param {e} ClickEvent
+   * 
+   * @return {Void}
    */
 
 
@@ -466,23 +746,46 @@ var Editor = function () {
       this.cursorMover.click(clientX, clientY);
       this.blinker.freeze();
     }
+
+    /**
+     * Handle the focus event on the input.
+     * 
+     * @return {Void}
+     */
+
   }, {
     key: 'handleFocus',
     value: function handleFocus() {
+      this.emitter.emit('focus');
       this.focused = true;
       (0, _addClass2.default)(this.$display, 'is-focused');
       (0, _showElement2.default)(this.$caret);
     }
+
+    /**
+     * Handle the blur event on the input.
+     * 
+     * @return {Void}
+     */
+
   }, {
     key: 'handleBlur',
     value: function handleBlur() {
       if (this.mouseAtDisplay) {
         return;
       }
+      this.emitter.emit('blur');
       this.focused = false;
       (0, _removeClass2.default)(this.$display, 'is-focused');
       (0, _hideElement2.default)(this.$caret);
     }
+
+    /**
+     * Handle the keyup/keydown event on the input.
+     * 
+     * @return {Void}
+     */
+
   }, {
     key: 'handleInput',
     value: function handleInput() {
@@ -492,16 +795,39 @@ var Editor = function () {
         this.emitter.emit('@input', input);
       }
     }
+
+    /**
+     * Handle the mouseenter event on the display.
+     * 
+     * @return {Void}
+     */
+
   }, {
     key: 'handleMouseenter',
     value: function handleMouseenter() {
       this.mouseAtDisplay = true;
     }
+
+    /**
+     * Handle the mouseleave event on the display.
+     * 
+     * @return {Void}
+     */
+
   }, {
     key: 'handleMouseleave',
     value: function handleMouseleave() {
       this.mouseAtDisplay = false;
     }
+
+    /**
+     * Handle the keydown event in the input.
+     * 
+     * @param {KeyboardEvent} e
+     * 
+     * @return {Void}
+     */
+
   }, {
     key: 'handleKeydown',
     value: function handleKeydown(e) {
@@ -511,34 +837,58 @@ var Editor = function () {
         case 13:
           return this.insertNewline();
         case 37:
-          return this.moveCursorLeft();
+          return this.cursor.moveLeft();
         case 39:
-          return this.moveCursorRight();
+          return this.cursor.moveRight();
         case 46:
           return this.deleteRemove();
         // default: console.log(e.which)
       }
     }
+
+    /**
+     * Update the editor tree, display, and cursor stuff.
+     * 
+     * @return {Void}
+     */
+
   }, {
     key: 'update',
     value: function update() {
       var _this2 = this;
 
-      if (!this.jaxElement) {
+      if (!this.elementJax) {
         return;
       }
+      var $cleanValue = this.getValue();
+      this.$el.value = $cleanValue.outerHTML;
+      this.emitter.emit('update', $cleanValue);
       this.tree.update();
-      this.jaxElement.setValue((0, _toDisplay2.default)(this.$value, this.placeholder)).update().then(function () {
+      this.elementJax.setValue((0, _toDisplay2.default)(this.$value, this.placeholder)).update().then(function () {
         _this2.rendered.update();
         _this2.cursor.update();
       });
     }
+
+    /**
+     * Apply a "backspace" deletion.
+     * 
+     * @return {Void}
+     */
+
   }, {
     key: 'backspaceRemove',
     value: function backspaceRemove() {
       (0, _applyBackspace2.default)(this.$value, this.cursor);
       this.update();
     }
+
+    /**
+     * Apply a "delete" deletion.
+     * 
+     * @return {Void}
+     */
+
   }, {
     key: 'deleteRemove',
     value: function deleteRemove() {
@@ -547,8 +897,12 @@ var Editor = function () {
     }
 
     /**
+     * Insert an element at current cursor position.
+     * 
      * @param {HTMLElement} $el  
      * @param {HTMLElement} [$moveTo]
+     * 
+     * @return {Void}
      */
 
   }, {
@@ -559,15 +913,15 @@ var Editor = function () {
       var $position = this.cursor.getPosition();
 
       if (!$position) {
-        this.$value.insertBefore($el, this.$value.firstElementChild);
+        (0, _prependElement2.default)(this.$value, $el);
       } else {
         switch ($position.tagName) {
           case 'MROW':
-            $position.insertBefore($el, $position.firstElementChild);break;
+            (0, _prependElement2.default)($position, $el);break;
           case 'MATH':
-            this.$value.appendChild($el);break;
+            (0, _appendElement2.default)(this.$value, $el);break;
           default:
-            $position.parentNode.insertBefore($el, $position.nextSibling);
+            (0, _appendElementAfter2.default)($position, $el);
         }
       }
 
@@ -575,32 +929,38 @@ var Editor = function () {
       this.focus();
       this.update();
     }
+
+    /**
+     * Insert a newline in the editor.
+     * 
+     * @return {Void}
+     */
+
   }, {
     key: 'insertNewline',
     value: function insertNewline() {
+      if (!this.allowNewlines) {
+        return;
+      }
       var $position = this.cursor.getPosition();
       if ($position && $position.tagName !== 'MATH' && $position.parentNode.tagName !== 'MATH') {
         return;
       }
 
-      var $mspace = document.createElement('mspace');
-      $mspace.setAttribute('linebreak', 'newline');
+      var $mspace = (0, _createElement2.default)('mspace', {
+        linebreak: 'newline'
+      });
+
       this.insert($mspace);
-    }
-  }, {
-    key: 'moveCursorLeft',
-    value: function moveCursorLeft() {
-      return this.cursor.moveLeft();
-    }
-  }, {
-    key: 'moveCursorRight',
-    value: function moveCursorRight() {
-      return this.cursor.moveRight();
     }
 
     /**
+     * Listen to an event of the editor.
+     * 
      * @param {String} type 
      * @param {Function} listener
+     * 
+     * @return {Void}
      */
 
   }, {
@@ -608,10 +968,75 @@ var Editor = function () {
     value: function on(type, listener) {
       return this.emitter.on(type, listener);
     }
+
+    /**
+     * Focus the editor.
+     * 
+     * @return {Void}
+     */
+
   }, {
     key: 'focus',
     value: function focus() {
       return this.$input.focus();
+    }
+
+    /**
+     * Get the value of the editor as string.
+     * 
+     * @return {String}
+     */
+
+  }, {
+    key: 'toString',
+    value: function toString() {
+      return this.getValue().outerHTML;
+    }
+
+    /**
+     * Get the value of the editor as a tex string.
+     * 
+     * @return {String}
+     */
+
+  }, {
+    key: 'toTex',
+    value: function toTex() {
+      return (0, _mml2tex2.default)(this.$value);
+    }
+
+    /**
+     * Get the value of the editor (a copy).
+     * 
+     * @return {HTMLElement}
+     */
+
+  }, {
+    key: 'getValue',
+    value: function getValue() {
+      return (0, _getCleanCopy2.default)(this.$value);
+    }
+
+    /**
+     * Set the value of the editor.
+     * 
+     * @param {HTMLElement} $value
+     * 
+     * @return {Void}
+     */
+
+  }, {
+    key: 'setValue',
+    value: function setValue($value) {
+      if (typeof $value === 'string') {
+        $value = (0, _toDom2.default)($value);
+      }
+      if ($value.nodeType !== 1 || $value.tagName !== 'MATH') {
+        throw new Exception('MathjaxEditor: the value must be an <math> element.');
+      }
+      this.$value = $value;
+      this.cursor.setPosition(null);
+      this.update();
     }
   }]);
 
@@ -621,7 +1046,7 @@ var Editor = function () {
 exports.default = Editor;
 
 /***/ }),
-/* 6 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -647,7 +1072,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var Blinker = function () {
   /**
-   * @param {HTMLElement} $caret  
+   * This class handles the animation of the caret element.
+   * 
+   * @param {HTMLElement} $caret
+   * 
+   * @constructor
    */
   function Blinker($caret) {
     var _this = this;
@@ -668,11 +1097,25 @@ var Blinker = function () {
     this.prevFreezeId = null;
   }
 
+  /**
+   * Stops the animation.
+   * 
+   * @return {Void}
+   */
+
+
   _createClass(Blinker, [{
     key: 'destroy',
     value: function destroy() {
       clearInterval(this.id);
     }
+
+    /**
+     * Freezes the animation temporarily.
+     * 
+     * @return {Void}
+     */
+
   }, {
     key: 'freeze',
     value: function freeze() {
@@ -692,7 +1135,7 @@ var Blinker = function () {
 exports.default = Blinker;
 
 /***/ }),
-/* 7 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -704,7 +1147,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _px = __webpack_require__(8);
+var _px = __webpack_require__(11);
 
 var _px2 = _interopRequireDefault(_px);
 
@@ -714,9 +1157,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var Cursor = function () {
   /**
+   * This class handles the cursor positioning.
+   * 
    * @param {Tree} tree 
    * @param {Rendered} rendered 
    * @param {HTMLElement} $caret
+   * 
+   * @constructor
    */
   function Cursor(tree, rendered, $caret) {
     _classCallCheck(this, Cursor);
@@ -732,6 +1179,8 @@ var Cursor = function () {
   }
 
   /**
+   * Get the client rect bounding of the caret element.
+   * 
    * @return {ClientRect}
    */
 
@@ -743,6 +1192,8 @@ var Cursor = function () {
     }
 
     /**
+     * Get current cursor position.
+     * 
      * @return {HTMLElement}
      */
 
@@ -753,6 +1204,8 @@ var Cursor = function () {
     }
 
     /**
+     * Set the cursor position.
+     * 
      * @param {HTMLElement} $position  
      * 
      * @return {this}
@@ -764,6 +1217,13 @@ var Cursor = function () {
       this.$position = $position;
       return this;
     }
+
+    /**
+     * Move the cursor to the left.
+     * 
+     * @return {Void}
+     */
+
   }, {
     key: 'moveLeft',
     value: function moveLeft() {
@@ -775,6 +1235,13 @@ var Cursor = function () {
       this.$position = path[index - 1];
       this.update();
     }
+
+    /**
+     * Move the cursor to the right.
+     * 
+     * @return {Void}
+     */
+
   }, {
     key: 'moveRight',
     value: function moveRight() {
@@ -795,6 +1262,13 @@ var Cursor = function () {
       }
       this.update();
     }
+
+    /**
+     * Update the caret element position on the display.
+     * 
+     * @return {Void}
+     */
+
   }, {
     key: 'update',
     value: function update() {
@@ -813,7 +1287,7 @@ var Cursor = function () {
 exports.default = Cursor;
 
 /***/ }),
-/* 8 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -824,14 +1298,18 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = px;
 /**
+ * Clean way to get the pixels units.
+ * 
  * @param {Number} value
+ * 
+ * @return {String}
  */
 function px(value) {
   return value + "px";
 }
 
 /***/ }),
-/* 9 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -846,6 +1324,16 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var CursorMover = function () {
+  /**
+   * This class handles where the cursor should be placed
+   * when the user clicks the display.
+   * 
+   * @param {Tree} tree
+   * @param {Rendered} rendered
+   * @param {Cursor} cursor
+   * 
+   * @constructor
+   */
   function CursorMover(tree, rendered, cursor) {
     _classCallCheck(this, CursorMover);
 
@@ -857,11 +1345,26 @@ var CursorMover = function () {
     this.cursor = cursor;
   }
 
+  /**
+   * Perform the calculation to determine where the cursor
+   * should be placed.
+   * 
+   * @param {Number} x
+   * @param {Number} y
+   * 
+   * @return {Void}
+   */
+
+
   _createClass(CursorMover, [{
     key: 'click',
     value: function click(x, y) {
       var shortest = Infinity;
       var $set = null;
+
+      // Here we check if the (x, y) is outside the boundings
+      // of the lines, so the cursor can be placed at the first element
+      // or last element of a line.
 
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
@@ -882,6 +1385,15 @@ var CursorMover = function () {
             }
           }
         }
+
+        // Dunno how much expensive getBoundingClientRect is, but
+        // this seems to be the best solution I had to deal with
+        // proper cursor placement without doing tricky code.
+
+        // We basically set the cursor to every possible place it
+        // can be at, then we calculate its distance to the given
+        // x and y. The shortest to that coordinate will determine
+        // where it should be placed.
       } catch (err) {
         _didIteratorError = true;
         _iteratorError = err;
@@ -946,7 +1458,7 @@ var CursorMover = function () {
 exports.default = CursorMover;
 
 /***/ }),
-/* 10 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -961,6 +1473,11 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var EventEmitter = function () {
+  /**
+   * This class is a simple event emitter.
+   * 
+   * @constructor
+   */
   function EventEmitter() {
     _classCallCheck(this, EventEmitter);
 
@@ -968,6 +1485,8 @@ var EventEmitter = function () {
   }
 
   /**
+   * Listen to an event.
+   * 
    * @param {String} type 
    * @param {Function} listener 
    */
@@ -983,9 +1502,12 @@ var EventEmitter = function () {
     }
 
     /**
+     * Emit an event.
      * 
      * @param {String} type 
-     * @param {...*} rest 
+     * @param {...*} rest
+     * 
+     * @return {Void}
      */
 
   }, {
@@ -1010,7 +1532,7 @@ var EventEmitter = function () {
 exports.default = EventEmitter;
 
 /***/ }),
-/* 11 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1022,11 +1544,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _element = __webpack_require__(12);
+var _element = __webpack_require__(15);
 
 var _element2 = _interopRequireDefault(_element);
 
-var _line = __webpack_require__(14);
+var _line = __webpack_require__(16);
 
 var _line2 = _interopRequireDefault(_line);
 
@@ -1040,8 +1562,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var Rendered = function () {
   /**
+   * This class matches every element of the editor's value to its
+   * rendered element by MathJax.
+   * 
    * @param {HTMLElement} $display
    * @param {Tree} tree
+   * 
+   * @constructor
    */
   function Rendered($display, tree) {
     _classCallCheck(this, Rendered);
@@ -1057,6 +1584,8 @@ var Rendered = function () {
   }
 
   /**
+   * Get the lines.
+   * 
    * @return {Array}
    */
 
@@ -1068,6 +1597,8 @@ var Rendered = function () {
     }
 
     /**
+     * Get the elements.
+     * 
      * @return {Array}
      */
 
@@ -1078,6 +1609,8 @@ var Rendered = function () {
     }
 
     /**
+     * Find the rendered line elements.
+     * 
      * @return {Array}
      */
 
@@ -1094,6 +1627,8 @@ var Rendered = function () {
     }
 
     /**
+     * Find a rendered element.
+     * 
      * @param {HTMLElement} $el
      * 
      * @return {HTMLElement}
@@ -1110,6 +1645,8 @@ var Rendered = function () {
     }
 
     /**
+     * Find an element.
+     * 
      * @param {HTMLElement} $el
      * 
      * @return {Element}
@@ -1122,6 +1659,13 @@ var Rendered = function () {
         return element.$el === $el;
       });
     }
+
+    /**
+     * Catch all rendered elements and lines of the display.
+     * 
+     * @return {Void}
+     */
+
   }, {
     key: 'update',
     value: function update() {
@@ -1182,7 +1726,7 @@ var Rendered = function () {
 exports.default = Rendered;
 
 /***/ }),
-/* 12 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1194,18 +1738,17 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _hasClass = __webpack_require__(13);
-
-var _hasClass2 = _interopRequireDefault(_hasClass);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Element = function () {
   /**
+   * This class makes a connection between an actual element
+   * of the editor's value and the rendered element by MathJax.
+   * 
    * @param {HTMLElement}  $el
    * @param {HTMLElement}  $rendered
+   * 
+   * @constructor
    */
   function Element($el, $rendered) {
     _classCallCheck(this, Element);
@@ -1245,6 +1788,8 @@ var Element = function () {
   }
 
   /**
+   * Get the element.
+   * 
    * @return {HTMLElement}
    */
 
@@ -1256,6 +1801,8 @@ var Element = function () {
     }
 
     /**
+     * Get the tag name of the element.
+     * 
      * @return {String}
      */
 
@@ -1269,6 +1816,8 @@ var Element = function () {
     }
 
     /**
+     * Check the element's tag name.
+     * 
      * @param {String} tag 
      * 
      * @return {Boolean}
@@ -1281,6 +1830,8 @@ var Element = function () {
     }
 
     /**
+     * Check if the element has children.
+     * 
      * @return {Boolean}
      */
 
@@ -1291,6 +1842,8 @@ var Element = function () {
     }
 
     /**
+     * Get the last child of the element.
+     * 
      * @return {Null|HTMLElement}
      */
 
@@ -1301,6 +1854,9 @@ var Element = function () {
     }
 
     /**
+     * Determines the position of the caret on the display based
+     * on the position of this rendered element on the display.
+     * 
      * @return {Object}
      */
 
@@ -1337,26 +1893,7 @@ var Element = function () {
 exports.default = Element;
 
 /***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = hasClass;
-/**
- * @param {HTMLElement} $el  
- * @param {String} name 
- */
-function hasClass($el, name) {
-  return $el.classList.contains(name);
-}
-
-/***/ }),
-/* 14 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1371,6 +1908,11 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Line = function () {
+  /**
+   * This class represents a line of the editor.
+   * 
+   * @constructor
+   */
   function Line() {
     _classCallCheck(this, Line);
 
@@ -1397,7 +1939,11 @@ var Line = function () {
   }
 
   /**
+   * Set the rendered line.
+   * 
    * @param {HTMLElement} $rendered
+   * 
+   * @return {Void}
    */
 
 
@@ -1417,6 +1963,8 @@ var Line = function () {
     }
 
     /**
+     * Get the first element of this line.
+     * 
      * @return {Element}
      */
 
@@ -1427,6 +1975,8 @@ var Line = function () {
     }
 
     /**
+     * Get the last element of this line.
+     * 
      * @return {Element}
      */
 
@@ -1444,7 +1994,11 @@ var Line = function () {
     }
 
     /**
+     * Check if the given y is between this line y1 and y2.
+     * 
      * @param {Number} y
+     * 
+     * @return {Boolean}
      */
 
   }, {
@@ -1454,7 +2008,11 @@ var Line = function () {
     }
 
     /**
+     * Check if the given x is between this line x1 and x2.
+     * 
      * @param {Number} x
+     * 
+     * @return {Boolean}
      */
 
   }, {
@@ -1470,7 +2028,7 @@ var Line = function () {
 exports.default = Line;
 
 /***/ }),
-/* 15 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1492,7 +2050,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var Tree = function () {
   /**
-   * @param {HTMLElement} $value  
+   * This class walks through the editor's value and creates
+   * a path for the cursor. Also, it sets an id for each
+   * element of the value, so we can find them later on Rendered class.
+   * 
+   * @param {HTMLElement} $value 
+   * 
+   * @constructor
    */
   function Tree($value) {
     _classCallCheck(this, Tree);
@@ -1505,6 +2069,8 @@ var Tree = function () {
   }
 
   /**
+   * Change the value of the tree.
+   * 
    * @param {HTMLElement} $value
    * 
    * @return {Tree}
@@ -1519,6 +2085,8 @@ var Tree = function () {
     }
 
     /**
+     * Get the cursor path.
+     * 
      * @return {Array}
      */
 
@@ -1527,6 +2095,14 @@ var Tree = function () {
     value: function getPath() {
       return this.path;
     }
+
+    /**
+     * Walk through the valeu and set an id to the elements
+     * that don't have one.
+     * 
+     * @return {Void}
+     */
+
   }, {
     key: 'update',
     value: function update() {
@@ -1564,7 +2140,7 @@ var Tree = function () {
 exports.default = Tree;
 
 /***/ }),
-/* 16 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1573,13 +2149,170 @@ exports.default = Tree;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = append;
-function append($parent, $child) {
-  $parent.appendChild($child);
+exports.default = mml2Tex;
+
+var _operatorList = __webpack_require__(3);
+
+var _operatorList2 = _interopRequireDefault(_operatorList);
+
+var _reverseObject = __webpack_require__(19);
+
+var _reverseObject2 = _interopRequireDefault(_reverseObject);
+
+var _toArray = __webpack_require__(0);
+
+var _toArray2 = _interopRequireDefault(_toArray);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var REVERSE_OPERATOR_LIST = (0, _reverseObject2.default)(_operatorList2.default);
+
+/**
+ * A basic basic basic MathML to Tex conversor.
+ * 
+ * @param {HTMLElement}  
+ * 
+ * @return {String}
+ */
+function mml2Tex($value) {
+  var output = '';
+
+  /** @param {HTMLElement} $el */
+  var walk = function walk($el) {
+    var children = $el.children;
+    var innerValue = $el.innerHTML;
+    var tagName = $el.tagName.toLowerCase();
+
+    switch (tagName) {
+      case 'math':
+      case 'msup':
+      case 'msub':
+        break;
+      case 'mn':
+      case 'mi':
+        output += innerValue;
+        break;
+      case 'mo':
+        output += REVERSE_OPERATOR_LIST[innerValue] || '?';
+        break;
+      case 'mrow':
+        output = output.trim() + '{';
+        break;
+      case 'mspace':
+        switch ($el.getAttribute('linebreak')) {
+          case 'newline':
+            output += '\\\\';
+            break;
+        }
+        break;
+      default:
+        output += '\\' + tagName.substr(1) + ' ';
+        break;
+    }
+
+    (0, _toArray2.default)(children).forEach(function ($child) {
+      return walk($child);
+    });
+
+    switch (tagName) {
+      case 'mrow':
+        output = output.trim() + '}';
+
+        if ($el.parentNode.firstElementChild === $el) {
+          switch ($el.parentNode.tagName.toLowerCase()) {
+            case 'msup':
+              output += '^';
+              break;
+            case 'msub':
+              output += '_';
+              break;
+          }
+        }
+        break;
+    }
+  };
+
+  walk($value);
+
+  return output;
 }
 
 /***/ }),
-/* 17 */
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = reverseObject;
+/**
+ * Keys trade places with values. So a key will turn into a value,
+ * and its value will be its key.
+ * 
+ * @param {Object} obj 
+ * 
+ * @return {Object}
+ */
+function reverseObject(obj) {
+  var keys = Object.keys(obj);
+  var output = {};
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = keys[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var key = _step.value;
+
+      var value = obj[key];
+      output[value] = key;
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+
+  return output;
+}
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = appendElement;
+/**
+ * Append an element to its parent.
+ * 
+ * @param {HTMLElement} $parent  
+ * @param {HTMLElement} $child
+ * 
+ * @return {Void}  
+ */
+function appendElement($parent, $child) {
+  return $parent.appendChild($child);
+}
+
+/***/ }),
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1590,15 +2323,19 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = appendElementAfter;
 /**
+ * Append an element after the referenced element.
+ * 
  * @param {HTMLElement} $ref  
  * @param {HTMLElement} $new 
+ * 
+ * @return {Void}
  */
 function appendElementAfter($ref, $new) {
   return $ref.parentNode.insertBefore($new, $ref.nextSibling);
 }
 
 /***/ }),
-/* 18 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1609,8 +2346,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = applyDelete;
 /**
- * @param {HTMLElement}  
+ * Perform the "delete" deletion on the given value and
+ * current cursor position.
+ * 
+ * @param {HTMLElement} $value
  * @param {Cursor} cursor 
+ * 
+ * @return {Void}
  */
 function applyDelete($value, cursor) {
   var $position = cursor.getPosition();
@@ -1630,7 +2372,7 @@ function applyDelete($value, cursor) {
 }
 
 /***/ }),
-/* 19 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1641,8 +2383,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = applyBackspace;
 /**
- * @param {HTMLElement}  
+ * Perform the "backspace" deletion on the given value and
+ * current cursor position.
+ * 
+ * @param {HTMLElement} $value
  * @param {Cursor} cursor 
+ * 
+ * @return {Void}
  */
 function applyBackspace($value, cursor) {
   var $position = cursor.getPosition();
@@ -1668,7 +2415,7 @@ function applyBackspace($value, cursor) {
 }
 
 /***/ }),
-/* 20 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1677,17 +2424,39 @@ function applyBackspace($value, cursor) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 exports.default = createElement;
+/**
+ * Quickly create an element with className.
+ * 
+ * @param {String} tagName 
+ * @param {String} [className=''] 
+ * @param {Object} [attributes={}]
+ * 
+ * @return {HTMLElement}
+ */
 function createElement(tagName) {
   var className = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+  var attributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+  if ((typeof className === 'undefined' ? 'undefined' : _typeof(className)) === 'object') {
+    attributes = className;
+    className = '';
+  }
 
   var $el = document.createElement(tagName);
   $el.className = className;
+
+  Object.keys(attributes).forEach(function (key) {
+    $el.setAttribute(key, attributes[key]);
+  });
   return $el;
 }
 
 /***/ }),
-/* 21 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1698,26 +2467,78 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = findTextarea;
 /**
- * @param {String|Node} selectors
+ * Find the textarea with the given selector. Just one textarea will be
+ * picked by this function, so the first found one.
  * 
- * @return {Node}
+ * @param {String|HTMLElement} selectors
+ * 
+ * @return {HTMLElement}
  */
 function findTextarea(selectors) {
-  var $node = typeof selectors === 'string' ? document.querySelector(selectors) : selectors.nodeType === 1 ? selectors : null;
+  var $el = typeof selectors === 'string' ? document.querySelector(selectors) : selectors.nodeType === 1 ? selectors : null;
 
-  if (!$node) {
+  if (!$el) {
     throw new ReferenceError('MathjaxEditor: Target TEXTAREA was not found.');
   }
 
-  if ($node.tagName !== 'TEXTAREA') {
+  if ($el.tagName !== 'TEXTAREA') {
     throw new TypeError('MathjaxEditor: Target element must be a TEXTAREA.');
   }
 
-  return $node;
+  return $el;
 }
 
 /***/ }),
-/* 22 */
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = getElementJax;
+
+var _elementJax = __webpack_require__(27);
+
+var _elementJax2 = _interopRequireDefault(_elementJax);
+
+var _promise = __webpack_require__(4);
+
+var _promise2 = _interopRequireDefault(_promise);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * This function will catch the MathJax's ElementJax inside the
+ * editor's display, so we can quickly update the math.
+ * 
+ * @see http://docs.mathjax.org/en/latest/api/elementjax.html
+ * 
+ * @param {HTMLElement} $el
+ * @param {Function} callback
+ * 
+ * @return {Void}
+ */
+function getElementJax($el, callback) {
+  var placeholder = '<math><mo>...</mo></math>';
+
+  return new _promise2.default(function (resolve) {
+    MathJax.Hub.Config({
+      displayAlign: "left"
+    });
+    MathJax.Hub.Queue(['Typeset', MathJax.Hub, $el, function () {
+      var jax = MathJax.Hub.getAllJax($el)[0];
+      jax.Text(placeholder, function () {
+        return resolve(new _elementJax2.default(jax));
+      });
+    }]);
+  });
+}
+
+/***/ }),
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1729,31 +2550,43 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-exports.default = getJaxElement;
+var _promise = __webpack_require__(4);
+
+var _promise2 = _interopRequireDefault(_promise);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var JaxElement = function () {
+var ElementJax = function () {
   /**
-   * @param {MathjaxJaxElement} jax
+   * This class is a wrapper around MathJax's ElementJax.
+   * 
+   * @see http://docs.mathjax.org/en/latest/api/elementjax.html
+   * 
+   * @param {MathJax's ElementJax} jax
+   * 
+   * @constructor
    */
-  function JaxElement(jax) {
-    _classCallCheck(this, JaxElement);
+  function ElementJax(jax) {
+    _classCallCheck(this, ElementJax);
 
-    /** @type {MathjaxJaxElement} */
+    /** @type {MathJax's ElementJax} */
     this.jax = jax;
     /** @type {String} */
     this.value = '';
   }
 
   /**
+   * Change the value of ElementJax.
+   * 
    * @param {String} value 
    * 
-   * @return {JaxElement}
+   * @return {this}
    */
 
 
-  _createClass(JaxElement, [{
+  _createClass(ElementJax, [{
     key: 'setValue',
     value: function setValue(value) {
       this.value = value;
@@ -1761,6 +2594,9 @@ var JaxElement = function () {
     }
 
     /**
+     * Update ElementJax to the current value, so the math
+     * will be reprocessed by MathJax.
+     * 
      * @return {Promise}
      */
 
@@ -1769,7 +2605,7 @@ var JaxElement = function () {
     value: function update() {
       var _this = this;
 
-      return new Promise(function (resolve) {
+      return new _promise2.default(function (resolve) {
         _this.jax.Text(_this.value, function () {
           return resolve();
         });
@@ -1777,35 +2613,660 @@ var JaxElement = function () {
     }
   }]);
 
-  return JaxElement;
+  return ElementJax;
 }();
 
-/**
- * @param {Node} $node
- * @param {Function} callback
- * 
- * @return {Void}
- */
+exports.default = ElementJax;
 
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
 
-function getJaxElement($node, callback) {
-  var placeholder = '<math><mo>...</mo></math>';
+/* WEBPACK VAR INJECTION */(function(setImmediate) {/**@license MIT-promiscuous-©Ruben Verborgh*/
+(function (func, obj) {
+  // Type checking utility function
+  function is(type, item) { return (typeof item)[0] == type; }
 
-  return new Promise(function (resolve) {
-    MathJax.Hub.Config({
-      displayAlign: "left"
+  // Creates a promise, calling callback(resolve, reject), ignoring other parameters.
+  function Promise(callback, handler) {
+    // The `handler` variable points to the function that will
+    // 1) handle a .then(resolved, rejected) call
+    // 2) handle a resolve or reject call (if the first argument === `is`)
+    // Before 2), `handler` holds a queue of callbacks.
+    // After 2), `handler` is a finalized .then handler.
+    handler = function pendingHandler(resolved, rejected, value, queue, then, i) {
+      queue = pendingHandler.q;
+
+      // Case 1) handle a .then(resolved, rejected) call
+      if (resolved != is) {
+        return Promise(function (resolve, reject) {
+          queue.push({ p: this, r: resolve, j: reject, 1: resolved, 0: rejected });
+        });
+      }
+
+      // Case 2) handle a resolve or reject call
+      // (`resolved` === `is` acts as a sentinel)
+      // The actual function signature is
+      // .re[ject|solve](<is>, success, value)
+
+      // Check if the value is a promise and try to obtain its `then` method
+      if (value && (is(func, value) | is(obj, value))) {
+        try { then = value.then; }
+        catch (reason) { rejected = 0; value = reason; }
+      }
+      // If the value is a promise, take over its state
+      if (is(func, then)) {
+        try { then.call(value, transferState(1), rejected = transferState(0)); }
+        catch (reason) { rejected(reason); }
+      }
+      // The value is not a promise; handle resolve/reject
+      else {
+        // Replace this handler with a finalized resolved/rejected handler
+        handler = function (Resolved, Rejected) {
+          // If the Resolved or Rejected parameter is not a function,
+          // return the original promise (now stored in the `callback` variable)
+          if (!is(func, (Resolved = rejected ? Resolved : Rejected)))
+            return callback;
+          // Otherwise, return a finalized promise, transforming the value with the function
+          return Promise(function (resolve, reject) { finalize(this, resolve, reject, value, Resolved); });
+        };
+        // Resolve/reject pending callbacks
+        i = 0;
+        while (i < queue.length) {
+          then = queue[i++];
+          // If no callback, just resolve/reject the promise
+          if (!is(func, resolved = then[rejected]))
+            (rejected ? then.r : then.j)(value);
+          // Otherwise, resolve/reject the promise with the result of the callback
+          else
+            finalize(then.p, then.r, then.j, value, resolved);
+        }
+      }
+      // Returns a function that transfers the state of the promise
+      function transferState(resolved) {
+        return function (value) { then && (then = 0, pendingHandler(is, resolved, value)); };
+      }
+    };
+    // The queue of pending callbacks; garbage-collected when handler is resolved/rejected
+    handler.q = [];
+
+    // Create and return the promise (reusing the callback variable)
+    callback.call(callback = { then:    function (resolved, rejected) { return handler(resolved, rejected); },
+                               "catch": function (rejected)           { return handler(0,        rejected); } },
+                  function (value)  { handler(is, 1,  value); },
+                  function (reason) { handler(is, 0, reason); });
+    return callback;
+  }
+
+  // Finalizes the promise by resolving/rejecting it with the transformed value
+  function finalize(promise, resolve, reject, value, transform) {
+    setImmediate(function () {
+      try {
+        // Transform the value through and check whether it's a promise
+        value = transform(value);
+        transform = value && (is(obj, value) | is(func, value)) && value.then;
+        // Return the result if it's not a promise
+        if (!is(func, transform))
+          resolve(value);
+        // If it's a promise, make sure it's not circular
+        else if (value == promise)
+          reject(TypeError());
+        // Take over the promise's state
+        else
+          transform.call(value, resolve, reject);
+      }
+      catch (error) { reject(error); }
     });
-    MathJax.Hub.Queue(['Typeset', MathJax.Hub, $node, function () {
-      var jax = MathJax.Hub.getAllJax($node)[0];
-      jax.Text(placeholder, function () {
-        return resolve(new JaxElement(jax));
+  }
+
+  // Export the main module
+  module.exports = Promise;
+
+  // Creates a resolved promise
+  Promise.resolve = ResolvedPromise;
+  function ResolvedPromise(value) { return Promise(function (resolve) { resolve(value); }); }
+
+  // Creates a rejected promise
+  Promise.reject = function (reason) { return Promise(function (resolve, reject) { reject(reason); }); };
+
+  // Transforms an array of promises into a promise for an array
+  Promise.all = function (promises) {
+    return Promise(function (resolve, reject, count, values) {
+      // Array of collected values
+      values = [];
+      // Resolve immediately if there are no promises
+      count = promises.length || resolve(values);
+      // Transform all elements (`map` is shorter than `forEach`)
+      promises.map(function (promise, index) {
+        ResolvedPromise(promise).then(
+          // Store the value and resolve if it was the last
+          function (value) {
+            values[index] = value;
+            --count || resolve(values);
+          },
+          // Reject if one element fails
+          reject);
       });
-    }]);
-  });
+    });
+  };
+
+  // Returns a promise that resolves or rejects as soon as one promise in the array does
+  Promise.race = function (promises) {
+    return Promise(function (resolve, reject) {
+      // Register to all promises in the array
+      promises.map(function (promise) {
+        ResolvedPromise(promise).then(resolve, reject);
+      });
+    });
+  };
+})('f', 'o');
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(29).setImmediate))
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var apply = Function.prototype.apply;
+
+// DOM APIs, for completeness
+
+exports.setTimeout = function() {
+  return new Timeout(apply.call(setTimeout, window, arguments), clearTimeout);
+};
+exports.setInterval = function() {
+  return new Timeout(apply.call(setInterval, window, arguments), clearInterval);
+};
+exports.clearTimeout =
+exports.clearInterval = function(timeout) {
+  if (timeout) {
+    timeout.close();
+  }
+};
+
+function Timeout(id, clearFn) {
+  this._id = id;
+  this._clearFn = clearFn;
+}
+Timeout.prototype.unref = Timeout.prototype.ref = function() {};
+Timeout.prototype.close = function() {
+  this._clearFn.call(window, this._id);
+};
+
+// Does not start the time, just sets up the members needed.
+exports.enroll = function(item, msecs) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = msecs;
+};
+
+exports.unenroll = function(item) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = -1;
+};
+
+exports._unrefActive = exports.active = function(item) {
+  clearTimeout(item._idleTimeoutId);
+
+  var msecs = item._idleTimeout;
+  if (msecs >= 0) {
+    item._idleTimeoutId = setTimeout(function onTimeout() {
+      if (item._onTimeout)
+        item._onTimeout();
+    }, msecs);
+  }
+};
+
+// setimmediate attaches itself to the global object
+__webpack_require__(30);
+var global = __webpack_require__(32);
+exports.setImmediate = global.setImmediate;
+exports.clearImmediate = global.clearImmediate;
+
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
+    "use strict";
+
+    if (global.setImmediate) {
+        return;
+    }
+
+    var nextHandle = 1; // Spec says greater than zero
+    var tasksByHandle = {};
+    var currentlyRunningATask = false;
+    var doc = global.document;
+    var registerImmediate;
+
+    function setImmediate(callback) {
+      // Callback can either be a function or a string
+      if (typeof callback !== "function") {
+        callback = new Function("" + callback);
+      }
+      // Copy function arguments
+      var args = new Array(arguments.length - 1);
+      for (var i = 0; i < args.length; i++) {
+          args[i] = arguments[i + 1];
+      }
+      // Store and register the task
+      var task = { callback: callback, args: args };
+      tasksByHandle[nextHandle] = task;
+      registerImmediate(nextHandle);
+      return nextHandle++;
+    }
+
+    function clearImmediate(handle) {
+        delete tasksByHandle[handle];
+    }
+
+    function run(task) {
+        var callback = task.callback;
+        var args = task.args;
+        switch (args.length) {
+        case 0:
+            callback();
+            break;
+        case 1:
+            callback(args[0]);
+            break;
+        case 2:
+            callback(args[0], args[1]);
+            break;
+        case 3:
+            callback(args[0], args[1], args[2]);
+            break;
+        default:
+            callback.apply(undefined, args);
+            break;
+        }
+    }
+
+    function runIfPresent(handle) {
+        // From the spec: "Wait until any invocations of this algorithm started before this one have completed."
+        // So if we're currently running a task, we'll need to delay this invocation.
+        if (currentlyRunningATask) {
+            // Delay by doing a setTimeout. setImmediate was tried instead, but in Firefox 7 it generated a
+            // "too much recursion" error.
+            setTimeout(runIfPresent, 0, handle);
+        } else {
+            var task = tasksByHandle[handle];
+            if (task) {
+                currentlyRunningATask = true;
+                try {
+                    run(task);
+                } finally {
+                    clearImmediate(handle);
+                    currentlyRunningATask = false;
+                }
+            }
+        }
+    }
+
+    function installNextTickImplementation() {
+        registerImmediate = function(handle) {
+            process.nextTick(function () { runIfPresent(handle); });
+        };
+    }
+
+    function canUsePostMessage() {
+        // The test against `importScripts` prevents this implementation from being installed inside a web worker,
+        // where `global.postMessage` means something completely different and can't be used for this purpose.
+        if (global.postMessage && !global.importScripts) {
+            var postMessageIsAsynchronous = true;
+            var oldOnMessage = global.onmessage;
+            global.onmessage = function() {
+                postMessageIsAsynchronous = false;
+            };
+            global.postMessage("", "*");
+            global.onmessage = oldOnMessage;
+            return postMessageIsAsynchronous;
+        }
+    }
+
+    function installPostMessageImplementation() {
+        // Installs an event handler on `global` for the `message` event: see
+        // * https://developer.mozilla.org/en/DOM/window.postMessage
+        // * http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#crossDocumentMessages
+
+        var messagePrefix = "setImmediate$" + Math.random() + "$";
+        var onGlobalMessage = function(event) {
+            if (event.source === global &&
+                typeof event.data === "string" &&
+                event.data.indexOf(messagePrefix) === 0) {
+                runIfPresent(+event.data.slice(messagePrefix.length));
+            }
+        };
+
+        if (global.addEventListener) {
+            global.addEventListener("message", onGlobalMessage, false);
+        } else {
+            global.attachEvent("onmessage", onGlobalMessage);
+        }
+
+        registerImmediate = function(handle) {
+            global.postMessage(messagePrefix + handle, "*");
+        };
+    }
+
+    function installMessageChannelImplementation() {
+        var channel = new MessageChannel();
+        channel.port1.onmessage = function(event) {
+            var handle = event.data;
+            runIfPresent(handle);
+        };
+
+        registerImmediate = function(handle) {
+            channel.port2.postMessage(handle);
+        };
+    }
+
+    function installReadyStateChangeImplementation() {
+        var html = doc.documentElement;
+        registerImmediate = function(handle) {
+            // Create a <script> element; its readystatechange event will be fired asynchronously once it is inserted
+            // into the document. Do so, thus queuing up the task. Remember to clean up once it's been called.
+            var script = doc.createElement("script");
+            script.onreadystatechange = function () {
+                runIfPresent(handle);
+                script.onreadystatechange = null;
+                html.removeChild(script);
+                script = null;
+            };
+            html.appendChild(script);
+        };
+    }
+
+    function installSetTimeoutImplementation() {
+        registerImmediate = function(handle) {
+            setTimeout(runIfPresent, 0, handle);
+        };
+    }
+
+    // If supported, we should attach to the prototype of global, since that is where setTimeout et al. live.
+    var attachTo = Object.getPrototypeOf && Object.getPrototypeOf(global);
+    attachTo = attachTo && attachTo.setTimeout ? attachTo : global;
+
+    // Don't get fooled by e.g. browserify environments.
+    if ({}.toString.call(global.process) === "[object process]") {
+        // For Node.js before 0.9
+        installNextTickImplementation();
+
+    } else if (canUsePostMessage()) {
+        // For non-IE10 modern browsers
+        installPostMessageImplementation();
+
+    } else if (global.MessageChannel) {
+        // For web workers, where supported
+        installMessageChannelImplementation();
+
+    } else if (doc && "onreadystatechange" in doc.createElement("script")) {
+        // For IE 6–8
+        installReadyStateChangeImplementation();
+
+    } else {
+        // For older browsers
+        installSetTimeoutImplementation();
+    }
+
+    attachTo.setImmediate = setImmediate;
+    attachTo.clearImmediate = clearImmediate;
+}(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5), __webpack_require__(31)))
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global) {var win;
+
+if (typeof window !== "undefined") {
+    win = window;
+} else if (typeof global !== "undefined") {
+    win = global;
+} else if (typeof self !== "undefined"){
+    win = self;
+} else {
+    win = {};
+}
+
+module.exports = win;
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = getCleanCopy;
+
+var _toArray = __webpack_require__(0);
+
+var _toArray2 = _interopRequireDefault(_toArray);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * Get a clean copy of editor's value.
+ * 
+ * @param {HTMLElement}  $value
+ * 
+ * @return {HTMLElement}
+ */
+function getCleanCopy($value) {
+  var $clone = $value.cloneNode(true);
+  /** @param {HTMLElement} $el */
+  var walk = function walk($el) {
+    $el.removeAttribute('id');
+    $el.removeAttribute('class');
+    (0, _toArray2.default)($el.children).forEach(function ($child) {
+      return walk($child);
+    });
+  };
+  walk($clone);
+  return $clone;
 }
 
 /***/ }),
-/* 23 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1815,12 +3276,19 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = hideElement;
+/**
+ * Hide the given element.
+ * 
+ * @param {HTMLElement}  
+ * 
+ * @return {Void}
+ */
 function hideElement($el) {
   $el.style.display = 'none';
 }
 
 /***/ }),
-/* 24 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1840,7 +3308,30 @@ function listenElement($el, type, listener) {
 }
 
 /***/ }),
-/* 25 */
+/* 36 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = prependElement;
+/**
+ * Insert an element at the beginning of the parent element.
+ * 
+ * @param {HTMLElement}  
+ * @param {HTMLElement}
+ * 
+ * @return {Void}  
+ */
+function prependElement($parent, $el) {
+  return $parent.insertBefore($el, $parent.firstElementChild);
+}
+
+/***/ }),
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1851,14 +3342,18 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = showElement;
 /**
+ * Show a element.
+ * 
  * @param {HTMLElement} $el  
+ * 
+ * @return {Void}
  */
 function showElement($el) {
   $el.style.display = 'block';
 }
 
 /***/ }),
-/* 26 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1876,8 +3371,14 @@ var _toArray2 = _interopRequireDefault(_toArray);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
+ * This function will add some visual stuff to the editor's current
+ * value after cloning it, then will return the final markup to be set
+ * on the display.
+ * 
  * @param {HTMLElement} $value
  * @param {String} [placeholder] 
+ * 
+ * @return {String}
  */
 function toDisplay($value) {
   var placeholder = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
@@ -1929,7 +3430,7 @@ function toDisplay($value) {
 }
 
 /***/ }),
-/* 27 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1938,50 +3439,68 @@ function toDisplay($value) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = {
-  '+': '+',
-  '-': '-',
-  '=': '=',
-  '*': '&#x22C5;<!-- ⋅ -->',
-  '/': '&#x00F7;<!-- ÷ -->',
-  'div': '&#x00F7;<!-- ÷ -->',
-  'times': '&#x00D7;<!-- × -->',
-  'cdot': '&#x22C5;<!-- ⋅ -->',
-  'pm': '&#x00B1;<!-- ± -->'
-};
-
-/***/ }),
-/* 28 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = inArray;
+exports.default = toDom;
 /**
- * @param {Array} array 
- * @param {*} subject 
+ * Parse a HTML string and returns the element.
+ * 
+ * NOTE: It seems that the performance of innerHTML is not
+ *       that good, so this implementation will probably
+ *       change...
+ * 
+ * @param {String} html
+ * 
+ * @return {HTMLElement}
  */
-function inArray(array, subject) {
-  return array.indexOf(subject) !== -1;
+function toDom(html) {
+  var tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  return tmp.firstElementChild;
 }
 
 /***/ }),
-/* 29 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _styles = __webpack_require__(30);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _operatorList = __webpack_require__(3);
+
+var _operatorList2 = _interopRequireDefault(_operatorList);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = Object.assign({}, _operatorList2.default, {
+  '*': '⋅',
+  '/': '÷'
+});
+
+/***/ }),
+/* 41 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _styles = __webpack_require__(42);
 
 var _styles2 = _interopRequireDefault(_styles);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/**
+ * This file will use MathJax.Ajax.Styles method to apply the styles
+ * of the editor. Also, it sets MathJax.Hub.processSectionDelay to
+ * `0` in order to the editor display feel fast.
+ * 
+ * Maybe could we set this property to `0` only when the user is
+ * actually using the editor and avoid rewriting the user's MathJax
+ * configuration?
+ */
 window.addEventListener('load', function () {
   if (!MathJax) {
     throw new Error('MathjaxEditor: MathJax is missing.');
@@ -1992,7 +3511,7 @@ window.addEventListener('load', function () {
 });
 
 /***/ }),
-/* 30 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
