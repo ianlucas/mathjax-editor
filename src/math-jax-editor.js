@@ -159,6 +159,24 @@ export default class MathJaxEditor {
   }
 
   /**
+   * Move the cursor to the left.
+   * 
+   * @return {Void}
+   */
+  moveCursorLeft() {
+    return this.core.cursor.moveLeft()
+  }
+
+  /**
+   * Move the cursor to the right.
+   * 
+   * @return {Void}
+   */
+  moveCursorRight() {
+    return this.core.cursor.moveRight()
+  }
+
+  /**
    * Get the value of the editor as string.
    * 
    * @return {String}
