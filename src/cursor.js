@@ -2,9 +2,13 @@ import px from './utils/px'
 
 export default class Cursor {
   /**
+   * This class handles the cursor positioning.
+   * 
    * @param {Tree} tree 
    * @param {Rendered} rendered 
    * @param {HTMLElement} $caret
+   * 
+   * @constructor
    */
   constructor(tree, rendered, $caret) {
     /** @type {Tree} */
@@ -18,6 +22,8 @@ export default class Cursor {
   }
 
   /**
+   * Get the client rect bounding of the caret element.
+   * 
    * @return {ClientRect}
    */
   getCaretBounding() {
@@ -25,6 +31,8 @@ export default class Cursor {
   }
 
   /**
+   * Get current cursor position.
+   * 
    * @return {HTMLElement}
    */
   getPosition() {
@@ -32,6 +40,8 @@ export default class Cursor {
   }
 
   /**
+   * Set the cursor position.
+   * 
    * @param {HTMLElement} $position  
    * 
    * @return {this}
@@ -41,6 +51,11 @@ export default class Cursor {
     return this
   }
 
+  /**
+   * Move the cursor to the left.
+   * 
+   * @return {Void}
+   */
   moveLeft() {
     if (!this.$position) {return this.update()}
     const path = this.tree.getPath()
@@ -49,6 +64,11 @@ export default class Cursor {
     this.update()
   }
 
+  /**
+   * Move the cursor to the right.
+   * 
+   * @return {Void}
+   */
   moveRight() {
     const path = this.tree.getPath()
     if (!this.$position) {
@@ -69,6 +89,11 @@ export default class Cursor {
     this.update()
   }
 
+  /**
+   * Update the caret element position on the display.
+   * 
+   * @return {Void}
+   */
   update() {
     const element = this.rendered.findElement(this.$position)
     const position = element.getCaretPosition()
