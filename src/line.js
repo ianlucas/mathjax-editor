@@ -1,4 +1,9 @@
 export default class Line {
+  /**
+   * This class represents a line of the editor.
+   * 
+   * @constructor
+   */
   constructor() {
     /** @type {Array} */
     this.elements = []
@@ -23,7 +28,11 @@ export default class Line {
   }
 
   /**
+   * Set the rendered line.
+   * 
    * @param {HTMLElement} $rendered
+   * 
+   * @return {Void}
    */
   setRendered($rendered) {
     const bounding = $rendered.getBoundingClientRect()
@@ -39,6 +48,8 @@ export default class Line {
   }
 
   /**
+   * Get the first element of this line.
+   * 
    * @return {Element}
    */
   getFirstElement() {
@@ -46,6 +57,8 @@ export default class Line {
   }
 
   /**
+   * Get the last element of this line.
+   * 
    * @return {Element}
    */
   getLastElement() {
@@ -60,14 +73,22 @@ export default class Line {
   }
 
   /**
+   * Check if the given y is between this line y1 and y2.
+   * 
    * @param {Number} y
+   * 
+   * @return {Boolean}
    */
   betweenYAxis(y) {
     return y > this.y1 && y < this.y2
   }
 
   /**
+   * Check if the given x is between this line x1 and x2.
+   * 
    * @param {Number} x
+   * 
+   * @return {Boolean}
    */
   betweenXAxis(x) {
     return x > this.x1 && x < this.x2
