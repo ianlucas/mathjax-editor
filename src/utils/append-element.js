@@ -6,6 +6,6 @@
  * 
  * @return {Void}  
  */
-export default function append($parent, $child) {
+export default function appendElement($parent, $child) {
   return $parent.appendChild($child)
 }
