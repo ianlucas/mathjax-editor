@@ -3165,6 +3165,10 @@ process@~0.5.1:
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/process/-/process-0.5.2.tgz#1638d8a8e34c2f440a91db95ab9aeb677fc185cf"
 
+promiscuous@^0.7.1:
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/promiscuous/-/promiscuous-0.7.1.tgz#8a1754feb694b0c53964e49e633afb646c51b76e"
+
 proxy-addr@~1.1.4:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/proxy-addr/-/proxy-addr-1.1.5.tgz#71c0ee3b102de3f202f3b64f608d173fcba1a918"

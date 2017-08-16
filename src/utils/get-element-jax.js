@@ -1,4 +1,5 @@
 import ElementJax from '../element-jax'
+import Promise from './promise'
 
 /**
  * This function will catch the MathJax's ElementJax inside the

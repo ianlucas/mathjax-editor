@@ -13,5 +13,8 @@
     "uglify-js": "^3.0.27",
     "webpack": "^3.5.4",
     "webpack-dev-server": "^2.7.1"
+  },
+  "dependencies": {
+    "promiscuous": "^0.7.1"
   }
 }

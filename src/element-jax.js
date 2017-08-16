@@ -1,3 +1,5 @@
+import Promise from './utils/promise'
+
 export default class ElementJax {
   /**
    * This class is a wrapper around MathJax's ElementJax.
