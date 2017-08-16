@@ -3,7 +3,11 @@ import removeClass from './utils/remove-class'
 
 export default class Blinker {
   /**
-   * @param {HTMLElement} $caret  
+   * This class handles the animation of the caret element.
+   * 
+   * @param {HTMLElement} $caret
+   * 
+   * @constructor
    */
   constructor($caret) {
     this.$caret = $caret
@@ -18,10 +22,20 @@ export default class Blinker {
     this.prevFreezeId = null
   }
 
+  /**
+   * Stops the animation.
+   * 
+   * @return {Void}
+   */
   destroy() {
     clearInterval(this.id)
   }
 
+  /**
+   * Freezes the animation temporarily.
+   * 
+   * @return {Void}
+   */
   freeze() {
     clearInterval(this.prevFreezeId)
     addClass(this.$caret, 'is-freezed')
