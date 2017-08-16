@@ -16,9 +16,6 @@ export default function getElementJax($el, callback) {
   const placeholder = '<math><mo>...</mo></math>'
 
   return new Promise(resolve => {
-    MathJax.Hub.Config({
-      displayAlign: "left"
-    });
     MathJax.Hub.Queue(['Typeset', MathJax.Hub, $el, () => {
       const jax = MathJax.Hub.getAllJax($el)[0]
       jax.Text(placeholder, () => resolve(new ElementJax(jax)))
