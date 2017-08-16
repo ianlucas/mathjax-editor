@@ -19,7 +19,7 @@ export default function mml2Tex($value) {
   const walk = $el => {
     const children = $el.children
     const innerValue = $el.innerHTML
-    const tagName = $el.tagName
+    const tagName = $el.tagName.toLowerCase()
 
     switch (tagName) {
     case 'math':
@@ -55,7 +55,7 @@ export default function mml2Tex($value) {
       output = output.trim() + '}'
       
       if ($el.parentNode.firstElementChild === $el) {
-        switch ($el.parentNode.tagName) {
+        switch ($el.parentNode.tagName.toLowerCase()) {
         case 'msup':
           output += '^'
           break
