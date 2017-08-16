@@ -6,8 +6,12 @@ import inArray from './utils/in-array'
 
 export default class MathJaxEditor {
   /**
+   * The surface that interacts with the Editor class.
+   * 
    * @param {String|Node} selectors 
-   * @param {Object} [options] 
+   * @param {Object} [options]
+   * 
+   * @constructor
    */
   constructor(selectors, options) {
     this.core = new Editor(selectors, options)
@@ -16,7 +20,11 @@ export default class MathJaxEditor {
   }
 
   /**
-   * @param {Number} n 
+   * Insert a number in the editor.
+   * 
+   * @param {Number} n
+   * 
+   * @return {Void}
    */
   insertNumber(n) {
     if (n < 0 || n > 9) {
@@ -30,7 +38,11 @@ export default class MathJaxEditor {
   }
 
   /**
+   * Insert a identifier in the editor.
+   * 
    * @param {String} i
+   * 
+   * @return {Void}
    */
   insertIdentifier(i) {
     if (typeof i !== 'string' && !i.match(/^[a-zA-Z]$/)) {
@@ -43,6 +55,11 @@ export default class MathJaxEditor {
     this.core.insert($mi)
   }
 
+  /**
+   * Insert a fraction in the editor.
+   * 
+   * @return {Void}
+   */
   insertFraction() {
     const $mfrac = document.createElement('mfrac')
     const $mrowNum = document.createElement('mrow')
@@ -54,6 +71,11 @@ export default class MathJaxEditor {
     this.core.insert($mfrac, $mrowNum)
   }
 
+  /**
+   * Insert a square root on the editor.
+   * 
+   * @return {Void}
+   */
   insertSqrt() {
     const $msqrt = document.createElement('msqrt')
     const $mrow = document.createElement('mrow')
@@ -64,7 +86,11 @@ export default class MathJaxEditor {
   }
 
   /**
-   * @param {String} o 
+   * Insert a operator in the editor.
+   * 
+   * @param {String} o
+   * 
+   * @return {Void}
    */
   insertOperator(o) {
     if (!EXTRA_OPERATOR_LIST[o]) {
@@ -78,6 +104,11 @@ export default class MathJaxEditor {
     this.core.insert($mo)
   }
 
+  /**
+   * Insert a superscript in the editor.
+   * 
+   * @return {Void}
+   */
   insertSuperscript() {
     const $msup = document.createElement('msup')
     const $mrowBase = document.createElement('mrow')
@@ -89,6 +120,11 @@ export default class MathJaxEditor {
     this.core.insert($msup, $mrowBase)
   }
 
+  /**
+   * Insert a subscript in the editor.
+   * 
+   * @return {Void}
+   */
   insertSubscript() {
     const $msub = document.createElement('msub')
     const $mrowBase = document.createElement('mrow')
@@ -101,7 +137,13 @@ export default class MathJaxEditor {
   }
 
   /**
+   * This method is not actually meant to be used, it is here to
+   * handle the @input event when the user types in the editor's
+   * input element.
+   * 
    * @param {String} what 
+   * 
+   * @return {Void}
    */
   insert(what) {
     if (what.match(/^[0-9]$/)) {
