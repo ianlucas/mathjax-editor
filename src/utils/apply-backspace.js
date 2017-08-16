@@ -1,3 +1,5 @@
+import lc from './lc'
+
 /**
  * Perform the "backspace" deletion on the given value and
  * current cursor position.
@@ -11,7 +13,7 @@ export default function applyBackspace($value, cursor) {
   const $position = cursor.getPosition()
   
   if (!$position) {return}
-  if ($position.tagName.toLowerCase() === 'mrow') {
+  if (lc($position.tagName) === 'mrow') {
     const $parent = $position.parentNode
     const $previous = $parent.previousElementSibling
     $parent.parentNode.removeChild($parent)
@@ -21,7 +23,7 @@ export default function applyBackspace($value, cursor) {
     if ($position.previousElementSibling) {
       cursor.setPosition($position.previousElementSibling)
     }
-    else if ($position.parentNode.tagName.toLowerCase() === 'mrow') {
+    else if (lc($position.parentNode.tagName) === 'mrow') {
       cursor.setPosition($position.parentNode)
     }
     else {

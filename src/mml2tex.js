@@ -1,5 +1,6 @@
 import OPERATOR_LIST from './constants/operator-list'
 
+import lc from './utils/lc'
 import reverseObject from './utils/reverse-object'
 import toArray from './utils/to-array'
 
@@ -19,7 +20,7 @@ export default function mml2Tex($value) {
   const walk = $el => {
     const children = $el.children
     const innerValue = $el.innerHTML
-    const tagName = $el.tagName.toLowerCase()
+    const tagName = lc($el.tagName)
 
     switch (tagName) {
     case 'math':
@@ -55,7 +56,7 @@ export default function mml2Tex($value) {
       output = output.trim() + '}'
       
       if ($el.parentNode.firstElementChild === $el) {
-        switch ($el.parentNode.tagName.toLowerCase()) {
+        switch (lc($el.parentNode.tagName)) {
         case 'msup':
           output += '^'
           break

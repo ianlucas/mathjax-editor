@@ -18,6 +18,7 @@ import findTextarea from './utils/find-textarea'
 import getElementJax from './utils/get-element-jax'
 import getCleanCopy from './utils/get-clean-copy'
 import hideElement from './utils/hide-element'
+import lc from './utils/lc'
 import listenElement from './utils/listen-element'
 import prependElement from './utils/prepend-element'
 import removeClass from './utils/remove-class'
@@ -233,7 +234,7 @@ export default class Editor {
       prependElement(this.$value, $el)
     }
     else {
-      switch ($position.tagName.toLowerCase()) {
+      switch (lc($position.tagName)) {
       case 'mrow': prependElement($position, $el); break
       case 'math': appendElement(this.$value, $el); break
       default: appendElementAfter($position, $el)
@@ -255,8 +256,8 @@ export default class Editor {
     const $position = this.cursor.getPosition()
     if (
       $position &&
-      $position.tagName.toLowerCase() !== 'math' && 
-      $position.parentNode.tagName.toLowerCase() !== 'math'
+      lc($position.tagName) !== 'math' && 
+      lc($position.parentNode.tagName) !== 'math'
     ) {return}
 
     const $mspace = createElement('mspace', {
@@ -325,7 +326,7 @@ export default class Editor {
     if (typeof $value === 'string') {
       $value = toDom($value)
     }
-    if ($value.nodeType !== 1 || $value.tagName.toLowerCase() !== 'math') {
+    if ($value.nodeType !== 1 || lc($value.tagName) !== 'math') {
       throw new Error('MathjaxEditor: the value must be an <math> element.')
     }
     this.$value = $value

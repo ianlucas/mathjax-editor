@@ -1,3 +1,4 @@
+import lc from './utils/lc'
 import px from './utils/px'
 
 export default class Cursor {
@@ -73,14 +74,14 @@ export default class Cursor {
     const path = this.tree.getPath()
     if (!this.$position) {
       const $first = path[1]
-      if ($first.tagName.toLowerCase() !== 'math') {
+      if (lc($first.tagName) !== 'math') {
         this.$position = $first
       }
     }
     else {
       const index = path.indexOf(this.$position)
       const $next = path[index + 1]
-      const isMath = ($next.tagName.toLowerCase() === 'math')
+      const isMath = (lc($next.tagName) === 'math')
       const isParent = (this.$position.parentNode === $next)
       if ($next && !(isMath && isParent)) {
         this.$position = $next

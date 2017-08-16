@@ -1,3 +1,5 @@
+import lc from './utils/lc'
+
 export default class Element {
   /**
    * This class makes a connection between an actual element
@@ -59,7 +61,7 @@ export default class Element {
    */
   getTagName() {
     if (!this.$el) {return 'null'}
-    return this.$el.tagName.toLowerCase()
+    return lc(this.$el.tagName)
   }
 
   /**
@@ -110,7 +112,7 @@ export default class Element {
     if (this.isTagName('mrow')) {
       height = this.height
     }
-    else if (this.$el.parentNode.tagName.toLowerCase() === 'mrow') {
+    else if (lc(this.$el.parentNode.tagName) === 'mrow') {
       const parent = this.rendered.findElement(this.$el.parentNode)
       height = parent.$rendered.clientHeight
     }
