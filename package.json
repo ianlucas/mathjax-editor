@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "debounce": "^1.0.2",
-    "promiscuous": "^0.7.1"
+    "promiscuous": "^0.7.1",
+    "raf": "^3.3.2"
   }
 }

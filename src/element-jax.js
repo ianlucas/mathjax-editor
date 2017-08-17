@@ -1,3 +1,5 @@
+import raf from 'raf'
+
 import Promise from './utils/promise'
 
 export default class ElementJax {
@@ -37,7 +39,12 @@ export default class ElementJax {
    */
   update() {
     return new Promise(resolve => {
-      this.jax.Text(this.value, () => resolve())
+      
+      // Use requestAnimationFrame to ensure that the browser really finished
+      // rendering the mathematics. Without using it, the caret could be placed
+      // in the wrong top and left pos when inserting multiple square roots at once.
+
+      this.jax.Text(this.value, () => raf(() => resolve()))
     })
   }
 }
