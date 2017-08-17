@@ -108,17 +108,24 @@ export default class Element {
         $parent: this.line.$rendered.parentNode
       }
     }
+    
     let height = this.line.height
+
     if (this.isTagName('mrow')) {
-      height = this.height
+      return {
+        top: 0,
+        left: 0,
+        height: this.height,
+        $parent: this.$rendered
+      }
     }
-    else if (lc(this.$el.parentNode.tagName) === 'mrow') {
+    if (lc(this.$el.parentNode.tagName) === 'mrow') {
       const parent = this.rendered.findElement(this.$el.parentNode)
       height = parent.$rendered.clientHeight
     }
     return {
-      top: Math.max(this.top - Math.max(height - this.height, 0), 0),
-      left: this.left + (!this.isTagName('mrow') ? this.width : 0),
+      top: 0,
+      left: this.left + this.width,
       height,
       $parent: this.$rendered.parentNode
     }

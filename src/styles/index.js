@@ -38,5 +38,9 @@ export default {
 
   '.mathjax-editor-placeholder': {
     'color': '#ccc'
+  },
+
+  '.mathjax-editor-mrow': {
+    'position': 'relative'
   }
 }

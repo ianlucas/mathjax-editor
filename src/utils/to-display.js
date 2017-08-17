@@ -1,3 +1,4 @@
+import addClass from './add-class'
 import lc from './lc'
 import toArray from './to-array'
 
@@ -20,6 +21,8 @@ export default function toDisplay($value, placeholder = '') {
 
   toArray($clone.querySelectorAll('mrow'))
     .forEach($mrow => {
+      addClass($mrow, 'mathjax-editor-mrow')
+
       if ($mrow.children.length) {
         if (lc($mrow.parentNode.tagName) === 'msqrt') {
           const $mspace = document.createElement('mspace')
