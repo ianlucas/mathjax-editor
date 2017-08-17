@@ -15,7 +15,7 @@ export default function applyBackspace($value, cursor) {
   if (!$position) {return}
   if (lc($position.tagName) === 'mrow') {
     const $parent = $position.parentNode
-    const $previous = $parent.previousElementSibling
+    const $previous = cursor.getLeft()
     $parent.parentNode.removeChild($parent)
     cursor.setPosition($previous)
   }

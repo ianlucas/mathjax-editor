@@ -53,15 +53,50 @@ export default class Cursor {
   }
 
   /**
+   * Get the element of the left side of the cursor.
+   * 
+   * @return {HTMLElement}
+   */
+  getLeft() {
+    if (!this.$position) {return null}
+    const path = this.tree.getPath()
+    const index = path.indexOf(this.$position)
+    return path[index - 1]
+  }
+
+  /**
+   * Get the element of the right side of the cursor.
+   * 
+   * @return {HTMLElement}
+   */
+  getRight() {
+    const path = this.tree.getPath()
+    if (!this.$position) {
+      const $first = path[1]
+      if (lc($first.tagName) !== 'math') {
+        return $first
+      }
+    }
+    else {
+      const index = path.indexOf(this.$position)
+      const $next = path[index + 1]
+      const isMath = (lc($next.tagName) === 'math')
+      const isParent = (this.$position.parentNode === $next)
+      if ($next && !(isMath && isParent)) {
+        return $next
+      }
+    }
+    return this.$position
+  }
+
+  /**
    * Move the cursor to the left.
    * 
    * @return {Void}
    */
   moveLeft() {
     if (!this.$position) {return this.update()}
-    const path = this.tree.getPath()
-    const index = path.indexOf(this.$position)
-    this.$position = path[index - 1]
+    this.$position = this.getLeft()
     this.update()
   }
 
@@ -71,22 +106,7 @@ export default class Cursor {
    * @return {Void}
    */
   moveRight() {
-    const path = this.tree.getPath()
-    if (!this.$position) {
-      const $first = path[1]
-      if (lc($first.tagName) !== 'math') {
-        this.$position = $first
-      }
-    }
-    else {
-      const index = path.indexOf(this.$position)
-      const $next = path[index + 1]
-      const isMath = (lc($next.tagName) === 'math')
-      const isParent = (this.$position.parentNode === $next)
-      if ($next && !(isMath && isParent)) {
-        this.$position = $next
-      }
-    }
+    this.$position = this.getRight()
     this.update()
   }
 
