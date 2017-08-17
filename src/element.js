@@ -1,4 +1,4 @@
-import lc from './utils/lc'
+import lcc from './utils/lcc'
 
 export default class Element {
   /**
@@ -61,7 +61,7 @@ export default class Element {
    */
   getTagName() {
     if (!this.$el) {return 'null'}
-    return lc(this.$el.tagName)
+    return lcc(this.$el.tagName)
   }
 
   /**
@@ -119,7 +119,7 @@ export default class Element {
         $parent: this.$rendered
       }
     }
-    if (lc(this.$el.parentNode.tagName) === 'mrow') {
+    if (lcc(this.$el.parentNode.tagName, 'mrow')) {
       const parent = this.rendered.findElement(this.$el.parentNode)
       height = parent.$rendered.clientHeight
     }

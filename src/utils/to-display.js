@@ -1,5 +1,5 @@
 import addClass from './add-class'
-import lc from './lc'
+import lcc from './lcc'
 import toArray from './to-array'
 
 /**
@@ -24,7 +24,7 @@ export default function toDisplay($value, placeholder = '') {
       addClass($mrow, 'mathjax-editor-mrow')
 
       if ($mrow.children.length) {
-        if (lc($mrow.parentNode.tagName) === 'msqrt') {
+        if (lcc($mrow.parentNode.tagName, 'msqrt')) {
           const $mspace = document.createElement('mspace')
           $mspace.setAttribute('width', 'thinmathspace')
           $mspace.className = 'mathjax-editor-helper'
@@ -49,11 +49,11 @@ export default function toDisplay($value, placeholder = '') {
       $mo.className = 'mathjax-editor-newline-empty'
       $mo.innerHTML = '⏎'
 
-      if (!$next || lc($next.tagName) === 'math') {
+      if (!$next || lcc($next.tagName, 'math')) {
         $mspace.parentNode.insertBefore($mo, $mspace.nextSibling)
       }
 
-      if (!(!$previous || lc($previous.tagName) === 'mspace')) {return}
+      if (!(!$previous || lcc($previous.tagName, 'mspace'))) {return}
       $mspace.parentNode.insertBefore($mo.cloneNode(true), $mspace)
     })
     

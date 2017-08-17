@@ -1,4 +1,4 @@
-import lc from './lc'
+import lcc from './lcc'
 
 /**
  * Perform the "delete" deletion on the given value and
@@ -16,7 +16,7 @@ export default function applyDelete($value, cursor) {
   }
   else if (!$position.nextElementSibling) {
     const $parent = $position.parentNode
-    if (lc($parent.tagName) === 'mrow') {
+    if (lcc($parent.tagName, 'mrow')) {
       cursor.setPosition($parent.parentNode.previousElementSibling)
       $parent.parentNode.parentNode.removeChild($parent.parentNode)
     }

@@ -1,7 +1,7 @@
 import Element from './element'
 import Line from './line'
 
-import lc from './utils/lc'
+import lcc from './utils/lcc'
 import toArray from './utils/to-array'
 
 export default class Rendered {
@@ -99,7 +99,7 @@ export default class Rendered {
       const $rendered = this.findRenderedElement($el)
       const element = new Element($el, $rendered)
 
-      if ($el && lc($el.tagName) === 'mspace') {
+      if ($el && lcc($el.tagName, 'mspace')) {
         line = new Line
         lineIndex += 1
         line.setRendered(renderedLines[lineIndex])

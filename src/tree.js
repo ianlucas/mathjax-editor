@@ -1,4 +1,4 @@
-import lc from './utils/lc'
+import lcc from './utils/lcc'
 import toArray from './utils/to-array'
 
 export default class Tree {
@@ -60,7 +60,7 @@ export default class Tree {
 
       children.forEach($child => walk($child))
 
-      if (children.length && lc($el.tagName) !== 'mrow') {
+      if (children.length && !lcc($el.tagName, 'mrow')) {
         const index = this.path.indexOf($el)
         this.path.splice(index, 1)
         this.path.push($el)

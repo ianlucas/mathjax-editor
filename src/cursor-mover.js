@@ -1,4 +1,4 @@
-import lc from './utils/lc'
+import lcc from './utils/lcc'
 
 export default class CursorMover {
   /**
@@ -63,7 +63,7 @@ export default class CursorMover {
     // where it should be placed.
 
     for (const $el of this.tree.getPath()) {
-      if ($el && lc($el.tagName) === 'math') {continue}
+      if ($el && lcc($el.tagName, 'math')) {continue}
 
       this.cursor.setPosition($el).update()
 
