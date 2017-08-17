@@ -6,6 +6,13 @@
  * @return {HTMLElement}
  */
 export default function toDom(source) {
-  const doc = (new DOMParser()).parseFromString(source, 'text/html')
+  let doc
+  try {
+    doc = (new DOMParser()).parseFromString(source, 'text/html')
+  }
+  catch (e) {
+    doc = document.implementation.createHTMLDocument('')
+    doc.body.innerHTML = source
+  }
   return doc.body.firstChild
 }
