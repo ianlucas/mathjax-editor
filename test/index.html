@@ -13,6 +13,7 @@
     .mathjax-editor-display {
       border: 1px solid #ccc;
       padding: 0 0.5em;
+      font-size: 32px;
     }
 
     .mathjax-editor-display.is-focused {
@@ -32,23 +33,27 @@
       messageStyle: 'none'
     });
   </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js"></script>
   <script type="text/javascript" async
     src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
   </script>
   <script src="MathJaxEditor.js"></script>
   <script>
-    const $panel = document.getElementById('panel')
+    var $panel = document.getElementById('panel')
     window.onload = function () {
-      window.editor = new MathJaxEditor('#targetNode')
-      const buttons = [
-        { label: '$$\\frac{a}{b}$$', click() {window.editor.insertFraction()} },
-        { label: '$$\\sqrt{a}$$', click() {window.editor.insertSqrt()} },
-        { label: '$$\\pm$$', click() {window.editor.insertOperator('pm')} },
-        { label: '$$a^b$$', click() {window.editor.insertSuperscript()} }
+      window.editor = new MathJaxEditor('#targetNode', {
+        allowNewlines: true
+      })
+      var buttons = [
+        { label: '$$\\frac{a}{b}$$', click: function () {window.editor.insertFraction()} },
+        { label: '$$\\sqrt{a}$$', click: function () {window.editor.insertSqrt()} },
+        { label: '$$\\pm$$', click: function () {window.editor.insertOperator('pm')} },
+        { label: '$$a^b$$', click: function () {window.editor.insertSuperscript()} },
+        { label: '$$a_b$$', click: function () {window.editor.insertSubscript()} }
       ]
-
-      buttons.forEach(button => {
-        const $button = document.createElement('button')
+      buttons.forEach(function (button) {
+        var $button = document.createElement('button')
+        $button.setAttribute('type', 'button')
         $button.innerHTML = button.label
         $button.onclick = button.click
         $panel.appendChild($button)
