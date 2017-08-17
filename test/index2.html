@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>MathJax Editor Next</title>
+  <style>
+    body {
+      font-size: 24px;
+    }
+
+    .mathjax-editor-display {
+      border: 1px solid #ccc;
+      padding: 0 0.5em;
+      font-size: 32px;
+    }
+
+    .mathjax-editor-display.is-focused {
+      border-color: #007fff;
+    }
+  </style>
+</head>
+<body>
+  <h1>MathJax Editor</h1>
+  <textarea id="targetNode"></textarea>
+  <hr>
+  <div id="panel"></div>
+
+  <script type='text/x-mathjax-config'>
+    MathJax.Hub.Config({
+      showMathMenu: false,
+      messageStyle: 'none'
+    });
+  </script>
+  <script type="text/javascript" async
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+  </script>
+  <script src="https://rawgit.com/ianlucas/mathjax-editor/next/dist/MathJaxEditor.js"></script>
+  <script>
+    const $panel = document.getElementById('panel')
+    window.onload = function () {
+      window.editor = new MathJaxEditor('#targetNode', {
+        allowNewlines: true
+      })
+      const buttons = [
+        { label: '$$\\frac{a}{b}$$', click() {window.editor.insertFraction()} },
+        { label: '$$\\sqrt{a}$$', click() {window.editor.insertSqrt()} },
+        { label: '$$\\pm$$', click() {window.editor.insertOperator('pm')} },
+        { label: '$$a^b$$', click() {window.editor.insertSuperscript()} },
+        { label: '$$a_b$$', click() {window.editor.insertSubscript()} }
+      ]
+
+      buttons.forEach(button => {
+        const $button = document.createElement('button')
+        $button.innerHTML = button.label
+        $button.onclick = button.click
+        $panel.appendChild($button)
+      })
+    }
+  </script>
+</body>
+</html>
