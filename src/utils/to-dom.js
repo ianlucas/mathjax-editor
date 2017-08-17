@@ -1,16 +1,11 @@
 /**
- * Parse a HTML string and returns the element.
- * 
- * NOTE: It seems that the performance of innerHTML is not
- *       that good, so this implementation will probably
- *       change...
+ * Parse a MathML string and returns the element.
  * 
  * @param {String} html
  * 
  * @return {HTMLElement}
  */
-export default function toDom(html) {
-  const tmp = document.createElement('div')
-  tmp.innerHTML = html
-  return tmp.firstElementChild
+export default function toDom(source) {
+  const doc = (new DOMParser()).parseFromString(source, 'text/html')
+  return doc.body.firstChild
 }
