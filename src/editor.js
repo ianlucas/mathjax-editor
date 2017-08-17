@@ -185,9 +185,9 @@ export default class Editor {
    */
   update() {
     if (!this.elementJax) {return}
-    const $cleanValue = this.getValue()
-    this.$el.value = $cleanValue.outerHTML
-    this.emitter.emit('update', $cleanValue)
+    const value = this.getValue().outerHTML
+    this.$el.value = value
+    this.emitter.emit('update', value)
     this.tree.setValue(this.$value)
     this.tree.update()
     this.elementJax
