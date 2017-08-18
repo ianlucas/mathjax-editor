@@ -35,7 +35,7 @@ export default class Editor {
    * 
    * @param {String|HTMLElement} selectors 
    * @param {Object} [options] 
-   * @param {Boolean} [options.newline=false]
+   * @param {Boolean} [options.allowNewlines=false]
    * @param {String} [options.placeholder="Start typing..."]
    * 
    * @constructor

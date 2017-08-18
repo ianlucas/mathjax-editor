@@ -9,7 +9,7 @@ export default class MathJaxEditor {
    * 
    * @param {String|Node} selectors 
    * @param {Object} [options]
-   * @param {Boolean} [options.newline=false]
+   * @param {Boolean} [options.allowNewlines=false]
    * @param {String} [options.placeholder="Start typing..."]
    * 
    * @constructor
