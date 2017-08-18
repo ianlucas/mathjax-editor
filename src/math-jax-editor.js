@@ -143,6 +143,15 @@ export default class MathJaxEditor {
   }
 
   /**
+   * Insert a newline in the editor.
+   * 
+   * @return {Void}
+   */
+  insertNewline() {
+    return this.core.insertNewline()
+  }
+
+  /**
    * This method is not actually meant to be used, it is here to
    * handle the @input event when the user types in the editor's
    * input element.
