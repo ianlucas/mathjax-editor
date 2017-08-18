@@ -79,7 +79,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 10);
+/******/ 	return __webpack_require__(__webpack_require__.s = 13);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -169,7 +169,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _promiscuous = __webpack_require__(25);
+var _promiscuous = __webpack_require__(27);
 
 var _promiscuous2 = _interopRequireDefault(_promiscuous);
 
@@ -262,6 +262,28 @@ function removeClass($el, name) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = px;
+/**
+ * Clean way to get the pixels units.
+ * 
+ * @param {Number} value
+ * 
+ * @return {String}
+ */
+function px(value) {
+  return value + "px";
+}
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.default = {
   '\\sin': 'sin',
   '\\cos': 'cos',
@@ -292,6 +314,7 @@ exports.default = {
   '\\Theta': 'Θ',
   '\\iota': 'ι',
   '\\kappa': 'κ',
+  '\\Lambda': 'Λ',
   '\\lambda': 'λ',
   '\\mu': 'μ',
   '\\nu': 'ν',
@@ -331,7 +354,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -360,6 +383,7 @@ exports.default = (_$$$$$$$$$$$ = {
   ')': ')',
   '[': '[',
   ']': ']',
+  '!': '!',
   '\\leq': '≤',
   '\\geq': '≥',
   '\\ll': '≪',
@@ -410,7 +434,7 @@ exports.default = (_$$$$$$$$$$$ = {
 }, _defineProperty(_$$$$$$$$$$$, '\\times', '×'), _defineProperty(_$$$$$$$$$$$, '\\ast', '∗'), _defineProperty(_$$$$$$$$$$$, '\\star', '⋆'), _defineProperty(_$$$$$$$$$$$, '\\dagger', '†'), _defineProperty(_$$$$$$$$$$$, '\\ddagger', '‡'), _defineProperty(_$$$$$$$$$$$, '\\cap', '∩'), _defineProperty(_$$$$$$$$$$$, '\\cup', '∪'), _defineProperty(_$$$$$$$$$$$, '\\uplus', '⊎'), _defineProperty(_$$$$$$$$$$$, '\\sqcap', '⊓'), _defineProperty(_$$$$$$$$$$$, '\\sqcup', '⊔'), _defineProperty(_$$$$$$$$$$$, '\\vee', '∨'), _defineProperty(_$$$$$$$$$$$, '\\wedge', '∧'), _defineProperty(_$$$$$$$$$$$, '\\diamond', '⋄'), _defineProperty(_$$$$$$$$$$$, '\\bigtriangleup', '△'), _defineProperty(_$$$$$$$$$$$, '\\bigtriangledown', '▽'), _defineProperty(_$$$$$$$$$$$, '\\triangleleft', '◃'), _defineProperty(_$$$$$$$$$$$, '\\triangleright', '▹'), _defineProperty(_$$$$$$$$$$$, '\\bigcirc', '◯'), _defineProperty(_$$$$$$$$$$$, '\\bullet', '∙'), _defineProperty(_$$$$$$$$$$$, '\\wr', '≀'), _defineProperty(_$$$$$$$$$$$, '\\oplus', '⊕'), _defineProperty(_$$$$$$$$$$$, '\\ominus', '⊖'), _defineProperty(_$$$$$$$$$$$, '\\otimes', '⊗'), _defineProperty(_$$$$$$$$$$$, '\\odot', '⊙'), _defineProperty(_$$$$$$$$$$$, '\\circ', '∘'), _defineProperty(_$$$$$$$$$$$, '\\setminus', '∖'), _defineProperty(_$$$$$$$$$$$, '\\amalg', '⨿'), _defineProperty(_$$$$$$$$$$$, '\\exists', '∃'), _defineProperty(_$$$$$$$$$$$, '\\nexists', '∄'), _defineProperty(_$$$$$$$$$$$, '\\forall', '∀'), _defineProperty(_$$$$$$$$$$$, '\\neg', '¬'), _defineProperty(_$$$$$$$$$$$, '\\land', '∧'), _defineProperty(_$$$$$$$$$$$, '\\lor', '∨'), _defineProperty(_$$$$$$$$$$$, '\\rightarrow', '→'), _defineProperty(_$$$$$$$$$$$, '\\leftarrow', '←'), _defineProperty(_$$$$$$$$$$$, '\\mapsto', '↦'), _defineProperty(_$$$$$$$$$$$, '\\implies', '⟹'), _defineProperty(_$$$$$$$$$$$, '\\Rightarrow', '⇒'), _defineProperty(_$$$$$$$$$$$, '\\leftrightarrow', '↔'), _defineProperty(_$$$$$$$$$$$, '\\iff', '⟺'), _defineProperty(_$$$$$$$$$$$, '\\Leftrightarrow', '⇔'), _defineProperty(_$$$$$$$$$$$, '\\top', '⊤'), _defineProperty(_$$$$$$$$$$$, '\\bot', '⊥'), _defineProperty(_$$$$$$$$$$$, '\\emptyset', '∅'), _defineProperty(_$$$$$$$$$$$, '\\varnothing', '∅'), _defineProperty(_$$$$$$$$$$$, '\\{', '{'), _defineProperty(_$$$$$$$$$$$, '\\uparrow', '↑'), _defineProperty(_$$$$$$$$$$$, '\\downarrow', '↓'), _defineProperty(_$$$$$$$$$$$, '\\|', '‖'), _defineProperty(_$$$$$$$$$$$, '\\}', '}'), _defineProperty(_$$$$$$$$$$$, '\\Uparrow', '⇑'), _defineProperty(_$$$$$$$$$$$, '\\Downarrow', '⇓'), _defineProperty(_$$$$$$$$$$$, '/', '/'), _defineProperty(_$$$$$$$$$$$, '\\angle', '∠'), _defineProperty(_$$$$$$$$$$$, '\\lceil', '⌈'), _defineProperty(_$$$$$$$$$$$, '\\lfloor', '⌊'), _defineProperty(_$$$$$$$$$$$, '\\backslash', '∖'), _defineProperty(_$$$$$$$$$$$, '\\rangle', '⟩'), _defineProperty(_$$$$$$$$$$$, '\\rceil', '⌉'), _defineProperty(_$$$$$$$$$$$, '\\rfloor', '⌋'), _$$$$$$$$$$$);
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -600,7 +624,36 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 10 */
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = appendElement;
+/**
+ * Append an element to its parent.
+ * 
+ * @param {HTMLElement} $parent  
+ * @param {...HTMLElement} children
+ * 
+ * @return {Void}  
+ */
+function appendElement($parent) {
+  for (var _len = arguments.length, children = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    children[_key - 1] = arguments[_key];
+  }
+
+  return children.forEach(function ($child) {
+    return $parent.appendChild($child);
+  });
+}
+
+/***/ }),
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -610,7 +663,55 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _mathJaxEditor = __webpack_require__(11);
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+exports.default = createElement;
+/**
+ * Quickly create an element with className.
+ * 
+ * @param {String} tagName 
+ * @param {String} [className=''] 
+ * @param {Object} [attributes={}]
+ * 
+ * @return {HTMLElement}
+ */
+function createElement(tagName) {
+  var className = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+  var attributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+  if ((typeof className === 'undefined' ? 'undefined' : _typeof(className)) === 'object') {
+    attributes = className;
+    className = '';
+  }
+
+  var $el = document.createElement(tagName);
+  $el.className = className;
+
+  Object.keys(attributes).forEach(function (key) {
+    var value = attributes[key];
+    switch (key) {
+      case '_html':
+        $el.innerHTML = value;
+        break;
+      default:
+        $el.setAttribute(key, value);
+    }
+  });
+  return $el;
+}
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _mathJaxEditor = __webpack_require__(14);
 
 var _mathJaxEditor2 = _interopRequireDefault(_mathJaxEditor);
 
@@ -621,7 +722,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.default = _mathJaxEditor2.default;
 
 /***/ }),
-/* 11 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -633,15 +734,23 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _editor = __webpack_require__(12);
+var _editor = __webpack_require__(15);
 
 var _editor2 = _interopRequireDefault(_editor);
+
+var _appendElement = __webpack_require__(11);
+
+var _appendElement2 = _interopRequireDefault(_appendElement);
+
+var _createElement = __webpack_require__(12);
+
+var _createElement2 = _interopRequireDefault(_createElement);
 
 var _extraOperatorList = __webpack_require__(48);
 
 var _extraOperatorList2 = _interopRequireDefault(_extraOperatorList);
 
-var _identifierList = __webpack_require__(7);
+var _identifierList = __webpack_require__(8);
 
 var _identifierList2 = _interopRequireDefault(_identifierList);
 
@@ -666,6 +775,7 @@ var MathJaxEditor = function () {
     _classCallCheck(this, MathJaxEditor);
 
     this.core = new _editor2.default(selectors, options);
+    this.version = '2.0.0-beta';
 
     this.core.on('@input', this.insert.bind(this));
   }
@@ -686,9 +796,7 @@ var MathJaxEditor = function () {
         throw new RangeError('MathjaxEditor: The number must be 0 or up to 9.');
       }
 
-      var $mn = document.createElement('mn');
-      $mn.innerHTML = n;
-
+      var $mn = (0, _createElement2.default)('mn', { _html: n });
       this.core.insert($mn);
     }
 
@@ -716,8 +824,7 @@ var MathJaxEditor = function () {
         i = _identifierList2.default[i];
       }
 
-      var $mi = document.createElement('mi');
-      $mi.innerHTML = i;
+      var $mi = (0, _createElement2.default)('mi', { _html: i });
 
       this.core.insert($mi);
     }
@@ -731,12 +838,11 @@ var MathJaxEditor = function () {
   }, {
     key: 'insertFraction',
     value: function insertFraction() {
-      var $mfrac = document.createElement('mfrac');
-      var $mrowNum = document.createElement('mrow');
-      var $mrowDen = document.createElement('mrow');
+      var $mfrac = (0, _createElement2.default)('mfrac');
+      var $mrowNum = (0, _createElement2.default)('mrow');
+      var $mrowDen = (0, _createElement2.default)('mrow');
 
-      $mfrac.appendChild($mrowNum);
-      $mfrac.appendChild($mrowDen);
+      (0, _appendElement2.default)($mfrac, $mrowNum, $mrowDen);
 
       this.core.insert($mfrac, $mrowNum);
     }
@@ -750,10 +856,10 @@ var MathJaxEditor = function () {
   }, {
     key: 'insertSqrt',
     value: function insertSqrt() {
-      var $msqrt = document.createElement('msqrt');
-      var $mrow = document.createElement('mrow');
+      var $msqrt = (0, _createElement2.default)('msqrt');
+      var $mrow = (0, _createElement2.default)('mrow');
 
-      $msqrt.appendChild($mrow);
+      (0, _appendElement2.default)($msqrt, $mrow);
 
       this.core.insert($msqrt, $mrow);
     }
@@ -776,8 +882,9 @@ var MathJaxEditor = function () {
         throw new TypeError('MathjaxEditor: Unknown operator "' + o + '"');
       }
 
-      var $mo = document.createElement('mo');
-      $mo.innerHTML = _extraOperatorList2.default[o];
+      var $mo = (0, _createElement2.default)('mo', {
+        _html: _extraOperatorList2.default[o]
+      });
 
       this.core.insert($mo);
     }
@@ -791,12 +898,11 @@ var MathJaxEditor = function () {
   }, {
     key: 'insertSuperscript',
     value: function insertSuperscript() {
-      var $msup = document.createElement('msup');
-      var $mrowBase = document.createElement('mrow');
-      var $mrowPower = document.createElement('mrow');
+      var $msup = (0, _createElement2.default)('msup');
+      var $mrowBase = (0, _createElement2.default)('mrow');
+      var $mrowPower = (0, _createElement2.default)('mrow');
 
-      $msup.appendChild($mrowBase);
-      $msup.appendChild($mrowPower);
+      (0, _appendElement2.default)($msup, $mrowBase, $mrowPower);
 
       this.core.insert($msup, $mrowBase);
     }
@@ -810,12 +916,11 @@ var MathJaxEditor = function () {
   }, {
     key: 'insertSubscript',
     value: function insertSubscript() {
-      var $msub = document.createElement('msub');
-      var $mrowBase = document.createElement('mrow');
-      var $mrowSequence = document.createElement('mrow');
+      var $msub = (0, _createElement2.default)('msub');
+      var $mrowBase = (0, _createElement2.default)('mrow');
+      var $mrowSequence = (0, _createElement2.default)('mrow');
 
-      $msub.appendChild($mrowBase);
-      $msub.appendChild($mrowSequence);
+      (0, _appendElement2.default)($msub, $mrowBase, $mrowSequence);
 
       this.core.insert($msub, $mrowBase);
     }
@@ -979,6 +1084,18 @@ var MathJaxEditor = function () {
     value: function deleteRemove() {
       return this.core.deleteRemove();
     }
+
+    /**
+     * Remove the editor element and event listeners.
+     * 
+     * @return {Void}
+     */
+
+  }, {
+    key: 'destroy',
+    value: function destroy() {
+      return this.core.destroy();
+    }
   }]);
 
   return MathJaxEditor;
@@ -987,7 +1104,7 @@ var MathJaxEditor = function () {
 exports.default = MathJaxEditor;
 
 /***/ }),
-/* 12 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -999,35 +1116,35 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _debounce = __webpack_require__(13);
+var _debounce = __webpack_require__(16);
 
 var _debounce2 = _interopRequireDefault(_debounce);
 
-var _blinker = __webpack_require__(14);
+var _blinker = __webpack_require__(17);
 
 var _blinker2 = _interopRequireDefault(_blinker);
 
-var _cursor = __webpack_require__(15);
+var _cursor = __webpack_require__(18);
 
 var _cursor2 = _interopRequireDefault(_cursor);
 
-var _cursorMover = __webpack_require__(17);
+var _cursorMover = __webpack_require__(19);
 
 var _cursorMover2 = _interopRequireDefault(_cursorMover);
 
-var _eventEmitter = __webpack_require__(18);
+var _eventEmitter = __webpack_require__(20);
 
 var _eventEmitter2 = _interopRequireDefault(_eventEmitter);
 
-var _rendered = __webpack_require__(19);
+var _rendered = __webpack_require__(21);
 
 var _rendered2 = _interopRequireDefault(_rendered);
 
-var _tree = __webpack_require__(22);
+var _tree = __webpack_require__(24);
 
 var _tree2 = _interopRequireDefault(_tree);
 
-var _mml2tex = __webpack_require__(23);
+var _mml2tex = __webpack_require__(25);
 
 var _mml2tex2 = _interopRequireDefault(_mml2tex);
 
@@ -1039,23 +1156,23 @@ var _addClass = __webpack_require__(2);
 
 var _addClass2 = _interopRequireDefault(_addClass);
 
-var _appendElement = __webpack_require__(29);
+var _appendElement = __webpack_require__(11);
 
 var _appendElement2 = _interopRequireDefault(_appendElement);
 
-var _appendElementAfter = __webpack_require__(30);
+var _appendElementAfter = __webpack_require__(31);
 
 var _appendElementAfter2 = _interopRequireDefault(_appendElementAfter);
 
-var _applyDelete = __webpack_require__(31);
+var _applyDelete = __webpack_require__(32);
 
 var _applyDelete2 = _interopRequireDefault(_applyDelete);
 
-var _applyBackspace = __webpack_require__(32);
+var _applyBackspace = __webpack_require__(33);
 
 var _applyBackspace2 = _interopRequireDefault(_applyBackspace);
 
-var _createElement = __webpack_require__(33);
+var _createElement = __webpack_require__(12);
 
 var _createElement2 = _interopRequireDefault(_createElement);
 
@@ -1082,6 +1199,10 @@ var _lcc2 = _interopRequireDefault(_lcc);
 var _listenElement = __webpack_require__(41);
 
 var _listenElement2 = _interopRequireDefault(_listenElement);
+
+var _px = __webpack_require__(7);
+
+var _px2 = _interopRequireDefault(_px);
 
 var _prependElement = __webpack_require__(42);
 
@@ -1142,6 +1263,7 @@ var Editor = function () {
     this.$input = (0, _createElement2.default)('input', 'mathjax-editor-input');
     this.$container = (0, _createElement2.default)('div', 'mathjax-editor-container');
     this.$display = (0, _createElement2.default)('div', 'mathjax-editor-display');
+    this.$wrapper = (0, _createElement2.default)('div');
     this.$caret = (0, _createElement2.default)('div', 'mathjax-editor-caret');
     this.focused = false;
     this.mouseAtDisplay = false;
@@ -1157,10 +1279,9 @@ var Editor = function () {
 
     (0, _hideElement2.default)(this.$caret);
     (0, _hideElement2.default)(this.$el);
-    (0, _appendElement2.default)(this.$display, this.$value);
-    (0, _appendElement2.default)(this.$container, this.$display);
-    (0, _appendElement2.default)(this.$container, this.$input);
-    (0, _appendElement2.default)(this.$display, this.$caret);
+    (0, _appendElement2.default)(this.$wrapper, this.$value);
+    (0, _appendElement2.default)(this.$display, this.$wrapper, this.$caret);
+    (0, _appendElement2.default)(this.$container, this.$display, this.$input);
     (0, _appendElementAfter2.default)(this.$el, this.$container);
     (0, _getElementJax2.default)(this.$display).then(function (elementJax) {
       _this.elementJax = elementJax;
@@ -1326,11 +1447,15 @@ var Editor = function () {
           return resolve();
         }
         var value = _this2.getValue().outerHTML;
+        _this2.$wrapper.style.width = (0, _px2.default)(_this2.$wrapper.clientWidth);
+        _this2.$wrapper.style.height = (0, _px2.default)(_this2.$wrapper.clientHeight);
         _this2.$el.value = value;
         _this2.emitter.emit('update', value);
         _this2.tree.setValue(_this2.$value);
         _this2.tree.update();
         _this2.elementJax.setValue((0, _toDisplay2.default)(_this2.$value, _this2.placeholder)).update().then(function () {
+          _this2.$wrapper.style.width = null;
+          _this2.$wrapper.style.height = null;
           _this2.rendered.update();
           _this2.cursor.update();
           resolve();
@@ -1520,7 +1645,7 @@ var Editor = function () {
     }
 
     /**
-     * Destroy the editor element and event listeners.
+     * Remove the editor element and event listeners.
      * 
      * @return {Void}
      */
@@ -1528,6 +1653,7 @@ var Editor = function () {
   }, {
     key: 'destroy',
     value: function destroy() {
+      this.blinker.destroy();
       (0, _removeElement2.default)(this.$container);
       (0, _unlistenElement2.default)(window, 'resize', this.handleResize);
     }
@@ -1539,7 +1665,7 @@ var Editor = function () {
 exports.default = Editor;
 
 /***/ }),
-/* 13 */
+/* 16 */
 /***/ (function(module, exports) {
 
 /**
@@ -1601,7 +1727,7 @@ module.exports = function debounce(func, wait, immediate){
 
 
 /***/ }),
-/* 14 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1690,7 +1816,7 @@ var Blinker = function () {
 exports.default = Blinker;
 
 /***/ }),
-/* 15 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1706,7 +1832,7 @@ var _lcc = __webpack_require__(0);
 
 var _lcc2 = _interopRequireDefault(_lcc);
 
-var _px = __webpack_require__(16);
+var _px = __webpack_require__(7);
 
 var _px2 = _interopRequireDefault(_px);
 
@@ -1874,29 +2000,7 @@ var Cursor = function () {
 exports.default = Cursor;
 
 /***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = px;
-/**
- * Clean way to get the pixels units.
- * 
- * @param {Number} value
- * 
- * @return {String}
- */
-function px(value) {
-  return value + "px";
-}
-
-/***/ }),
-/* 17 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2051,7 +2155,7 @@ var CursorMover = function () {
 exports.default = CursorMover;
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2125,7 +2229,7 @@ var EventEmitter = function () {
 exports.default = EventEmitter;
 
 /***/ }),
-/* 19 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2137,11 +2241,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _element = __webpack_require__(20);
+var _element = __webpack_require__(22);
 
 var _element2 = _interopRequireDefault(_element);
 
-var _line = __webpack_require__(21);
+var _line = __webpack_require__(23);
 
 var _line2 = _interopRequireDefault(_line);
 
@@ -2323,7 +2427,7 @@ var Rendered = function () {
 exports.default = Rendered;
 
 /***/ }),
-/* 20 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2504,7 +2608,7 @@ var Element = function () {
 exports.default = Element;
 
 /***/ }),
-/* 21 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2639,7 +2743,7 @@ var Line = function () {
 exports.default = Line;
 
 /***/ }),
-/* 22 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2755,7 +2859,7 @@ var Tree = function () {
 exports.default = Tree;
 
 /***/ }),
-/* 23 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2766,11 +2870,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = mml2Tex;
 
-var _identifierList = __webpack_require__(7);
+var _identifierList = __webpack_require__(8);
 
 var _identifierList2 = _interopRequireDefault(_identifierList);
 
-var _operatorList = __webpack_require__(8);
+var _operatorList = __webpack_require__(9);
 
 var _operatorList2 = _interopRequireDefault(_operatorList);
 
@@ -2778,7 +2882,7 @@ var _lcc = __webpack_require__(0);
 
 var _lcc2 = _interopRequireDefault(_lcc);
 
-var _reverseObject = __webpack_require__(24);
+var _reverseObject = __webpack_require__(26);
 
 var _reverseObject2 = _interopRequireDefault(_reverseObject);
 
@@ -2806,6 +2910,7 @@ function mml2Tex($value) {
     var children = $el.children;
     var innerValue = $el.innerHTML;
     var tagName = (0, _lcc2.default)($el.tagName);
+    var fromList = void 0;
 
     switch (tagName) {
       case 'math':
@@ -2816,10 +2921,18 @@ function mml2Tex($value) {
         output += innerValue;
         break;
       case 'mi':
-        output += REVERSE_IDENTIFIER_LIST[innerValue] || innerValue;
+        if (fromList = REVERSE_IDENTIFIER_LIST[innerValue]) {
+          output += fromList + (fromList[0] === '\\' ? ' ' : '');
+        } else {
+          output += innerValue;
+        }
         break;
       case 'mo':
-        output += REVERSE_OPERATOR_LIST[innerValue] || '?';
+        if (fromList = REVERSE_OPERATOR_LIST[innerValue]) {
+          output += fromList + (fromList[0] === '\\' ? ' ' : '');
+        } else {
+          output += '?';
+        }
         break;
       case 'mrow':
         output = output.trim() + '{';
@@ -2842,7 +2955,7 @@ function mml2Tex($value) {
 
     switch (tagName) {
       case 'mrow':
-        output = output.trim() + '}';
+        output += '}';
 
         if ($el.parentNode.firstElementChild === $el) {
           switch ((0, _lcc2.default)($el.parentNode.tagName)) {
@@ -2864,7 +2977,7 @@ function mml2Tex($value) {
 }
 
 /***/ }),
-/* 24 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2915,7 +3028,7 @@ function reverseObject(obj) {
 }
 
 /***/ }),
-/* 25 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(setImmediate) {/**@license MIT-promiscuous-©Ruben Verborgh*/
@@ -3057,10 +3170,10 @@ function reverseObject(obj) {
   };
 })('f', 'o');
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(26).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(28).setImmediate))
 
 /***/ }),
-/* 26 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var apply = Function.prototype.apply;
@@ -3113,14 +3226,14 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(27);
-var global = __webpack_require__(28);
+__webpack_require__(29);
+var global = __webpack_require__(30);
 exports.setImmediate = global.setImmediate;
 exports.clearImmediate = global.clearImmediate;
 
 
 /***/ }),
-/* 27 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -3310,10 +3423,10 @@ exports.clearImmediate = global.clearImmediate;
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(9)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(10)))
 
 /***/ }),
-/* 28 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var win;
@@ -3333,30 +3446,7 @@ module.exports = win;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
-/* 29 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = appendElement;
-/**
- * Append an element to its parent.
- * 
- * @param {HTMLElement} $parent  
- * @param {HTMLElement} $child
- * 
- * @return {Void}  
- */
-function appendElement($parent, $child) {
-  return $parent.appendChild($child);
-}
-
-/***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3379,7 +3469,7 @@ function appendElementAfter($ref, $new) {
 }
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3404,6 +3494,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * Perform the "delete" deletion on the given value and
  * current cursor position.
  * 
+ * TODO: Refactor this code.
+ * 
  * @param {HTMLElement} $value
  * @param {Cursor} cursor 
  * 
@@ -3411,19 +3503,28 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 function applyDelete($value, cursor) {
   var $position = cursor.getPosition();
+  var isMrow = $position && (0, _lcc2.default)($position.tagName, 'mrow');
   if (!$position) {
     if ($value.firstElementChild) {
       (0, _removeElement2.default)($value.firstElementChild);
     }
-  } else if (!$position.nextElementSibling) {
+  } else if (!$position.nextElementSibling || isMrow) {
     var $parent = $position.parentNode;
-    if ((0, _lcc2.default)($parent.tagName, 'mrow')) {
-      cursor.setPosition($parent.parentNode.previousElementSibling || $parent.parentNode.parentNode);
+    if (isMrow) {
+      var isMath = (0, _lcc2.default)($parent.parentNode.tagName, 'math');
+      cursor.setPosition($parent.previousElementSibling || (!isMath ? $parent.parentNode : null));
+      (0, _removeElement2.default)($parent);
+    } else if ((0, _lcc2.default)($parent.tagName, 'mrow')) {
+      var _isMath = (0, _lcc2.default)($parent.parentNode.parentNode.tagName, 'math');
+      cursor.setPosition($parent.parentNode.previousElementSibling || (!_isMath ? $parent.parentNode.parentNode : null));
       (0, _removeElement2.default)($parent.parentNode);
     } else {
+      if ((0, _lcc2.default)($parent.tagName, 'math')) {
+        return;
+      }
       if ($parent.previousElementSibling) {
         cursor.setPosition($parent.previousElementSibling);
-      } else if ((0, _lcc2.default)($parent.parentNode.tagName, 'math')) {
+      } else if ($parent.parentNode && (0, _lcc2.default)($parent.parentNode.tagName, 'math')) {
         cursor.setPosition(null);
       } else {
         cursor.setPosition($parent.parentNode);
@@ -3436,7 +3537,7 @@ function applyDelete($value, cursor) {
 }
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3460,6 +3561,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /**
  * Perform the "backspace" deletion on the given value and
  * current cursor position.
+ * 
+ * TODO: Refactor this code.
  * 
  * @param {HTMLElement} $value
  * @param {Cursor} cursor 
@@ -3493,47 +3596,6 @@ function applyBackspace($value, cursor) {
 
     (0, _removeElement2.default)($position);
   }
-}
-
-/***/ }),
-/* 33 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-exports.default = createElement;
-/**
- * Quickly create an element with className.
- * 
- * @param {String} tagName 
- * @param {String} [className=''] 
- * @param {Object} [attributes={}]
- * 
- * @return {HTMLElement}
- */
-function createElement(tagName) {
-  var className = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-  var attributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-  if ((typeof className === 'undefined' ? 'undefined' : _typeof(className)) === 'object') {
-    attributes = className;
-    className = '';
-  }
-
-  var $el = document.createElement(tagName);
-  $el.className = className;
-
-  Object.keys(attributes).forEach(function (key) {
-    $el.setAttribute(key, attributes[key]);
-  });
-  return $el;
 }
 
 /***/ }),
@@ -3827,7 +3889,7 @@ module.exports.polyfill = function() {
 
 //# sourceMappingURL=performance-now.js.map
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
 /* 39 */
@@ -4128,7 +4190,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _operatorList = __webpack_require__(8);
+var _operatorList = __webpack_require__(9);
 
 var _operatorList2 = _interopRequireDefault(_operatorList);
 
