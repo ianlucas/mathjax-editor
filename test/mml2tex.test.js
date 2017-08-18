@@ -8,7 +8,7 @@ const massEnergyEquivalence = loadHtml('./mass-energy-equivalence.html')
 const quadraticFormula = loadHtml('./quadratic-formula.html')
 
 test('Quadratic formula (frac, sup, sqrt)', () => {
-  expect(mml2Tex(quadraticFormula)).toBe('x=\\frac{-b\\pm\\sqrt{{b}^{2}-4ac}}{2a}')
+  expect(mml2Tex(quadraticFormula)).toBe('x=\\frac{-b\\pm \\sqrt{{b}^{2}-4ac}}{2a}')
 })
 
 test('Mass-Energy equivalence (sup)', () => {
@@ -24,5 +24,5 @@ test('Find X (frac, newline)', () => {
 })
 
 test('Cotangent function', () => {
-  expect(mml2Tex(cotangentFunction)).toBe('\\cot\\theta=\\frac{\\cos\\theta}{\\sin\\theta}=\\tan(\\frac{\\pi}{2}-\\theta)=\\frac{1}{\\tan\\theta}')
+  expect(mml2Tex(cotangentFunction)).toBe('\\cot \\theta =\\frac{\\cos \\theta }{\\sin \\theta }=\\tan (\\frac{\\pi }{2}-\\theta )=\\frac{1}{\\tan \\theta }')
 })

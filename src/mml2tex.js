@@ -23,6 +23,7 @@ export default function mml2Tex($value) {
     const children = $el.children
     const innerValue = $el.innerHTML
     const tagName = lcc($el.tagName)
+    let fromList
 
     switch (tagName) {
     case 'math':
@@ -33,10 +34,20 @@ export default function mml2Tex($value) {
       output += innerValue
       break
     case 'mi':
-      output += REVERSE_IDENTIFIER_LIST[innerValue] + ' ' || innerValue
+      if (fromList = REVERSE_IDENTIFIER_LIST[innerValue]) {
+        output += fromList + (fromList[0] === '\\' ? ' ' : '')
+      }
+      else {
+        output += innerValue
+      } 
       break
     case 'mo':
-      output += REVERSE_OPERATOR_LIST[innerValue] + ' ' || '?'
+      if (fromList = REVERSE_OPERATOR_LIST[innerValue]) {
+        output += fromList + (fromList[0] === '\\' ? ' ' : '')
+      }
+      else {
+        output += '?'
+      }
       break
     case 'mrow':
       output = output.trim() + '{'
@@ -57,7 +68,7 @@ export default function mml2Tex($value) {
 
     switch (tagName) {
     case 'mrow':
-      output = output.trim() + '}'
+      output += '}'
       
       if ($el.parentNode.firstElementChild === $el) {
         switch (lcc($el.parentNode.tagName)) {
