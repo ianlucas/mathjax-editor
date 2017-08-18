@@ -22,6 +22,10 @@ export default {
     'outline': 'none !important'
   },
 
+  '.mathjax-editor-display .mjx-block > .mjx-box': {
+    'position': 'relative'
+  },
+
   '.mathjax-editor-caret': {
     'background-color': '#000',
     'position': 'absolute',
