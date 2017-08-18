@@ -1,4 +1,5 @@
 import lcc from './lcc'
+import removeElement from './remove-element'
 
 /**
  * Perform the "backspace" deletion on the given value and
@@ -15,9 +16,16 @@ export default function applyBackspace($value, cursor) {
   if (!$position) {return}
   if (lcc($position.tagName, 'mrow')) {
     const $parent = $position.parentNode
-    const $previous = cursor.getLeft()
-    $parent.parentNode.removeChild($parent)
-    cursor.setPosition($previous)
+
+    if (lcc($parent.parentNode.tagName, 'math')) {
+      cursor.setPosition(null)
+    }
+    else {cursor.setPosition(
+      $parent.previousElementSibling ||
+      $parent.parentNode
+    )}
+    
+    removeElement($parent)
   }
   else {
     if ($position.previousElementSibling) {
@@ -29,6 +37,7 @@ export default function applyBackspace($value, cursor) {
     else {
       cursor.setPosition($position.parentNode.previousElementSibling)
     }
-    $position.parentNode.removeChild($position)
+    
+    removeElement($position)
   }
 }

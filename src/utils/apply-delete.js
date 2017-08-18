@@ -1,4 +1,5 @@
 import lcc from './lcc'
+import removeElement from './remove-element'
 
 /**
  * Perform the "delete" deletion on the given value and
@@ -12,19 +13,28 @@ import lcc from './lcc'
 export default function applyDelete($value, cursor) {
   const $position = cursor.getPosition()
   if (!$position) {
-    $value.removeChild($value.firstElementChild)
+    if ($value.firstElementChild) {
+      removeElement($value.firstElementChild)
+    }
   }
   else if (!$position.nextElementSibling) {
     const $parent = $position.parentNode
     if (lcc($parent.tagName, 'mrow')) {
-      cursor.setPosition($parent.parentNode.previousElementSibling)
-      $parent.parentNode.parentNode.removeChild($parent.parentNode)
+      cursor.setPosition(
+        $parent.parentNode.previousElementSibling ||
+        $parent.parentNode.parentNode
+      )
+      removeElement($parent.parentNode)
     }
     else {
-      $parent.parentNode.removeChild($parent)
+      if (lcc($parent.parentNode.tagName, 'math')) {
+        cursor.setPosition(null)
+      }
+      else {cursor.setPosition($parent.parentNode)}
+      removeElement($parent)
     }
   }
   else {
-    $position.parentNode.removeChild($position.nextElementSibling)
+    removeElement($position.nextElementSibling)
   }
 }
