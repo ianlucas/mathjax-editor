@@ -122,5 +122,6 @@ export default class Cursor {
     this.$caret.style.top = px(position.top)
     this.$caret.style.left = px(position.left)
     this.$caret.style.height = px(position.height)
+    this.$caret.scrollIntoView()
   }
 }

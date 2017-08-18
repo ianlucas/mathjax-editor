@@ -79,6 +79,7 @@ export default class Editor {
     listenElement(this.$input, 'blur', this.handleBlur.bind(this))
     listenElement(this.$display, 'mouseenter', this.handleMouseenter.bind(this))
     listenElement(this.$display, 'mouseleave', this.handleMouseleave.bind(this))
+    listenElement(this.$display, 'scroll', this.handleResize)
     listenElement(window, 'resize', this.handleResize)
   }
 
