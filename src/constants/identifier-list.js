@@ -28,6 +28,7 @@ export default {
   '\\Theta': 'Θ',
   '\\iota': 'ι',
   '\\kappa': 'κ',
+  '\\Lambda': 'Λ',
   '\\lambda': 'λ',
   '\\mu': 'μ',
   '\\nu': 'ν',
