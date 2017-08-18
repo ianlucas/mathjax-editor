@@ -21,6 +21,7 @@ import getCleanCopy from './utils/get-clean-copy'
 import hideElement from './utils/hide-element'
 import lcc from './utils/lcc'
 import listenElement from './utils/listen-element'
+import px from './utils/px'
 import prependElement from './utils/prepend-element'
 import removeClass from './utils/remove-class'
 import removeElement from './utils/remove-element'
@@ -47,6 +48,7 @@ export default class Editor {
     this.$input = createElement('input', 'mathjax-editor-input')
     this.$container = createElement('div', 'mathjax-editor-container')
     this.$display = createElement('div', 'mathjax-editor-display')
+    this.$wrapper = createElement('div')
     this.$caret = createElement('div', 'mathjax-editor-caret')
     this.focused = false
     this.mouseAtDisplay = false
@@ -62,7 +64,8 @@ export default class Editor {
     
     hideElement(this.$caret)
     hideElement(this.$el)
-    appendElement(this.$display, this.$value, this.$caret)
+    appendElement(this.$wrapper, this.$value)
+    appendElement(this.$display, this.$wrapper, this.$caret)
     appendElement(this.$container, this.$display, this.$input)
     appendElementAfter(this.$el, this.$container)
     getElementJax(this.$display)
@@ -188,6 +191,8 @@ export default class Editor {
     return new Promise(resolve => {
       if (!this.elementJax) {return resolve()}
       const value = this.getValue().outerHTML
+      this.$wrapper.style.width = px(this.$wrapper.clientWidth)
+      this.$wrapper.style.height = px(this.$wrapper.clientHeight)
       this.$el.value = value
       this.emitter.emit('update', value)
       this.tree.setValue(this.$value)
@@ -196,6 +201,8 @@ export default class Editor {
         .setValue(toDisplay(this.$value, this.placeholder))
         .update()
         .then(() => {
+          this.$wrapper.style.width = null
+          this.$wrapper.style.height = null
           this.rendered.update()
           this.cursor.update()
           resolve()
