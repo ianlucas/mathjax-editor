@@ -8,6 +8,7 @@ import Rendered from './rendered'
 import Tree from './tree'
 import mml2Tex from './mml2tex'
 
+import Promise from './utils/promise'
 import addClass from './utils/add-class'
 import appendElement from './utils/append-element'
 import appendElementAfter from './utils/append-element-after'
@@ -182,22 +183,25 @@ export default class Editor {
   /**
    * Update the editor tree, display, and cursor stuff.
    * 
-   * @return {Void}
+   * @return {Promise}
    */
   update() {
-    if (!this.elementJax) {return}
-    const value = this.getValue().outerHTML
-    this.$el.value = value
-    this.emitter.emit('update', value)
-    this.tree.setValue(this.$value)
-    this.tree.update()
-    this.elementJax
-      .setValue(toDisplay(this.$value, this.placeholder))
-      .update()
-      .then(() => {
-        this.rendered.update()
-        this.cursor.update()
-      })
+    return new Promise(resolve => {
+      if (!this.elementJax) {return resolve()}
+      const value = this.getValue().outerHTML
+      this.$el.value = value
+      this.emitter.emit('update', value)
+      this.tree.setValue(this.$value)
+      this.tree.update()
+      this.elementJax
+        .setValue(toDisplay(this.$value, this.placeholder))
+        .update()
+        .then(() => {
+          this.rendered.update()
+          this.cursor.update()
+          resolve()
+        })
+    })
   }
 
   /**
@@ -245,6 +249,7 @@ export default class Editor {
     this.cursor.setPosition($moveTo || $el)
     this.focus()
     this.update()
+      .then(() => this.$caret.scrollIntoView())
   }
 
   /**
