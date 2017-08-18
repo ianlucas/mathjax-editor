@@ -1,5 +1,8 @@
 import Editor from './editor'
 
+import appendElement from './utils/append-element'
+import createElement from './utils/create-element'
+
 import EXTRA_OPERATOR_LIST from './constants/extra-operator-list'
 import IDENTIFIER_LIST from './constants/identifier-list'
 
@@ -32,9 +35,7 @@ export default class MathJaxEditor {
       throw new RangeError('MathjaxEditor: The number must be 0 or up to 9.')
     }
 
-    const $mn = document.createElement('mn')
-    $mn.innerHTML = n
-
+    const $mn = createElement('mn', { _html: n })
     this.core.insert($mn)
   }
 
@@ -55,8 +56,7 @@ export default class MathJaxEditor {
     }
     else {i = IDENTIFIER_LIST[i]}
 
-    const $mi = document.createElement('mi')
-    $mi.innerHTML = i
+    const $mi = createElement('mi', { _html: i })
 
     this.core.insert($mi)
   }
@@ -67,12 +67,11 @@ export default class MathJaxEditor {
    * @return {Void}
    */
   insertFraction() {
-    const $mfrac = document.createElement('mfrac')
-    const $mrowNum = document.createElement('mrow')
-    const $mrowDen = document.createElement('mrow')
+    const $mfrac = createElement('mfrac')
+    const $mrowNum = createElement('mrow')
+    const $mrowDen = createElement('mrow')
 
-    $mfrac.appendChild($mrowNum)
-    $mfrac.appendChild($mrowDen)
+    appendElement($mfrac, $mrowNum, $mrowDen)
 
     this.core.insert($mfrac, $mrowNum)
   }
@@ -83,10 +82,10 @@ export default class MathJaxEditor {
    * @return {Void}
    */
   insertSqrt() {
-    const $msqrt = document.createElement('msqrt')
-    const $mrow = document.createElement('mrow')
+    const $msqrt = createElement('msqrt')
+    const $mrow = createElement('mrow')
 
-    $msqrt.appendChild($mrow)
+    appendElement($msqrt, $mrow)
 
     this.core.insert($msqrt, $mrow)
   }
@@ -104,8 +103,9 @@ export default class MathJaxEditor {
       throw new TypeError(`MathjaxEditor: Unknown operator "${o}"`)
     }
 
-    const $mo = document.createElement('mo')
-    $mo.innerHTML = EXTRA_OPERATOR_LIST[o]
+    const $mo = createElement('mo', {
+      _html: EXTRA_OPERATOR_LIST[o]
+    })
 
     this.core.insert($mo)
   }
@@ -116,12 +116,11 @@ export default class MathJaxEditor {
    * @return {Void}
    */
   insertSuperscript() {
-    const $msup = document.createElement('msup')
-    const $mrowBase = document.createElement('mrow')
-    const $mrowPower = document.createElement('mrow')
+    const $msup = createElement('msup')
+    const $mrowBase = createElement('mrow')
+    const $mrowPower = createElement('mrow')
 
-    $msup.appendChild($mrowBase)
-    $msup.appendChild($mrowPower)
+    appendElement($msup, $mrowBase, $mrowPower)
 
     this.core.insert($msup, $mrowBase)
   }
@@ -132,12 +131,11 @@ export default class MathJaxEditor {
    * @return {Void}
    */
   insertSubscript() {
-    const $msub = document.createElement('msub')
-    const $mrowBase = document.createElement('mrow')
-    const $mrowSequence = document.createElement('mrow')
+    const $msub = createElement('msub')
+    const $mrowBase = createElement('mrow')
+    const $mrowSequence = createElement('mrow')
 
-    $msub.appendChild($mrowBase)
-    $msub.appendChild($mrowSequence)
+    appendElement($msub, $mrowBase, $mrowSequence)
 
     this.core.insert($msub, $mrowBase)
   }

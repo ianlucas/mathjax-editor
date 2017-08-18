@@ -62,10 +62,8 @@ export default class Editor {
     
     hideElement(this.$caret)
     hideElement(this.$el)
-    appendElement(this.$display, this.$value)
-    appendElement(this.$container, this.$display)
-    appendElement(this.$container, this.$input)
-    appendElement(this.$display, this.$caret)
+    appendElement(this.$display, this.$value, this.$caret)
+    appendElement(this.$container, this.$display, this.$input)
     appendElementAfter(this.$el, this.$container)
     getElementJax(this.$display)
       .then(elementJax => {

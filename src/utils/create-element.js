@@ -17,7 +17,14 @@ export default function createElement(tagName, className = '', attributes = {}) 
   $el.className = className
 
   Object.keys(attributes).forEach(key => {
-    $el.setAttribute(key, attributes[key])
+    const value = attributes[key]
+    switch (key) {
+    case '_html':
+      $el.innerHTML = value
+      break
+    default:
+      $el.setAttribute(key, value)
+    }
   })
   return $el
 }
