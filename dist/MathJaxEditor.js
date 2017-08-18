@@ -614,7 +614,7 @@ var _mathJaxEditor = __webpack_require__(11);
 
 var _mathJaxEditor2 = _interopRequireDefault(_mathJaxEditor);
 
-__webpack_require__(48);
+__webpack_require__(49);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -637,7 +637,7 @@ var _editor = __webpack_require__(12);
 
 var _editor2 = _interopRequireDefault(_editor);
 
-var _extraOperatorList = __webpack_require__(47);
+var _extraOperatorList = __webpack_require__(48);
 
 var _extraOperatorList2 = _interopRequireDefault(_extraOperatorList);
 
@@ -655,7 +655,7 @@ var MathJaxEditor = function () {
    * 
    * @param {String|Node} selectors 
    * @param {Object} [options]
-   * @param {Boolean} [options.newline=false]
+   * @param {Boolean} [options.allowNewlines=false]
    * @param {String} [options.placeholder="Start typing..."]
    * 
    * @constructor
@@ -821,6 +821,18 @@ var MathJaxEditor = function () {
     }
 
     /**
+     * Insert a newline in the editor.
+     * 
+     * @return {Void}
+     */
+
+  }, {
+    key: 'insertNewline',
+    value: function insertNewline() {
+      return this.core.insertNewline();
+    }
+
+    /**
      * This method is not actually meant to be used, it is here to
      * handle the @input event when the user types in the editor's
      * input element.
@@ -916,7 +928,7 @@ var MathJaxEditor = function () {
   }, {
     key: 'setValue',
     value: function setValue($value) {
-      this.core.setValue($value);
+      return this.core.setValue($value);
     }
 
     /**
@@ -928,7 +940,7 @@ var MathJaxEditor = function () {
   }, {
     key: 'focus',
     value: function focus() {
-      this.core.focus();
+      return this.core.focus();
     }
 
     /**
@@ -941,7 +953,31 @@ var MathJaxEditor = function () {
   }, {
     key: 'on',
     value: function on(type, listener) {
-      this.core.on(type, listener);
+      return this.core.on(type, listener);
+    }
+
+    /**
+     * Perform a "backspace" deletion.
+     * 
+     * @return {Void}
+     */
+
+  }, {
+    key: 'backspaceRemove',
+    value: function backspaceRemove() {
+      return this.core.backspaceRemove();
+    }
+
+    /**
+     * Perform a "delete" deletion.
+     * 
+     * @return {Void}
+     */
+
+  }, {
+    key: 'deleteRemove',
+    value: function deleteRemove() {
+      return this.core.deleteRemove();
     }
   }]);
 
@@ -1063,15 +1099,19 @@ var _showElement = __webpack_require__(43);
 
 var _showElement2 = _interopRequireDefault(_showElement);
 
-var _toDisplay = __webpack_require__(44);
+var _scrollTo = __webpack_require__(44);
+
+var _scrollTo2 = _interopRequireDefault(_scrollTo);
+
+var _toDisplay = __webpack_require__(45);
 
 var _toDisplay2 = _interopRequireDefault(_toDisplay);
 
-var _toDom = __webpack_require__(45);
+var _toDom = __webpack_require__(46);
 
 var _toDom2 = _interopRequireDefault(_toDom);
 
-var _unlistenElement = __webpack_require__(46);
+var _unlistenElement = __webpack_require__(47);
 
 var _unlistenElement2 = _interopRequireDefault(_unlistenElement);
 
@@ -1085,7 +1125,7 @@ var Editor = function () {
    * 
    * @param {String|HTMLElement} selectors 
    * @param {Object} [options] 
-   * @param {Boolean} [options.newline=false]
+   * @param {Boolean} [options.allowNewlines=false]
    * @param {String} [options.placeholder="Start typing..."]
    * 
    * @constructor
@@ -1307,8 +1347,12 @@ var Editor = function () {
   }, {
     key: 'backspaceRemove',
     value: function backspaceRemove() {
+      var _this3 = this;
+
       (0, _applyBackspace2.default)(this.$value, this.cursor);
-      this.update();
+      this.update().then(function () {
+        return (0, _scrollTo2.default)(_this3.$display, _this3.$caret);
+      });
     }
 
     /**
@@ -1320,8 +1364,12 @@ var Editor = function () {
   }, {
     key: 'deleteRemove',
     value: function deleteRemove() {
+      var _this4 = this;
+
       (0, _applyDelete2.default)(this.$value, this.cursor);
-      this.update();
+      this.update().then(function () {
+        return (0, _scrollTo2.default)(_this4.$display, _this4.$caret);
+      });
     }
 
     /**
@@ -1336,7 +1384,7 @@ var Editor = function () {
   }, {
     key: 'insert',
     value: function insert($el) {
-      var _this3 = this;
+      var _this5 = this;
 
       var $moveTo = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
@@ -1358,7 +1406,7 @@ var Editor = function () {
       this.cursor.setPosition($moveTo || $el);
       this.focus();
       this.update().then(function () {
-        return _this3.$caret.scrollIntoView();
+        return (0, _scrollTo2.default)(_this5.$display, _this5.$caret);
       });
     }
 
@@ -3917,6 +3965,28 @@ function showElement($el) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = scrollTo;
+/**
+ * Scroll the $view to the $target element.
+ * 
+ * @param {HTMLElement}  $view
+ * @param {HTMLElement}  $target
+ */
+function scrollTo($view, $target) {
+  $view.scrollTop = $target.parentNode.offsetTop;
+  $view.scrollLeft = $target.offsetLeft;
+}
+
+/***/ }),
+/* 45 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.default = toDisplay;
 
 var _addClass = __webpack_require__(2);
@@ -3995,7 +4065,7 @@ function toDisplay($value) {
 }
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4024,7 +4094,7 @@ function toDom(source) {
 }
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4048,7 +4118,7 @@ function unlistenElement($el, type, listener) {
 }
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4070,13 +4140,13 @@ exports.default = Object.assign({}, _operatorList2.default, {
 });
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _styles = __webpack_require__(49);
+var _styles = __webpack_require__(50);
 
 var _styles2 = _interopRequireDefault(_styles);
 
@@ -4101,7 +4171,7 @@ window.addEventListener('load', function () {
 });
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
