@@ -5,6 +5,8 @@ import removeElement from './remove-element'
  * Perform the "backspace" deletion on the given value and
  * current cursor position.
  * 
+ * TODO: Refactor this code.
+ * 
  * @param {HTMLElement} $value
  * @param {Cursor} cursor 
  * 
