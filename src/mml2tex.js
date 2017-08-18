@@ -33,10 +33,10 @@ export default function mml2Tex($value) {
       output += innerValue
       break
     case 'mi':
-      output += REVERSE_IDENTIFIER_LIST[innerValue] || innerValue
+      output += REVERSE_IDENTIFIER_LIST[innerValue] + ' ' || innerValue
       break
     case 'mo':
-      output += REVERSE_OPERATOR_LIST[innerValue] || '?'
+      output += REVERSE_OPERATOR_LIST[innerValue] + ' ' || '?'
       break
     case 'mrow':
       output = output.trim() + '{'
