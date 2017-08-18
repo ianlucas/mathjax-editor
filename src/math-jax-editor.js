@@ -19,6 +19,7 @@ export default class MathJaxEditor {
    */
   constructor(selectors, options = {}) {
     this.core = new Editor(selectors, options)
+    this.version = '2.0.0-beta'
 
     this.core.on('@input', this.insert.bind(this))
   }
@@ -262,5 +263,14 @@ export default class MathJaxEditor {
    */
   deleteRemove() {
     return this.core.deleteRemove()
+  }
+
+  /**
+   * Remove the editor element and event listeners.
+   * 
+   * @return {Void}
+   */
+  destroy() {
+    return this.core.destroy()
   }
 }

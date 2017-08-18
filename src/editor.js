@@ -352,11 +352,12 @@ export default class Editor {
   }
 
   /**
-   * Destroy the editor element and event listeners.
+   * Remove the editor element and event listeners.
    * 
    * @return {Void}
    */
   destroy() {
+    this.blinker.destroy()
     removeElement(this.$container)
     unlistenElement(window, 'resize', this.handleResize)
   }
