@@ -217,7 +217,7 @@ export default class MathJaxEditor {
    * @return {Void}
    */
   setValue($value) {
-    this.core.setValue($value)
+    return this.core.setValue($value)
   }
 
   /**
@@ -226,7 +226,7 @@ export default class MathJaxEditor {
    * @return {Void}
    */
   focus() {
-    this.core.focus()
+    return this.core.focus()
   }
 
   /**
@@ -236,6 +236,24 @@ export default class MathJaxEditor {
    * @param {Function} listener 
    */
   on(type, listener) {
-    this.core.on(type, listener)
+    return this.core.on(type, listener)
+  }
+
+  /**
+   * Perform a "backspace" deletion.
+   * 
+   * @return {Void}
+   */
+  backspaceRemove() {
+    return this.core.backspaceRemove()
+  }
+
+  /**
+   * Perform a "delete" deletion.
+   * 
+   * @return {Void}
+   */
+  deleteRemove() {
+    return this.core.deleteRemove()
   }
 }
