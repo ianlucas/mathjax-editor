@@ -219,4 +219,23 @@ export default class MathJaxEditor {
   setValue($value) {
     this.core.setValue($value)
   }
+
+  /**
+   * Focus the editor.
+   * 
+   * @return {Void}
+   */
+  focus() {
+    this.core.focus()
+  }
+
+  /**
+   * Listen to an editor event.
+   * 
+   * @param {String} type 
+   * @param {Function} listener 
+   */
+  on(type, listener) {
+    this.core.on(type, listener)
+  }
 }
