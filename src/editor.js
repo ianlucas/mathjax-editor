@@ -25,6 +25,7 @@ import prependElement from './utils/prepend-element'
 import removeClass from './utils/remove-class'
 import removeElement from './utils/remove-element'
 import showElement from './utils/show-element'
+import scrollTo from './utils/scroll-to'
 import toDisplay from './utils/to-display'
 import toDom from './utils/to-dom'
 import unlistenElement from './utils/unlisten-element'
@@ -211,7 +212,9 @@ export default class Editor {
    */
   backspaceRemove() {
     applyBackspace(this.$value, this.cursor)
-    this.update()
+    this.update().then(
+      () => scrollTo(this.$display, this.$caret)
+    )
   }
 
   /**
@@ -221,7 +224,9 @@ export default class Editor {
    */
   deleteRemove() {
     applyDelete(this.$value, this.cursor)
-    this.update()
+    this.update().then(
+      () => scrollTo(this.$display, this.$caret)
+    )
   }
 
   /**
@@ -248,8 +253,9 @@ export default class Editor {
 
     this.cursor.setPosition($moveTo || $el)
     this.focus()
-    this.update()
-      .then(() => this.$caret.scrollIntoView())
+    this.update().then(
+      () => scrollTo(this.$display, this.$caret)
+    )
   }
 
   /**
