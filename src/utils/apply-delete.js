@@ -27,7 +27,10 @@ export default function applyDelete($value, cursor) {
       removeElement($parent.parentNode)
     }
     else {
-      if (lcc($parent.parentNode.tagName, 'math')) {
+      if ($parent.previousElementSibling) {
+        cursor.setPosition($parent.previousElementSibling)
+      }
+      else if (lcc($parent.parentNode.tagName, 'math')) {
         cursor.setPosition(null)
       }
       else {cursor.setPosition($parent.parentNode)}

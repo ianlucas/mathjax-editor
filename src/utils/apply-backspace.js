@@ -17,7 +17,7 @@ export default function applyBackspace($value, cursor) {
   if (lcc($position.tagName, 'mrow')) {
     const $parent = $position.parentNode
 
-    if (lcc($parent.parentNode.tagName, 'math')) {
+    if (lcc($parent.parentNode.tagName, 'math') && !$parent.previousElementSibling) {
       cursor.setPosition(null)
     }
     else {cursor.setPosition(
@@ -37,7 +37,7 @@ export default function applyBackspace($value, cursor) {
     else {
       cursor.setPosition($position.parentNode.previousElementSibling)
     }
-    
+
     removeElement($position)
   }
 }
