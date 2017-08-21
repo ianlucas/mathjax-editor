@@ -2,6 +2,7 @@ import loadHtml from './load-html'
 import mml2Tex from '../src/mml2tex'
 
 const cotangentFunction = loadHtml('./cotangent-function.html')
+const equationWithRoot = loadHtml('./equation-with-root.html')
 const findX = loadHtml('./find-x.html')
 const gravityFormula = loadHtml('./gravity-formula.html')
 const massEnergyEquivalence = loadHtml('./mass-energy-equivalence.html')
@@ -25,4 +26,8 @@ test('Find X (frac, newline)', () => {
 
 test('Cotangent function', () => {
   expect(mml2Tex(cotangentFunction)).toBe('\\cot \\theta =\\frac{\\cos \\theta }{\\sin \\theta }=\\tan (\\frac{\\pi }{2}-\\theta )=\\frac{1}{\\tan \\theta }')
+})
+
+test('Equation with nth root', () => {
+  expect(mml2Tex(equationWithRoot)).toBe('2x=\\sqrt[{3}]{25-2x}+4')
 })

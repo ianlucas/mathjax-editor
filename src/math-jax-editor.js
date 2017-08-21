@@ -91,6 +91,16 @@ export default class MathJaxEditor {
     this.core.insert($msqrt, $mrow)
   }
 
+  insertRoot() {
+    const $mroot = createElement('mroot')
+    const $mrowRadicand = createElement('mrow')
+    const $mrowIndex = createElement('mrow')
+
+    appendElement($mroot, $mrowRadicand, $mrowIndex)
+
+    this.core.insert($mroot, $mrowRadicand, $mrowIndex)
+  }
+
   /**
    * Insert a operator in the editor.
    * 

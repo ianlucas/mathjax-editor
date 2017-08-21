@@ -112,9 +112,11 @@ export default class Element {
     let height = this.line.height
 
     if (this.isTagName('mrow')) {
+      const styles = window.getComputedStyle(this.$rendered)
+      const paddingLeft = parseFloat(styles.paddingLeft)
       return {
         top: 0,
-        left: 0,
+        left: paddingLeft,
         height: this.height,
         $parent: this.$rendered
       }

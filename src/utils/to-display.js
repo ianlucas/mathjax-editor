@@ -3,6 +3,18 @@ import lcc from './lcc'
 import toArray from './to-array'
 
 /**
+ * Create a mathspace.
+ * 
+ * @return {HTMLElement}
+ */
+function createMspace() {
+  const $mspace = document.createElement('mspace')
+  $mspace.setAttribute('width', 'thinmathspace')
+  $mspace.className = 'mathjax-editor-helper'
+  return $mspace
+}
+
+/**
  * This function will add some visual stuff to the editor's current
  * value after cloning it, then will return the final markup to be set
  * on the display.
@@ -24,11 +36,15 @@ export default function toDisplay($value, placeholder = '') {
       addClass($mrow, 'mathjax-editor-mrow')
 
       if ($mrow.children.length) {
-        if (lcc($mrow.parentNode.tagName, 'msqrt')) {
-          const $mspace = document.createElement('mspace')
-          $mspace.setAttribute('width', 'thinmathspace')
-          $mspace.className = 'mathjax-editor-helper'
-          $mrow.appendChild($mspace)
+        switch (lcc($mrow.parentNode.tagName)) {
+        case 'msqrt':
+          $mrow.appendChild(createMspace())
+          break
+        case 'mroot':
+          if ($mrow.parentNode.firstElementChild === $mrow) {
+            $mrow.appendChild(createMspace())
+          }
+          break
         }
       }
       else {

@@ -59,12 +59,24 @@ export default function mml2Tex($value) {
         break
       }
       break
+    case 'mroot':
+      output += '\\sqrt'
+      break
     default:
       output += `\\${tagName.substr(1)} `
       break
     }
 
-    toArray(children).forEach($child => walk($child))
+    switch (tagName) {
+    case 'mroot':
+      output += '['
+      walk(children[1])
+      output += ']'
+      walk(children[0])
+      break
+    default:
+      toArray(children).forEach($child => walk($child))
+    }
 
     switch (tagName) {
     case 'mrow':
