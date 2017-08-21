@@ -1,17 +1,42 @@
 import addClass from './add-class'
+import appendElement from './append-element'
+import appendElementAfter from './append-element-after'
+import appendElementBefore from './append-element-before'
+import createElement from './create-element'
 import lcc from './lcc'
 import toArray from './to-array'
 
 /**
- * Create a mathspace.
+ * Create a thin space.
  * 
  * @return {HTMLElement}
  */
-function createMspace() {
-  const $mspace = document.createElement('mspace')
-  $mspace.setAttribute('width', 'thinmathspace')
-  $mspace.className = 'mathjax-editor-helper'
-  return $mspace
+function createThinSpace() {
+  return createElement('mspace', 'mathjax-editor-helper', {
+    width: 'thinmathspace'
+  })
+}
+
+/**
+ * Create a placeholder for empty <mrow>s.
+ * 
+ * @return {HTMLElement}
+ */
+function createPlaceholder() {
+  return createElement('mo', 'mathjax-editor-placeholder', {
+    _html: '?'
+  })
+}
+
+/**
+ * Create a placeholder for empty lines.
+ * 
+ * @return {HTMLElement}
+ */
+function createNewlinePlaceholder() {
+  return createElement('mo', 'mathjax-editor-newline-empty', {
+    _html: '⏎'
+  })
 }
 
 /**
@@ -35,23 +60,19 @@ export default function toDisplay($value, placeholder = '') {
     .forEach($mrow => {
       addClass($mrow, 'mathjax-editor-mrow')
 
-      if ($mrow.children.length) {
-        switch (lcc($mrow.parentNode.tagName)) {
-        case 'msqrt':
-          $mrow.appendChild(createMspace())
-          break
-        case 'mroot':
-          if ($mrow.parentNode.firstElementChild === $mrow) {
-            $mrow.appendChild(createMspace())
-          }
-          break
-        }
+      if (!$mrow.children.length) {
+        return appendElement($mrow, createPlaceholder())
       }
-      else {
-        const $mo = document.createElement('mo')
-        $mo.className = 'mathjax-editor-placeholder'
-        $mo.innerHTML = '?'
-        $mrow.appendChild($mo)
+
+      switch (lcc($mrow.parentNode.tagName)) {
+      case 'msqrt':
+        appendElement($mrow, createThinSpace())
+        break
+      case 'mroot':
+        if ($mrow.parentNode.firstElementChild === $mrow) {
+          appendElement($mrow, createThinSpace())
+        }
+        break
       }
     })
 
@@ -59,18 +80,18 @@ export default function toDisplay($value, placeholder = '') {
     .forEach($mspace => {
       if ($mspace.getAttribute('linebreak') !== 'newline') {return}
 
+      // Newlines are allowed only as child of the <math> element.
+
+      const $math = $mspace.parentNode
       const $previous = $mspace.previousElementSibling
       const $next = $mspace.nextElementSibling
-      const $mo = document.createElement('mo')
-      $mo.className = 'mathjax-editor-newline-empty'
-      $mo.innerHTML = '⏎'
 
       if (!$next || lcc($next.tagName, 'math')) {
-        $mspace.parentNode.insertBefore($mo, $mspace.nextSibling)
+        appendElementAfter($mspace, createNewlinePlaceholder())
       }
 
       if (!(!$previous || lcc($previous.tagName, 'mspace'))) {return}
-      $mspace.parentNode.insertBefore($mo.cloneNode(true), $mspace)
+      appendElementBefore($mspace, createNewlinePlaceholder())
     })
     
   return $clone.outerHTML
