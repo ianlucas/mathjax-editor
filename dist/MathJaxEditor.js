@@ -79,7 +79,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 13);
+/******/ 	return __webpack_require__(__webpack_require__.s = 15);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -169,7 +169,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _promiscuous = __webpack_require__(27);
+var _promiscuous = __webpack_require__(29);
 
 var _promiscuous2 = _interopRequireDefault(_promiscuous);
 
@@ -214,6 +214,35 @@ module.exports = g;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = appendElement;
+/**
+ * Append an element to its parent.
+ * 
+ * @param {HTMLElement} $parent  
+ * @param {...HTMLElement} children
+ * 
+ * @return {Void}  
+ */
+function appendElement($parent) {
+  for (var _len = arguments.length, children = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    children[_key - 1] = arguments[_key];
+  }
+
+  return children.forEach(function ($child) {
+    return $parent.appendChild($child);
+  });
+}
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.default = removeElement;
 /**
  * Remove the element from the DOM.
@@ -227,7 +256,55 @@ function removeElement($el) {
 }
 
 /***/ }),
-/* 6 */
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+exports.default = createElement;
+/**
+ * Quickly create an element with className.
+ * 
+ * @param {String} tagName 
+ * @param {String} [className=''] 
+ * @param {Object} [attributes={}]
+ * 
+ * @return {HTMLElement}
+ */
+function createElement(tagName) {
+  var className = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+  var attributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+  if ((typeof className === 'undefined' ? 'undefined' : _typeof(className)) === 'object') {
+    attributes = className;
+    className = '';
+  }
+
+  var $el = document.createElement(tagName);
+  $el.className = className;
+
+  Object.keys(attributes).forEach(function (key) {
+    var value = attributes[key];
+    switch (key) {
+      case '_html':
+        $el.innerHTML = value;
+        break;
+      default:
+        $el.setAttribute(key, value);
+    }
+  });
+  return $el;
+}
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -253,7 +330,7 @@ function removeClass($el, name) {
 }
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -275,7 +352,7 @@ function px(value) {
 }
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -354,7 +431,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -434,7 +511,7 @@ exports.default = (_$$$$$$$$$$$ = {
 }, _defineProperty(_$$$$$$$$$$$, '\\times', '×'), _defineProperty(_$$$$$$$$$$$, '\\ast', '∗'), _defineProperty(_$$$$$$$$$$$, '\\star', '⋆'), _defineProperty(_$$$$$$$$$$$, '\\dagger', '†'), _defineProperty(_$$$$$$$$$$$, '\\ddagger', '‡'), _defineProperty(_$$$$$$$$$$$, '\\cap', '∩'), _defineProperty(_$$$$$$$$$$$, '\\cup', '∪'), _defineProperty(_$$$$$$$$$$$, '\\uplus', '⊎'), _defineProperty(_$$$$$$$$$$$, '\\sqcap', '⊓'), _defineProperty(_$$$$$$$$$$$, '\\sqcup', '⊔'), _defineProperty(_$$$$$$$$$$$, '\\vee', '∨'), _defineProperty(_$$$$$$$$$$$, '\\wedge', '∧'), _defineProperty(_$$$$$$$$$$$, '\\diamond', '⋄'), _defineProperty(_$$$$$$$$$$$, '\\bigtriangleup', '△'), _defineProperty(_$$$$$$$$$$$, '\\bigtriangledown', '▽'), _defineProperty(_$$$$$$$$$$$, '\\triangleleft', '◃'), _defineProperty(_$$$$$$$$$$$, '\\triangleright', '▹'), _defineProperty(_$$$$$$$$$$$, '\\bigcirc', '◯'), _defineProperty(_$$$$$$$$$$$, '\\bullet', '∙'), _defineProperty(_$$$$$$$$$$$, '\\wr', '≀'), _defineProperty(_$$$$$$$$$$$, '\\oplus', '⊕'), _defineProperty(_$$$$$$$$$$$, '\\ominus', '⊖'), _defineProperty(_$$$$$$$$$$$, '\\otimes', '⊗'), _defineProperty(_$$$$$$$$$$$, '\\odot', '⊙'), _defineProperty(_$$$$$$$$$$$, '\\circ', '∘'), _defineProperty(_$$$$$$$$$$$, '\\setminus', '∖'), _defineProperty(_$$$$$$$$$$$, '\\amalg', '⨿'), _defineProperty(_$$$$$$$$$$$, '\\exists', '∃'), _defineProperty(_$$$$$$$$$$$, '\\nexists', '∄'), _defineProperty(_$$$$$$$$$$$, '\\forall', '∀'), _defineProperty(_$$$$$$$$$$$, '\\neg', '¬'), _defineProperty(_$$$$$$$$$$$, '\\land', '∧'), _defineProperty(_$$$$$$$$$$$, '\\lor', '∨'), _defineProperty(_$$$$$$$$$$$, '\\rightarrow', '→'), _defineProperty(_$$$$$$$$$$$, '\\leftarrow', '←'), _defineProperty(_$$$$$$$$$$$, '\\mapsto', '↦'), _defineProperty(_$$$$$$$$$$$, '\\implies', '⟹'), _defineProperty(_$$$$$$$$$$$, '\\Rightarrow', '⇒'), _defineProperty(_$$$$$$$$$$$, '\\leftrightarrow', '↔'), _defineProperty(_$$$$$$$$$$$, '\\iff', '⟺'), _defineProperty(_$$$$$$$$$$$, '\\Leftrightarrow', '⇔'), _defineProperty(_$$$$$$$$$$$, '\\top', '⊤'), _defineProperty(_$$$$$$$$$$$, '\\bot', '⊥'), _defineProperty(_$$$$$$$$$$$, '\\emptyset', '∅'), _defineProperty(_$$$$$$$$$$$, '\\varnothing', '∅'), _defineProperty(_$$$$$$$$$$$, '\\{', '{'), _defineProperty(_$$$$$$$$$$$, '\\uparrow', '↑'), _defineProperty(_$$$$$$$$$$$, '\\downarrow', '↓'), _defineProperty(_$$$$$$$$$$$, '\\|', '‖'), _defineProperty(_$$$$$$$$$$$, '\\}', '}'), _defineProperty(_$$$$$$$$$$$, '\\Uparrow', '⇑'), _defineProperty(_$$$$$$$$$$$, '\\Downarrow', '⇓'), _defineProperty(_$$$$$$$$$$$, '/', '/'), _defineProperty(_$$$$$$$$$$$, '\\angle', '∠'), _defineProperty(_$$$$$$$$$$$, '\\lceil', '⌈'), _defineProperty(_$$$$$$$$$$$, '\\lfloor', '⌊'), _defineProperty(_$$$$$$$$$$$, '\\backslash', '∖'), _defineProperty(_$$$$$$$$$$$, '\\rangle', '⟩'), _defineProperty(_$$$$$$$$$$$, '\\rceil', '⌉'), _defineProperty(_$$$$$$$$$$$, '\\rfloor', '⌋'), _$$$$$$$$$$$);
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -624,83 +701,6 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = appendElement;
-/**
- * Append an element to its parent.
- * 
- * @param {HTMLElement} $parent  
- * @param {...HTMLElement} children
- * 
- * @return {Void}  
- */
-function appendElement($parent) {
-  for (var _len = arguments.length, children = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-    children[_key - 1] = arguments[_key];
-  }
-
-  return children.forEach(function ($child) {
-    return $parent.appendChild($child);
-  });
-}
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-exports.default = createElement;
-/**
- * Quickly create an element with className.
- * 
- * @param {String} tagName 
- * @param {String} [className=''] 
- * @param {Object} [attributes={}]
- * 
- * @return {HTMLElement}
- */
-function createElement(tagName) {
-  var className = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-  var attributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-  if ((typeof className === 'undefined' ? 'undefined' : _typeof(className)) === 'object') {
-    attributes = className;
-    className = '';
-  }
-
-  var $el = document.createElement(tagName);
-  $el.className = className;
-
-  Object.keys(attributes).forEach(function (key) {
-    var value = attributes[key];
-    switch (key) {
-      case '_html':
-        $el.innerHTML = value;
-        break;
-      default:
-        $el.setAttribute(key, value);
-    }
-  });
-  return $el;
-}
-
-/***/ }),
 /* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -710,16 +710,18 @@ function createElement(tagName) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _mathJaxEditor = __webpack_require__(14);
-
-var _mathJaxEditor2 = _interopRequireDefault(_mathJaxEditor);
-
-__webpack_require__(49);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = _mathJaxEditor2.default;
+exports.default = appendElementAfter;
+/**
+ * Append an element after the referenced element.
+ * 
+ * @param {HTMLElement} $ref  
+ * @param {HTMLElement} $new 
+ * 
+ * @return {Void}
+ */
+function appendElementAfter($ref, $new) {
+  return $ref.parentNode.insertBefore($new, $ref.nextSibling);
+}
 
 /***/ }),
 /* 14 */
@@ -731,26 +733,99 @@ exports.default = _mathJaxEditor2.default;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = applyBackspace;
+
+var _lcc = __webpack_require__(0);
+
+var _lcc2 = _interopRequireDefault(_lcc);
+
+var _removeElement = __webpack_require__(6);
+
+var _removeElement2 = _interopRequireDefault(_removeElement);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * Perform the "backspace" deletion on the given value and
+ * current cursor position.
+ * 
+ * @param {HTMLElement} $value
+ * @param {HTMLElement} $pos 
+ * 
+ * @return {Void}
+ */
+function applyBackspace($value, $pos) {
+  if (!$pos) {
+    return $pos;
+  }
+
+  var $parent = $pos.parentNode;
+
+  switch ((0, _lcc2.default)($pos.tagName)) {
+    case 'mrow':
+      return applyBackspace($value, $parent);
+    case 'math':
+      return $pos;
+  }
+
+  var $newPos = $pos.previousElementSibling || (!(0, _lcc2.default)($parent.tagName, 'math') ? $parent : null);
+
+  (0, _removeElement2.default)($pos);
+
+  return $newPos;
+}
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _mathJaxEditor = __webpack_require__(16);
+
+var _mathJaxEditor2 = _interopRequireDefault(_mathJaxEditor);
+
+__webpack_require__(50);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = _mathJaxEditor2.default;
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _editor = __webpack_require__(15);
+var _editor = __webpack_require__(17);
 
 var _editor2 = _interopRequireDefault(_editor);
 
-var _appendElement = __webpack_require__(11);
+var _appendElement = __webpack_require__(5);
 
 var _appendElement2 = _interopRequireDefault(_appendElement);
 
-var _createElement = __webpack_require__(12);
+var _createElement = __webpack_require__(7);
 
 var _createElement2 = _interopRequireDefault(_createElement);
 
-var _extraOperatorList = __webpack_require__(48);
+var _extraOperatorList = __webpack_require__(49);
 
 var _extraOperatorList2 = _interopRequireDefault(_extraOperatorList);
 
-var _identifierList = __webpack_require__(8);
+var _identifierList = __webpack_require__(10);
 
 var _identifierList2 = _interopRequireDefault(_identifierList);
 
@@ -775,7 +850,7 @@ var MathJaxEditor = function () {
     _classCallCheck(this, MathJaxEditor);
 
     this.core = new _editor2.default(selectors, options);
-    this.version = '2.0.0-beta';
+    this.version = '2.0.0-beta2';
 
     this.core.on('@input', this.insert.bind(this));
   }
@@ -862,6 +937,24 @@ var MathJaxEditor = function () {
       (0, _appendElement2.default)($msqrt, $mrow);
 
       this.core.insert($msqrt, $mrow);
+    }
+
+    /**
+     * Insert a nth root on the editor.
+     * 
+     * @return {Void}
+     */
+
+  }, {
+    key: 'insertRoot',
+    value: function insertRoot() {
+      var $mroot = (0, _createElement2.default)('mroot');
+      var $mrowRadicand = (0, _createElement2.default)('mrow');
+      var $mrowIndex = (0, _createElement2.default)('mrow');
+
+      (0, _appendElement2.default)($mroot, $mrowRadicand, $mrowIndex);
+
+      this.core.insert($mroot, $mrowRadicand, $mrowIndex);
     }
 
     /**
@@ -1104,7 +1197,7 @@ var MathJaxEditor = function () {
 exports.default = MathJaxEditor;
 
 /***/ }),
-/* 15 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1116,35 +1209,35 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _debounce = __webpack_require__(16);
+var _debounce = __webpack_require__(18);
 
 var _debounce2 = _interopRequireDefault(_debounce);
 
-var _blinker = __webpack_require__(17);
+var _blinker = __webpack_require__(19);
 
 var _blinker2 = _interopRequireDefault(_blinker);
 
-var _cursor = __webpack_require__(18);
+var _cursor = __webpack_require__(20);
 
 var _cursor2 = _interopRequireDefault(_cursor);
 
-var _cursorMover = __webpack_require__(19);
+var _cursorMover = __webpack_require__(21);
 
 var _cursorMover2 = _interopRequireDefault(_cursorMover);
 
-var _eventEmitter = __webpack_require__(20);
+var _eventEmitter = __webpack_require__(22);
 
 var _eventEmitter2 = _interopRequireDefault(_eventEmitter);
 
-var _rendered = __webpack_require__(21);
+var _rendered = __webpack_require__(23);
 
 var _rendered2 = _interopRequireDefault(_rendered);
 
-var _tree = __webpack_require__(24);
+var _tree = __webpack_require__(26);
 
 var _tree2 = _interopRequireDefault(_tree);
 
-var _mml2tex = __webpack_require__(25);
+var _mml2tex = __webpack_require__(27);
 
 var _mml2tex2 = _interopRequireDefault(_mml2tex);
 
@@ -1156,23 +1249,23 @@ var _addClass = __webpack_require__(2);
 
 var _addClass2 = _interopRequireDefault(_addClass);
 
-var _appendElement = __webpack_require__(11);
+var _appendElement = __webpack_require__(5);
 
 var _appendElement2 = _interopRequireDefault(_appendElement);
 
-var _appendElementAfter = __webpack_require__(31);
+var _appendElementAfter = __webpack_require__(13);
 
 var _appendElementAfter2 = _interopRequireDefault(_appendElementAfter);
 
-var _applyDelete = __webpack_require__(32);
+var _applyDelete = __webpack_require__(33);
 
 var _applyDelete2 = _interopRequireDefault(_applyDelete);
 
-var _applyBackspace = __webpack_require__(33);
+var _applyBackspace = __webpack_require__(14);
 
 var _applyBackspace2 = _interopRequireDefault(_applyBackspace);
 
-var _createElement = __webpack_require__(12);
+var _createElement = __webpack_require__(7);
 
 var _createElement2 = _interopRequireDefault(_createElement);
 
@@ -1200,7 +1293,7 @@ var _listenElement = __webpack_require__(41);
 
 var _listenElement2 = _interopRequireDefault(_listenElement);
 
-var _px = __webpack_require__(7);
+var _px = __webpack_require__(9);
 
 var _px2 = _interopRequireDefault(_px);
 
@@ -1208,11 +1301,11 @@ var _prependElement = __webpack_require__(42);
 
 var _prependElement2 = _interopRequireDefault(_prependElement);
 
-var _removeClass = __webpack_require__(6);
+var _removeClass = __webpack_require__(8);
 
 var _removeClass2 = _interopRequireDefault(_removeClass);
 
-var _removeElement = __webpack_require__(5);
+var _removeElement = __webpack_require__(6);
 
 var _removeElement2 = _interopRequireDefault(_removeElement);
 
@@ -1228,11 +1321,11 @@ var _toDisplay = __webpack_require__(45);
 
 var _toDisplay2 = _interopRequireDefault(_toDisplay);
 
-var _toDom = __webpack_require__(46);
+var _toDom = __webpack_require__(47);
 
 var _toDom2 = _interopRequireDefault(_toDom);
 
-var _unlistenElement = __webpack_require__(47);
+var _unlistenElement = __webpack_require__(48);
 
 var _unlistenElement2 = _interopRequireDefault(_unlistenElement);
 
@@ -1276,6 +1369,7 @@ var Editor = function () {
     this.placeholder = options.placeholder || 'Start typing...';
     this.allowNewlines = options.allowNewlines || false;
     this.handleResize = (0, _debounce2.default)(this.handleResize.bind(this), 25);
+    this.scrollToCaret = this.scrollToCaret.bind(this);
 
     (0, _hideElement2.default)(this.$caret);
     (0, _hideElement2.default)(this.$el);
@@ -1432,6 +1526,18 @@ var Editor = function () {
     }
 
     /**
+     * Scroll the editor display to where the caret element is located.
+     * 
+     * @return {Void}
+     */
+
+  }, {
+    key: 'scrollToCaret',
+    value: function scrollToCaret() {
+      (0, _scrollTo2.default)(this.$display, this.$caret);
+    }
+
+    /**
      * Update the editor tree, display, and cursor stuff.
      * 
      * @return {Promise}
@@ -1472,12 +1578,8 @@ var Editor = function () {
   }, {
     key: 'backspaceRemove',
     value: function backspaceRemove() {
-      var _this3 = this;
-
-      (0, _applyBackspace2.default)(this.$value, this.cursor);
-      this.update().then(function () {
-        return (0, _scrollTo2.default)(_this3.$display, _this3.$caret);
-      });
+      this.cursor.setPosition((0, _applyBackspace2.default)(this.$value, this.cursor.getPosition()));
+      this.update().then(this.scrollToCaret);
     }
 
     /**
@@ -1489,12 +1591,8 @@ var Editor = function () {
   }, {
     key: 'deleteRemove',
     value: function deleteRemove() {
-      var _this4 = this;
-
-      (0, _applyDelete2.default)(this.$value, this.cursor);
-      this.update().then(function () {
-        return (0, _scrollTo2.default)(_this4.$display, _this4.$caret);
-      });
+      this.cursor.setPosition((0, _applyDelete2.default)(this.$value, this.cursor.getPosition()));
+      this.update().then(this.scrollToCaret);
     }
 
     /**
@@ -1509,8 +1607,6 @@ var Editor = function () {
   }, {
     key: 'insert',
     value: function insert($el) {
-      var _this5 = this;
-
       var $moveTo = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
       var $position = this.cursor.getPosition();
@@ -1530,9 +1626,7 @@ var Editor = function () {
 
       this.cursor.setPosition($moveTo || $el);
       this.focus();
-      this.update().then(function () {
-        return (0, _scrollTo2.default)(_this5.$display, _this5.$caret);
-      });
+      this.update().then(this.scrollToCaret);
     }
 
     /**
@@ -1665,7 +1759,7 @@ var Editor = function () {
 exports.default = Editor;
 
 /***/ }),
-/* 16 */
+/* 18 */
 /***/ (function(module, exports) {
 
 /**
@@ -1727,7 +1821,7 @@ module.exports = function debounce(func, wait, immediate){
 
 
 /***/ }),
-/* 17 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1743,7 +1837,7 @@ var _addClass = __webpack_require__(2);
 
 var _addClass2 = _interopRequireDefault(_addClass);
 
-var _removeClass = __webpack_require__(6);
+var _removeClass = __webpack_require__(8);
 
 var _removeClass2 = _interopRequireDefault(_removeClass);
 
@@ -1816,7 +1910,7 @@ var Blinker = function () {
 exports.default = Blinker;
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1832,7 +1926,7 @@ var _lcc = __webpack_require__(0);
 
 var _lcc2 = _interopRequireDefault(_lcc);
 
-var _px = __webpack_require__(7);
+var _px = __webpack_require__(9);
 
 var _px2 = _interopRequireDefault(_px);
 
@@ -2000,7 +2094,7 @@ var Cursor = function () {
 exports.default = Cursor;
 
 /***/ }),
-/* 19 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2155,7 +2249,7 @@ var CursorMover = function () {
 exports.default = CursorMover;
 
 /***/ }),
-/* 20 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2229,7 +2323,7 @@ var EventEmitter = function () {
 exports.default = EventEmitter;
 
 /***/ }),
-/* 21 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2241,11 +2335,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _element = __webpack_require__(22);
+var _element = __webpack_require__(24);
 
 var _element2 = _interopRequireDefault(_element);
 
-var _line = __webpack_require__(23);
+var _line = __webpack_require__(25);
 
 var _line2 = _interopRequireDefault(_line);
 
@@ -2427,7 +2521,7 @@ var Rendered = function () {
 exports.default = Rendered;
 
 /***/ }),
-/* 22 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2582,9 +2676,11 @@ var Element = function () {
       var height = this.line.height;
 
       if (this.isTagName('mrow')) {
+        var styles = window.getComputedStyle(this.$rendered);
+        var paddingLeft = parseFloat(styles.paddingLeft);
         return {
           top: 0,
-          left: 0,
+          left: paddingLeft,
           height: this.height,
           $parent: this.$rendered
         };
@@ -2608,7 +2704,7 @@ var Element = function () {
 exports.default = Element;
 
 /***/ }),
-/* 23 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2743,7 +2839,7 @@ var Line = function () {
 exports.default = Line;
 
 /***/ }),
-/* 24 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2859,7 +2955,7 @@ var Tree = function () {
 exports.default = Tree;
 
 /***/ }),
-/* 25 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2870,11 +2966,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = mml2Tex;
 
-var _identifierList = __webpack_require__(8);
+var _identifierList = __webpack_require__(10);
 
 var _identifierList2 = _interopRequireDefault(_identifierList);
 
-var _operatorList = __webpack_require__(9);
+var _operatorList = __webpack_require__(11);
 
 var _operatorList2 = _interopRequireDefault(_operatorList);
 
@@ -2882,7 +2978,7 @@ var _lcc = __webpack_require__(0);
 
 var _lcc2 = _interopRequireDefault(_lcc);
 
-var _reverseObject = __webpack_require__(26);
+var _reverseObject = __webpack_require__(28);
 
 var _reverseObject2 = _interopRequireDefault(_reverseObject);
 
@@ -2944,14 +3040,26 @@ function mml2Tex($value) {
             break;
         }
         break;
+      case 'mroot':
+        output += '\\sqrt';
+        break;
       default:
         output += '\\' + tagName.substr(1) + ' ';
         break;
     }
 
-    (0, _toArray2.default)(children).forEach(function ($child) {
-      return walk($child);
-    });
+    switch (tagName) {
+      case 'mroot':
+        output += '[';
+        walk(children[1]);
+        output += ']';
+        walk(children[0]);
+        break;
+      default:
+        (0, _toArray2.default)(children).forEach(function ($child) {
+          return walk($child);
+        });
+    }
 
     switch (tagName) {
       case 'mrow':
@@ -2977,7 +3085,7 @@ function mml2Tex($value) {
 }
 
 /***/ }),
-/* 26 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3028,7 +3136,7 @@ function reverseObject(obj) {
 }
 
 /***/ }),
-/* 27 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(setImmediate) {/**@license MIT-promiscuous-©Ruben Verborgh*/
@@ -3170,10 +3278,10 @@ function reverseObject(obj) {
   };
 })('f', 'o');
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(28).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(30).setImmediate))
 
 /***/ }),
-/* 28 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var apply = Function.prototype.apply;
@@ -3226,14 +3334,14 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(29);
-var global = __webpack_require__(30);
+__webpack_require__(31);
+var global = __webpack_require__(32);
 exports.setImmediate = global.setImmediate;
 exports.clearImmediate = global.clearImmediate;
 
 
 /***/ }),
-/* 29 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -3423,10 +3531,10 @@ exports.clearImmediate = global.clearImmediate;
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(10)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(12)))
 
 /***/ }),
-/* 30 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var win;
@@ -3446,30 +3554,7 @@ module.exports = win;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
-/* 31 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = appendElementAfter;
-/**
- * Append an element after the referenced element.
- * 
- * @param {HTMLElement} $ref  
- * @param {HTMLElement} $new 
- * 
- * @return {Void}
- */
-function appendElementAfter($ref, $new) {
-  return $ref.parentNode.insertBefore($new, $ref.nextSibling);
-}
-
-/***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3484,9 +3569,13 @@ var _lcc = __webpack_require__(0);
 
 var _lcc2 = _interopRequireDefault(_lcc);
 
-var _removeElement = __webpack_require__(5);
+var _removeElement = __webpack_require__(6);
 
 var _removeElement2 = _interopRequireDefault(_removeElement);
+
+var _applyBackspace = __webpack_require__(14);
+
+var _applyBackspace2 = _interopRequireDefault(_applyBackspace);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3494,108 +3583,33 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * Perform the "delete" deletion on the given value and
  * current cursor position.
  * 
- * TODO: Refactor this code.
- * 
  * @param {HTMLElement} $value
- * @param {Cursor} cursor 
+ * @param {HTMLElement} $pos 
  * 
  * @return {Void}
  */
-function applyDelete($value, cursor) {
-  var $position = cursor.getPosition();
-  var isMrow = $position && (0, _lcc2.default)($position.tagName, 'mrow');
-  if (!$position) {
-    if ($value.firstElementChild) {
-      (0, _removeElement2.default)($value.firstElementChild);
-    }
-  } else if (!$position.nextElementSibling || isMrow) {
-    var $parent = $position.parentNode;
-    if (isMrow) {
-      var isMath = (0, _lcc2.default)($parent.parentNode.tagName, 'math');
-      cursor.setPosition($parent.previousElementSibling || (!isMath ? $parent.parentNode : null));
-      (0, _removeElement2.default)($parent);
-    } else if ((0, _lcc2.default)($parent.tagName, 'mrow')) {
-      var _isMath = (0, _lcc2.default)($parent.parentNode.parentNode.tagName, 'math');
-      cursor.setPosition($parent.parentNode.previousElementSibling || (!_isMath ? $parent.parentNode.parentNode : null));
-      (0, _removeElement2.default)($parent.parentNode);
-    } else {
-      if ((0, _lcc2.default)($parent.tagName, 'math')) {
-        return;
-      }
-      if ($parent.previousElementSibling) {
-        cursor.setPosition($parent.previousElementSibling);
-      } else if ($parent.parentNode && (0, _lcc2.default)($parent.parentNode.tagName, 'math')) {
-        cursor.setPosition(null);
-      } else {
-        cursor.setPosition($parent.parentNode);
-      }
-      (0, _removeElement2.default)($parent);
-    }
-  } else {
-    (0, _removeElement2.default)($position.nextElementSibling);
+function applyDelete($value, $pos) {
+  if (!$pos) {
+    return (0, _applyBackspace2.default)($value, $value.firstElementChild);
   }
-}
 
-/***/ }),
-/* 33 */
-/***/ (function(module, exports, __webpack_require__) {
+  var $parent = $pos.parentNode;
 
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = applyBackspace;
-
-var _lcc = __webpack_require__(0);
-
-var _lcc2 = _interopRequireDefault(_lcc);
-
-var _removeElement = __webpack_require__(5);
-
-var _removeElement2 = _interopRequireDefault(_removeElement);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * Perform the "backspace" deletion on the given value and
- * current cursor position.
- * 
- * TODO: Refactor this code.
- * 
- * @param {HTMLElement} $value
- * @param {Cursor} cursor 
- * 
- * @return {Void}
- */
-function applyBackspace($value, cursor) {
-  var $position = cursor.getPosition();
-
-  if (!$position) {
-    return;
+  switch ((0, _lcc2.default)($pos.tagName)) {
+    case 'mrow':
+      return (0, _applyBackspace2.default)($value, $pos.firstElementChild || $parent);
   }
-  if ((0, _lcc2.default)($position.tagName, 'mrow')) {
-    var $parent = $position.parentNode;
 
-    if ((0, _lcc2.default)($parent.parentNode.tagName, 'math') && !$parent.previousElementSibling) {
-      cursor.setPosition(null);
-    } else {
-      cursor.setPosition($parent.previousElementSibling || $parent.parentNode);
+  if (!$pos.nextElementSibling) {
+    if ((0, _lcc2.default)($parent.tagName, 'math')) {
+      return $pos;
     }
-
-    (0, _removeElement2.default)($parent);
-  } else {
-    if ($position.previousElementSibling) {
-      cursor.setPosition($position.previousElementSibling);
-    } else if ((0, _lcc2.default)($position.parentNode.tagName, 'mrow')) {
-      cursor.setPosition($position.parentNode);
-    } else {
-      cursor.setPosition($position.parentNode.previousElementSibling);
-    }
-
-    (0, _removeElement2.default)($position);
+    return (0, _applyBackspace2.default)($value, $parent);
   }
+
+  (0, _removeElement2.default)($pos.nextElementSibling);
+
+  return $pos;
 }
 
 /***/ }),
@@ -3889,7 +3903,7 @@ module.exports.polyfill = function() {
 
 //# sourceMappingURL=performance-now.js.map
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
 
 /***/ }),
 /* 39 */
@@ -4055,6 +4069,22 @@ var _addClass = __webpack_require__(2);
 
 var _addClass2 = _interopRequireDefault(_addClass);
 
+var _appendElement = __webpack_require__(5);
+
+var _appendElement2 = _interopRequireDefault(_appendElement);
+
+var _appendElementAfter = __webpack_require__(13);
+
+var _appendElementAfter2 = _interopRequireDefault(_appendElementAfter);
+
+var _appendElementBefore = __webpack_require__(46);
+
+var _appendElementBefore2 = _interopRequireDefault(_appendElementBefore);
+
+var _createElement = __webpack_require__(7);
+
+var _createElement2 = _interopRequireDefault(_createElement);
+
 var _lcc = __webpack_require__(0);
 
 var _lcc2 = _interopRequireDefault(_lcc);
@@ -4064,6 +4094,39 @@ var _toArray = __webpack_require__(1);
 var _toArray2 = _interopRequireDefault(_toArray);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * Create a thin space.
+ * 
+ * @return {HTMLElement}
+ */
+function createThinSpace() {
+  return (0, _createElement2.default)('mspace', 'mathjax-editor-helper', {
+    width: 'thinmathspace'
+  });
+}
+
+/**
+ * Create a placeholder for empty <mrow>s.
+ * 
+ * @return {HTMLElement}
+ */
+function createPlaceholder() {
+  return (0, _createElement2.default)('mo', 'mathjax-editor-placeholder', {
+    _html: '?'
+  });
+}
+
+/**
+ * Create a placeholder for empty lines.
+ * 
+ * @return {HTMLElement}
+ */
+function createNewlinePlaceholder() {
+  return (0, _createElement2.default)('mo', 'mathjax-editor-newline-empty', {
+    _html: '⏎'
+  });
+}
 
 /**
  * This function will add some visual stuff to the editor's current
@@ -4087,18 +4150,19 @@ function toDisplay($value) {
   (0, _toArray2.default)($clone.querySelectorAll('mrow')).forEach(function ($mrow) {
     (0, _addClass2.default)($mrow, 'mathjax-editor-mrow');
 
-    if ($mrow.children.length) {
-      if ((0, _lcc2.default)($mrow.parentNode.tagName, 'msqrt')) {
-        var $mspace = document.createElement('mspace');
-        $mspace.setAttribute('width', 'thinmathspace');
-        $mspace.className = 'mathjax-editor-helper';
-        $mrow.appendChild($mspace);
-      }
-    } else {
-      var $mo = document.createElement('mo');
-      $mo.className = 'mathjax-editor-placeholder';
-      $mo.innerHTML = '?';
-      $mrow.appendChild($mo);
+    if (!$mrow.children.length) {
+      return (0, _appendElement2.default)($mrow, createPlaceholder());
+    }
+
+    switch ((0, _lcc2.default)($mrow.parentNode.tagName)) {
+      case 'msqrt':
+        (0, _appendElement2.default)($mrow, createThinSpace());
+        break;
+      case 'mroot':
+        if ($mrow.parentNode.firstElementChild === $mrow) {
+          (0, _appendElement2.default)($mrow, createThinSpace());
+        }
+        break;
     }
   });
 
@@ -4107,20 +4171,20 @@ function toDisplay($value) {
       return;
     }
 
+    // Newlines are allowed only as child of the <math> element.
+
+    var $math = $mspace.parentNode;
     var $previous = $mspace.previousElementSibling;
     var $next = $mspace.nextElementSibling;
-    var $mo = document.createElement('mo');
-    $mo.className = 'mathjax-editor-newline-empty';
-    $mo.innerHTML = '⏎';
 
     if (!$next || (0, _lcc2.default)($next.tagName, 'math')) {
-      $mspace.parentNode.insertBefore($mo, $mspace.nextSibling);
+      (0, _appendElementAfter2.default)($mspace, createNewlinePlaceholder());
     }
 
     if (!(!$previous || (0, _lcc2.default)($previous.tagName, 'mspace'))) {
       return;
     }
-    $mspace.parentNode.insertBefore($mo.cloneNode(true), $mspace);
+    (0, _appendElementBefore2.default)($mspace, createNewlinePlaceholder());
   });
 
   return $clone.outerHTML;
@@ -4128,6 +4192,29 @@ function toDisplay($value) {
 
 /***/ }),
 /* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = appendElementBefore;
+/**
+ * Append an element before the referenced element.
+ * 
+ * @param {HTMLElement} $ref  
+ * @param {HTMLElement} $new 
+ * 
+ * @return {Void}
+ */
+function appendElementBefore($ref, $new) {
+  return $ref.parentNode.insertBefore($new, $ref);
+}
+
+/***/ }),
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4156,7 +4243,7 @@ function toDom(source) {
 }
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4180,7 +4267,7 @@ function unlistenElement($el, type, listener) {
 }
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4190,7 +4277,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _operatorList = __webpack_require__(9);
+var _operatorList = __webpack_require__(11);
 
 var _operatorList2 = _interopRequireDefault(_operatorList);
 
@@ -4202,13 +4289,13 @@ exports.default = Object.assign({}, _operatorList2.default, {
 });
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _styles = __webpack_require__(50);
+var _styles = __webpack_require__(51);
 
 var _styles2 = _interopRequireDefault(_styles);
 
@@ -4233,7 +4320,7 @@ window.addEventListener('load', function () {
 });
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
