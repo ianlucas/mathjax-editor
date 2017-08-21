@@ -61,6 +61,7 @@ export default class Editor {
     this.placeholder = options.placeholder || 'Start typing...'
     this.allowNewlines = options.allowNewlines || false
     this.handleResize = debounce(this.handleResize.bind(this), 25)
+    this.scrollToCaret = this.scrollToCaret.bind(this)
     
     hideElement(this.$caret)
     hideElement(this.$el)
@@ -183,6 +184,15 @@ export default class Editor {
   }
 
   /**
+   * Scroll the editor display to where the caret element is located.
+   * 
+   * @return {Void}
+   */
+  scrollToCaret() {
+    scrollTo(this.$display, this.$caret)
+  }
+
+  /**
    * Update the editor tree, display, and cursor stuff.
    * 
    * @return {Promise}
@@ -219,9 +229,7 @@ export default class Editor {
     this.cursor.setPosition(
       applyBackspace(this.$value, this.cursor.getPosition())
     )
-    this.update().then(
-      () => scrollTo(this.$display, this.$caret)
-    )
+    this.update().then(this.scrollToCaret)
   }
 
   /**
@@ -233,9 +241,7 @@ export default class Editor {
     this.cursor.setPosition(
       applyDelete(this.$value, this.cursor.getPosition())
     )
-    this.update().then(
-      () => scrollTo(this.$display, this.$caret)
-    )
+    this.update().then(this.scrollToCaret)
   }
 
   /**
@@ -262,9 +268,7 @@ export default class Editor {
 
     this.cursor.setPosition($moveTo || $el)
     this.focus()
-    this.update().then(
-      () => scrollTo(this.$display, this.$caret)
-    )
+    this.update().then(this.scrollToCaret)
   }
 
   /**
