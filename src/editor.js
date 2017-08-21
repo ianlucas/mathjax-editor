@@ -216,7 +216,9 @@ export default class Editor {
    * @return {Void}
    */
   backspaceRemove() {
-    applyBackspace(this.$value, this.cursor)
+    this.cursor.setPosition(
+      applyBackspace(this.$value, this.cursor.getPosition())
+    )
     this.update().then(
       () => scrollTo(this.$display, this.$caret)
     )
@@ -228,7 +230,9 @@ export default class Editor {
    * @return {Void}
    */
   deleteRemove() {
-    applyDelete(this.$value, this.cursor)
+    this.cursor.setPosition(
+      applyDelete(this.$value, this.cursor.getPosition())
+    )
     this.update().then(
       () => scrollTo(this.$display, this.$caret)
     )

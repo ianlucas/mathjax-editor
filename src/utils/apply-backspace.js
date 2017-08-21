@@ -5,41 +5,29 @@ import removeElement from './remove-element'
  * Perform the "backspace" deletion on the given value and
  * current cursor position.
  * 
- * TODO: Refactor this code.
- * 
  * @param {HTMLElement} $value
- * @param {Cursor} cursor 
+ * @param {HTMLElement} $pos 
  * 
  * @return {Void}
  */
-export default function applyBackspace($value, cursor) {
-  const $position = cursor.getPosition()
+export default function applyBackspace($value, $pos) {
+  if (!$pos) {return $pos}
+
+  const $parent = $pos.parentNode
+
+  switch (lcc($pos.tagName)) {
+  case 'mrow':
+    return applyBackspace($value, $parent)
+  case 'math':
+    return $pos
+  }
+
+  const $newPos = (
+    $pos.previousElementSibling || 
+    (!lcc($parent.tagName, 'math') ? $parent : null)
+  )
   
-  if (!$position) {return}
-  if (lcc($position.tagName, 'mrow')) {
-    const $parent = $position.parentNode
+  removeElement($pos)
 
-    if (lcc($parent.parentNode.tagName, 'math') && !$parent.previousElementSibling) {
-      cursor.setPosition(null)
-    }
-    else {cursor.setPosition(
-      $parent.previousElementSibling ||
-      $parent.parentNode
-    )}
-    
-    removeElement($parent)
-  }
-  else {
-    if ($position.previousElementSibling) {
-      cursor.setPosition($position.previousElementSibling)
-    }
-    else if (lcc($position.parentNode.tagName, 'mrow')) {
-      cursor.setPosition($position.parentNode)
-    }
-    else {
-      cursor.setPosition($position.parentNode.previousElementSibling)
-    }
-
-    removeElement($position)
-  }
+  return $newPos
 }
