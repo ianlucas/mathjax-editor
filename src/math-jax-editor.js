@@ -19,7 +19,7 @@ export default class MathJaxEditor {
    */
   constructor(selectors, options = {}) {
     this.core = new Editor(selectors, options)
-    this.version = '2.0.0-beta'
+    this.version = '2.0.0-beta2'
 
     this.core.on('@input', this.insert.bind(this))
   }
@@ -91,6 +91,11 @@ export default class MathJaxEditor {
     this.core.insert($msqrt, $mrow)
   }
 
+  /**
+   * Insert a nth root on the editor.
+   * 
+   * @return {Void}
+   */
   insertRoot() {
     const $mroot = createElement('mroot')
     const $mrowRadicand = createElement('mrow')
