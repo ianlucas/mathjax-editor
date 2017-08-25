@@ -60,7 +60,7 @@ export default class Editor {
     this.blinker = new Blinker(this.$caret)
     this.placeholder = options.placeholder || 'Start typing...'
     this.allowNewlines = options.allowNewlines || false
-    this.handleResize = debounce(this.handleResize.bind(this), 25)
+    this.handleResize = debounce(this.handleResize.bind(this), 250)
     this.scrollToCaret = this.scrollToCaret.bind(this)
     
     hideElement(this.$caret)
