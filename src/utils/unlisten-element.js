@@ -8,5 +8,5 @@
  * @return {Void}
  */
 export default function unlistenElement($el, type, listener) {
-  return $el.removeEventListener($el, type, listener)
+  return $el.removeEventListener(type, listener)
 }
