@@ -19,7 +19,7 @@ export default class MathJaxEditor {
    */
   constructor(selectors, options = {}) {
     this.core = new Editor(selectors, options)
-    this.version = '2.0.0-beta2'
+    this.version = '2.0.0-beta3'
 
     this.core.on('@input', this.insert.bind(this))
   }
