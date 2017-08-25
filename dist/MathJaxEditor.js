@@ -850,7 +850,7 @@ var MathJaxEditor = function () {
     _classCallCheck(this, MathJaxEditor);
 
     this.core = new _editor2.default(selectors, options);
-    this.version = '2.0.0-beta2';
+    this.version = '2.0.0-beta3';
 
     this.core.on('@input', this.insert.bind(this));
   }
@@ -1368,7 +1368,7 @@ var Editor = function () {
     this.blinker = new _blinker2.default(this.$caret);
     this.placeholder = options.placeholder || 'Start typing...';
     this.allowNewlines = options.allowNewlines || false;
-    this.handleResize = (0, _debounce2.default)(this.handleResize.bind(this), 25);
+    this.handleResize = (0, _debounce2.default)(this.handleResize.bind(this), 250);
     this.scrollToCaret = this.scrollToCaret.bind(this);
 
     (0, _hideElement2.default)(this.$caret);
@@ -4173,7 +4173,6 @@ function toDisplay($value) {
 
     // Newlines are allowed only as child of the <math> element.
 
-    var $math = $mspace.parentNode;
     var $previous = $mspace.previousElementSibling;
     var $next = $mspace.nextElementSibling;
 
@@ -4263,7 +4262,7 @@ exports.default = unlistenElement;
  * @return {Void}
  */
 function unlistenElement($el, type, listener) {
-  return $el.removeEventListener($el, type, listener);
+  return $el.removeEventListener(type, listener);
 }
 
 /***/ }),
