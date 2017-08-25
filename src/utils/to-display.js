@@ -82,7 +82,6 @@ export default function toDisplay($value, placeholder = '') {
 
       // Newlines are allowed only as child of the <math> element.
 
-      const $math = $mspace.parentNode
       const $previous = $mspace.previousElementSibling
       const $next = $mspace.nextElementSibling
 
