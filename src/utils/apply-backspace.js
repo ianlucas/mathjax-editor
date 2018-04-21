@@ -15,8 +15,8 @@ export default function applyBackspace($value, $pos, $invoker = null) {
   if (!$pos) {return $pos}
 
   // If the $pos contains the 'editable' attribute, we assume that
-  // its the container of the elements that can be inserted on
-  // a readonly math equation.
+  // it's the container of the elements that can be inserted on
+  // a readonly math equation, so it can't be removed.
 
   if ($pos.getAttribute('editable') === 'true') {return $invoker || $pos}
 

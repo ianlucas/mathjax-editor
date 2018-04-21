@@ -1,7 +1,7 @@
 import lcc from './lcc'
 
 /**
- * Check if an to be inserted element is insertable or some of its parents.
+ * Check if an element or its parent has the `editable` attribute enabled.
  * 
  * @param {HTMLElement} $el
  * 

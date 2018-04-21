@@ -258,7 +258,7 @@ export default class Editor {
   insert($el, $moveTo = null) {
     const $position = this.cursor.getPosition()
 
-    if (this.readonly && !isEditable($position, true)) {return}
+    if (this.readonly && !isEditable($position)) {return}
 
     if (!$position) {
       prependElement(this.$value, $el)
