@@ -42,8 +42,10 @@
     var $panel = document.getElementById('panel')
     window.onload = function () {
       window.editor = new MathJaxEditor('#targetNode', {
-        allowNewlines: true
+        allowNewlines: true,
+        readonly: true
       })
+      window.editor.setValue('<math><mi>K</mi><mo>=</mo><msqrt><mrow><msup><mrow><mi>a</mi></mrow><mrow editable="true"><mn>2</mn></mrow></msup><mo>+</mo><msup><mrow><mi>b</mi></mrow><mrow editable="true"><mn>2</mn></mrow></msup></mrow></msqrt></math>')
       var buttons = [
         { label: '$$\\frac{a}{b}$$', click: function () {window.editor.insertFraction()} },
         { label: '$$\\sqrt{a}$$', click: function () {window.editor.insertSqrt()} },

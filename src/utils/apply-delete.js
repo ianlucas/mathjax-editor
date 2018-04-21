@@ -13,17 +13,21 @@ import applyBackspace from './apply-backspace'
  */
 export default function applyDelete($value, $pos) {
   if (!$pos) {return applyBackspace($value, $value.firstElementChild)}
-
+  
   const $parent = $pos.parentNode
 
   switch (lcc($pos.tagName)) {
   case 'mrow':
+    if (
+      !$pos.firstElementChild &&
+      $pos.getAttribute('editable') === 'true'
+    ) {return $pos}
     return applyBackspace($value, $pos.firstElementChild || $parent)
   }
 
   if (!$pos.nextElementSibling) {
     if (lcc($parent.tagName, 'math')) {return $pos}
-    return applyBackspace($value, $parent)
+    return applyBackspace($value, $parent, $pos)
   }
 
   removeElement($pos.nextElementSibling)

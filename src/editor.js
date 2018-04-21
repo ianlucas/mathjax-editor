@@ -19,6 +19,7 @@ import findTextarea from './utils/find-textarea'
 import getElementJax from './utils/get-element-jax'
 import getCleanCopy from './utils/get-clean-copy'
 import hideElement from './utils/hide-element'
+import isEditable from './utils/is-editable'
 import lcc from './utils/lcc'
 import listenElement from './utils/listen-element'
 import px from './utils/px'
@@ -39,6 +40,7 @@ export default class Editor {
    * @param {Object} [options] 
    * @param {Boolean} [options.allowNewlines=false]
    * @param {String} [options.placeholder="Start typing..."]
+   * @param {Boolean} [option.readonly=false]
    * 
    * @constructor
    */
@@ -60,6 +62,7 @@ export default class Editor {
     this.blinker = new Blinker(this.$caret)
     this.placeholder = options.placeholder || 'Start typing...'
     this.allowNewlines = options.allowNewlines || false
+    this.readonly = options.readonly || false
     this.handleResize = debounce(this.handleResize.bind(this), 250)
     this.scrollToCaret = this.scrollToCaret.bind(this)
     
@@ -254,6 +257,8 @@ export default class Editor {
    */
   insert($el, $moveTo = null) {
     const $position = this.cursor.getPosition()
+
+    if (this.readonly && !isEditable($position, true)) {return}
 
     if (!$position) {
       prependElement(this.$value, $el)

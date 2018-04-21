@@ -14,6 +14,7 @@ export default class MathJaxEditor {
    * @param {Object} [options]
    * @param {Boolean} [options.allowNewlines=false]
    * @param {String} [options.placeholder="Start typing..."]
+   * @param {Boolean} [options.readonly=false]
    * 
    * @constructor
    */
