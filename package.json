@@ -1,29 +1,23 @@
 {
   "name": "mathjax-editor",
-  "version": "1.3.9",
-  "description": "A Mathematics editor on top of MathJax.",
-  "main": "src/MathJaxEditor.js",
-  "scripts": {
-    "dev": "webpack --watch",
-    "build": "webpack && uglifyjs ./dist/MathJaxEditor.js -c -m -o ./dist/MathJaxEditor.min.js",
-    "lint": "eslint ./src"
-  },
-  "author": "Ian Lucas <ianlucas_ferreira@hotmail.com>",
+  "version": "3.0.0",
+  "description": "An equation editor on top of MathJax.",
+  "main": "dist/mathjax-editor.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ianlucas/mathjax-editor"
+    "url": "git+https://github.com/ianlucas/mathjax-editor.git"
   },
+  "keywords": [
+    "math",
+    "MathJax",
+    "editor",
+    "equation",
+    "wysiwyg"
+  ],
+  "author": "Ian Lucas <ianlucas_ferreira@hotmail.com>",
   "license": "MIT",
-  "devDependencies": {
-    "babel-core": "^6.18.2",
-    "babel-loader": "^6.2.9",
-    "babel-preset-es2015": "^6.18.0",
-    "eslint": "^3.12.2",
-    "uglify-js": "^2.7.5",
-    "webpack": "^2.1.0-beta.26"
-  },
-  "homepage": "https://github.com/ianlucas/mathjax-editor",
   "bugs": {
     "url": "https://github.com/ianlucas/mathjax-editor/issues"
-  }
+  },
+  "homepage": "https://github.com/ianlucas/mathjax-editor#readme"
 }
