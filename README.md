@@ -2,7 +2,7 @@
 
 Upcoming version of MathJax Editor.
 
-**Usage/Documentation:** http://ianlucas.github.io/mje
+**Usage/Documentation:** http://ianlucas.github.io/mathjax-editor
 
 ## Browser Support
 
