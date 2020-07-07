@@ -1,1 +1,0 @@
-# MathJax Editor for MathJax 3
