@@ -1,23 +1,31 @@
 {
-  "name": "mathjax-editor",
-  "version": "3.0.0",
-  "description": "An equation editor on top of MathJax.",
-  "main": "dist/mathjax-editor.js",
+  "name": "library",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ianlucas/mathjax-editor.git"
+    "url": "https://github.com/ianlucas/library"
   },
-  "keywords": [
-    "math",
-    "MathJax",
-    "editor",
-    "equation",
-    "wysiwyg"
-  ],
+  "bugs": {
+    "url": "https://github.com/ianlucas/library/issues"
+  },
+  "scripts": {
+    "lint": "standard",
+    "build": "rollup -c rollup.config.js --environment BUILD:PRD",
+    "dev": "rollup -w -c rollup.config.js --environment BUILD:DEV"
+  },
   "author": "Ian Lucas <ianlucas_ferreira@hotmail.com>",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/ianlucas/mathjax-editor/issues"
+  "devDependencies": {
+    "@babel/core": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
+    "@rollup/plugin-babel": "^5.0.4",
+    "@rollup/plugin-commonjs": "^13.0.0",
+    "@rollup/pluginutils": "^3.1.0",
+    "clean-css": "^4.2.3",
+    "rollup": "^2.18.2",
+    "rollup-plugin-terser": "^6.1.0",
+    "standard": "^14.3.4"
   },
-  "homepage": "https://github.com/ianlucas/mathjax-editor#readme"
+  "dependencies": {}
 }
