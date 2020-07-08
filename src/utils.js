@@ -45,7 +45,7 @@ export function walk (root, actions) {
  * @param {HTMLElement} reference
  */
 export function insertElement (element, reference) {
-  if (isContainer(element)) {
+  if (isContainer(reference)) {
     if (!reference.children.length) {
       reference.appendChild(element)
       return true
