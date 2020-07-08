@@ -2,12 +2,17 @@ body {
   cursor: text;
   font-size: 32px;
   margin: 0;
+  padding: 1em;
 }
 
 mje-cursor {
-  background-color: red;
+  background-color: #000;
   position: absolute;
   width: 1px;
+}
+
+mje-cursor.hidden {
+  display: none;
 }
 
 mjx-container {
@@ -16,4 +21,8 @@ mjx-container {
 
 [type=eof] {
   opacity: 0;
+}
+
+[type=placeholder] {
+  opacity: 0.25;
 }
