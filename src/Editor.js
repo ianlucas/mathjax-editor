@@ -38,6 +38,10 @@ export default class Editor {
     this.update()
   }
 
+  setCursor (value) {
+    this.cursor = value
+  }
+
   /**
    * Update the editor displayed math.
    *
@@ -62,7 +66,7 @@ export default class Editor {
    */
   updateCursor (value) {
     if (value) {
-      this.cursor = value
+      this.setCursor(value)
     }
     const { cursor } = this.getCurrentStep()
     this.display.updateCursor(cursor)
@@ -177,22 +181,15 @@ export default class Editor {
    */
   handleKeyboardInteraction (e) {
     const { keyCode, key } = e
-    const step = this.getCurrentStep()
 
-    if (!step) {
-      return
-    }
-
-    if (keyCode === ARROW_RIGHT && step.next) {
-      this.updateCursor(step.next.element)
-    } else if (keyCode === ARROW_LEFT && step.previous) {
-      this.updateCursor(step.previous.element)
+    if (keyCode === ARROW_RIGHT) {
+      this.moveRight()
+    } else if (keyCode === ARROW_LEFT) {
+      this.moveLeft()
     } else if (keyCode === BACKSPACE) {
-      this.cursor = deleteBeforeElement(this.math, this.cursor)
-      this.update()
+      this.applyBackspace()
     } else if (keyCode === DELETE) {
-      this.cursor = deleteElement(this.math, this.cursor)
-      this.update()
+      this.applyDelete()
     } else if (key.match(IS_NUMBER)) {
       this.addNumber(key)
     } else if (key.match(IS_LETTER)) {
@@ -230,6 +227,30 @@ export default class Editor {
     }
 
     this.updateCursor(candidate.element)
+  }
+
+  applyDelete () {
+    this.setCursor(deleteElement(this.math, this.cursor))
+    this.update()
+  }
+
+  applyBackspace () {
+    this.setCursor(deleteBeforeElement(this.math, this.cursor))
+    this.update()
+  }
+
+  moveRight () {
+    const step = this.getCurrentStep()
+    if (step.next) {
+      this.updateCursor(step.next.element)
+    }
+  }
+
+  moveLeft () {
+    const step = this.getCurrentStep()
+    if (step.previous) {
+      this.updateCursor(step.previous.element)
+    }
   }
 
   addNumber (number) {
