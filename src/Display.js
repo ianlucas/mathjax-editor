@@ -1,6 +1,8 @@
 import Iframe from './Iframe'
 import editorStyle from './styles/editor.css'
 
+const CURSOR_BLINK = 600
+
 export default class Display {
   /**
    * This class handles math rendering and DOM manipulation.
@@ -14,9 +16,11 @@ export default class Display {
     // @TODO: Remove this default, target should be required.
     this.iframe = new Iframe(options.target || document.body)
     this.cursor = document.createElement('mje-cursor')
+    this.cursorBlink = null
 
     this.prepareHead()
     this.prepareBody()
+    this.updateCursorBlink()
   }
 
   /**
@@ -100,6 +104,18 @@ export default class Display {
     this.cursor.style.left = properties.x + 'px'
     this.cursor.style.top = properties.y + 'px'
     this.cursor.style.height = properties.height + 'px'
+    this.updateCursorBlink(true)
+  }
+
+  updateCursorBlink (reset = false) {
+    clearInterval(this.cursorBlink)
+    if (reset) {
+      this.cursor.className = ''
+    }
+    this.cursorBlink = setInterval(() => {
+      this.cursor.classList.toggle('hidden')
+      this.updateCursorBlink()
+    }, CURSOR_BLINK)
   }
 
   /**
