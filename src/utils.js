@@ -84,6 +84,34 @@ export function deleteElement (value, current, initial) {
 }
 
 /**
+ * Perform a backspace deletion relative to current cursor position.
+ *
+ * @param {HTMLElement} value
+ * @param {HTMLElement} current
+ * @return {HTMLElement} New cursor position.
+ */
+export function deleteBeforeElement (value, current) {
+  const parent = current.parentNode
+  const previous = current.previousElementSibling
+
+  if (isContainer(current)) {
+    if (current.lastElementChild) {
+      return deleteElement(value, current.lastElementChild, current)
+    }
+    if (isMath(current)) {
+      return current
+    }
+    return deleteElement(value, parent, current)
+  }
+
+  if (!previous && isMath(parent)) {
+    return current
+  }
+
+  return deleteElement(value, previous || parent, current)
+}
+
+/**
  * Checks if element is an <math> element.
  *
  * @param {HTMLElement} element
