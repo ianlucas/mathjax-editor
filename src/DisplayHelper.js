@@ -1,6 +1,12 @@
 import { isContainer, walk } from './utils'
 
 export default {
+  createSpace () {
+    const el = document.createElement('mspace')
+    el.setAttribute('width', 'thinmathspace')
+    return el
+  },
+
   createContainerPlaceholder () {
     const mo = document.createElement('mo')
     mo.textContent = '?'
@@ -17,10 +23,13 @@ export default {
   prepare (math) {
     const clone = math.cloneNode(true)
     walk(clone, (element) => {
-      if (isContainer(element) && !element.children.length) {
-        element.appendChild(
-          this.createContainerPlaceholder()
-        )
+      if (isContainer(element)) {
+        if (!element.children.length) {
+          element.appendChild(
+            this.createContainerPlaceholder()
+          )
+        }
+        element.appendChild(this.createSpace())
       }
     })
     clone.appendChild(this.createEndOfLine())
