@@ -10,7 +10,7 @@
     "url": "https://github.com/ianlucas/library/issues"
   },
   "scripts": {
-    "lint": "standard",
+    "lint": "standard src/*",
     "build": "rollup -c rollup.config.js --environment BUILD:PRD",
     "dev": "rollup -w -c rollup.config.js --environment BUILD:DEV"
   },
