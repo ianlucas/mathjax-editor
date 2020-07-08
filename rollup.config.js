@@ -1,10 +1,28 @@
 import babel from '@rollup/plugin-babel'
 import commonjs from '@rollup/plugin-commonjs'
-import css from './build/css'
 import { terser } from 'rollup-plugin-terser'
+import CleanCSS from 'clean-css'
+import { createFilter } from '@rollup/pluginutils'
 
 const libName = 'MathJaxEditor'
 const isProduction = (process.env.BUILD === 'PRD')
+
+function css (options = {}) {
+  const filter = createFilter(options.include, options.exclude)
+
+  return {
+    name: 'css',
+
+    transform (css, id) {
+      if (id.slice(-4) !== '.css' || !filter(id)) {
+        return null
+      }
+
+      const minified = new CleanCSS().minify(css)
+      return `var style = document.createElement('style');style.innerHTML = '${minified.styles}';export default style`
+    }
+  }
+}
 
 function addConfig (file, plugins = []) {
   const defaultPlugins = [
