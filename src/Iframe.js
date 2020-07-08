@@ -12,15 +12,9 @@ export default class Iframe {
       target = document.querySelector(target)
     }
     target.appendChild(this.element)
-  }
-
-  /**
-   * Gets iframe document.
-   *
-   * @return {Document}
-   */
-  getDocument () {
-    return this.element.contentDocument
+    this.document = this.element.contentDocument
+    this.body = this.document.body
+    this.head = this.document.head
   }
 
   /**
@@ -40,7 +34,7 @@ export default class Iframe {
    */
   addStyle (key, element) {
     this.storedStyles[key] = element
-    this.getDocument().head.appendChild(element)
+    this.head.appendChild(element)
   }
 
   /**
@@ -54,7 +48,7 @@ export default class Iframe {
       element ||
       this.createPlaceholderElement()
     )
-    this.getDocument().body.appendChild(
+    this.body.appendChild(
       this.storedElements[key]
     )
   }
@@ -69,7 +63,7 @@ export default class Iframe {
     if (!this.storedElements[key]) {
       return
     }
-    this.getDocument().body.replaceChild(
+    this.body.replaceChild(
       newElement,
       this.storedElements[key]
     )
@@ -86,7 +80,7 @@ export default class Iframe {
     if (!this.storedStyles[key]) {
       return
     }
-    this.getDocument().head.replaceChild(
+    this.head.replaceChild(
       newElement,
       this.storedStyles[key]
     )

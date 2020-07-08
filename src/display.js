@@ -59,11 +59,15 @@ export default class Display {
    * @param {String} id
    */
   getElementById (id) {
-    const dom = this.iframe.getDocument().getElementById(id)
-    return {
-      dom,
-      rect: dom.getBoundingClientRect()
+    const dom = this.iframe.document.getElementById(id)
+    const rect = dom.getBoundingClientRect()
+    if (this.iframe.body.scrollLeft > 0) {
+      rect.x += this.iframe.body.scrollLeft
     }
+    if (this.iframe.body.scrollTop > 0) {
+      rect.y += this.iframe.body.scrollTop
+    }
+    return { dom, rect }
   }
 
   /**
@@ -72,7 +76,7 @@ export default class Display {
    * @param {Number} index
    */
   getEndOfLineByIndex (index) {
-    return this.iframe.getDocument().querySelectorAll('[type=eof]')[index]
+    return this.iframe.document.querySelectorAll('[type=eof]')[index]
   }
 
   /**
@@ -93,6 +97,6 @@ export default class Display {
    * @param {Function} listener
    */
   on (type, listener) {
-    return this.iframe.getDocument().addEventListener(type, listener)
+    return this.iframe.document.addEventListener(type, listener)
   }
 }
