@@ -9,6 +9,7 @@ export default {
 
   createContainerPlaceholder () {
     const mo = document.createElement('mo')
+    mo.setAttribute('type', 'placeholder')
     mo.textContent = '?'
     return mo
   },
