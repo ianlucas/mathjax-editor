@@ -1,9 +1,14 @@
 import Display from './Display'
 import DisplayHelper from './DisplayHelper'
-import { createId, isContainer, isMath, isRow, walk } from './utils'
+import { createId, isContainer, isMath, isRow, walk, insertElement, deleteElement, deleteBeforeElement } from './utils'
+import { operators } from './constants'
 
 const ARROW_LEFT = 37
 const ARROW_RIGHT = 39
+const BACKSPACE = 8
+const DELETE = 46
+const IS_NUMBER = /^\d$/
+const IS_LETTER = /^[a-z]$/i
 
 export default class Editor {
   /**
@@ -91,25 +96,42 @@ export default class Editor {
     }
     let previousStep = null
 
+    const findStep = (element) => {
+      return path.find((other) => (
+        other.element === element
+      ))
+    }
+
     const createStep = (element) => {
       const { dom, rect } = this.display.getElementById(element.id)
 
-      let x = rect.x + (isRow(element) ? rect.width : 0)
+      let x = rect.x
       let y = rect.y
       let height = rect.height
 
-      if (isMath(element) || isMath(element.parentNode)) {
+      if (isContainer(element)) {
+        // Cursor should be placed after last element child of this mrow.
+        if (element.children.length) {
+          const lastChildStep = findStep(element.lastElementChild)
+          x = lastChildStep.rect.x + lastChildStep.rect.width
+          y = lastChildStep.rect.y
+          height = lastChildStep.rect.height
+        }
+      }
+
+      if (isMath(element.parentNode)) {
         height = line.rect.height
         y = line.rect.y
       }
 
       if (isMath(element)) {
-        x = line.rect.x + 5
+        x = line.rect.x + 0
       }
 
       const step = {
         dom,
         element,
+        rect,
 
         next: null,
         previous: previousStep,
@@ -163,14 +185,29 @@ export default class Editor {
    * @param {KeyboardEvent} e
    */
   handleKeyboardInteraction (e) {
+    const { keyCode, key } = e
     const step = this.getCurrentStep()
+
     if (!step) {
       return
     }
-    if (e.keyCode === ARROW_RIGHT && step.next) {
+
+    if (keyCode === ARROW_RIGHT && step.next) {
       this.updateCursor(step.next.element)
-    } else if (e.keyCode === ARROW_LEFT && step.previous) {
+    } else if (keyCode === ARROW_LEFT && step.previous) {
       this.updateCursor(step.previous.element)
+    } else if (keyCode === BACKSPACE) {
+      this.cursor = deleteBeforeElement(this.math, this.cursor)
+      this.update()
+    } else if (keyCode === DELETE) {
+      this.cursor = deleteElement(this.math, this.cursor)
+      this.update()
+    } else if (key.match(IS_NUMBER)) {
+      this.addNumber(key)
+    } else if (key.match(IS_LETTER)) {
+      this.addIdentifier(key)
+    } else if (operators[key]) {
+      this.addOperator(operators[key])
     }
   }
 
@@ -202,5 +239,26 @@ export default class Editor {
     }
 
     this.updateCursor(candidate.element)
+  }
+
+  addNumber (number) {
+    const mn = document.createElement('mn')
+    mn.textContent = number
+    insertElement(mn, this.cursor)
+    this.update()
+  }
+
+  addIdentifier (letter) {
+    const mi = document.createElement('mi')
+    mi.textContent = letter
+    insertElement(mi, this.cursor)
+    this.update()
+  }
+
+  addOperator (operator) {
+    const mo = document.createElement('mo')
+    mo.textContent = operator
+    insertElement(mo, this.cursor)
+    this.update()
   }
 }
