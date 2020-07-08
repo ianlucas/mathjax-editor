@@ -73,6 +73,7 @@ export default class Iframe {
       newElement,
       this.storedElements[key]
     )
+    this.storedElements[key] = newElement
   }
 
   /**
@@ -89,5 +90,6 @@ export default class Iframe {
       newElement,
       this.storedStyles[key]
     )
+    this.storedStyles[key] = newElement
   }
 }
