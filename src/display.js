@@ -54,19 +54,29 @@ export default class Display {
   }
 
   /**
-   * Get element from iframe.
+   * Get element rect.
    *
-   * @param {String} id
+   * @param {HTMLElement} element
    */
-  getElementById (id) {
-    const dom = this.iframe.document.getElementById(id)
-    const rect = dom.getBoundingClientRect()
+  getElementRect (element) {
+    const rect = element.getBoundingClientRect()
     if (this.iframe.body.scrollLeft > 0) {
       rect.x += this.iframe.body.scrollLeft
     }
     if (this.iframe.body.scrollTop > 0) {
       rect.y += this.iframe.body.scrollTop
     }
+    return rect
+  }
+
+  /**
+   * Get element from iframe.
+   *
+   * @param {String} id
+   */
+  getElementById (id) {
+    const dom = this.iframe.document.getElementById(id)
+    const rect = this.getElementRect(dom)
     return { dom, rect }
   }
 
@@ -76,7 +86,9 @@ export default class Display {
    * @param {Number} index
    */
   getEndOfLineByIndex (index) {
-    return this.iframe.document.querySelectorAll('[type=eof]')[index]
+    const dom = this.iframe.document.querySelectorAll('[type=eof]')[index]
+    const rect = this.getElementRect(dom)
+    return { dom, rect }
   }
 
   /**

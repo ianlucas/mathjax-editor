@@ -156,7 +156,7 @@ export default class Editor {
         if (!line.rect) {
           line.rect = this.display.getEndOfLineByIndex(
             line.index
-          ).getBoundingClientRect()
+          ).rect
         }
         if (!isContainer(element)) {
           createStep(element)
