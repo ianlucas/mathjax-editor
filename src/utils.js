@@ -118,6 +118,7 @@ export function deleteBeforeElement (value, current) {
  */
 export function isMath (element) {
   return (
+    element &&
     element.tagName === 'MATH'
   )
 }
