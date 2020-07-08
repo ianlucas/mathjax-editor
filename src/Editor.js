@@ -1,6 +1,6 @@
 import Display from './Display'
 import DisplayHelper from './DisplayHelper'
-import { createId, isContainer, isMath, isRow, walk, insertElement, deleteElement, deleteBeforeElement } from './utils'
+import { createId, isContainer, walk, insertElement, deleteElement, deleteBeforeElement } from './utils'
 import { operators } from './constants'
 
 const ARROW_LEFT = 37
@@ -110,22 +110,13 @@ export default class Editor {
       let height = rect.height
 
       if (isContainer(element)) {
-        // Cursor should be placed after last element child of this mrow.
+        // Cursor should be placed after last element child.
         if (element.children.length) {
           const lastChildStep = findStep(element.lastElementChild)
           x = lastChildStep.rect.x + lastChildStep.rect.width
           y = lastChildStep.rect.y
           height = lastChildStep.rect.height
         }
-      }
-
-      if (isMath(element.parentNode)) {
-        height = line.rect.height
-        y = line.rect.y
-      }
-
-      if (isMath(element)) {
-        x = line.rect.x + 0
       }
 
       const step = {
