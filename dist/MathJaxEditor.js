@@ -118,26 +118,19 @@
       }
 
       target.appendChild(this.element);
+      this.document = this.element.contentDocument;
+      this.window = this.element.contentWindow;
+      this.body = this.document.body;
+      this.head = this.document.head;
     }
     /**
-     * Gets iframe document.
+     * Create a placeholder element
      *
-     * @return {Document}
+     * @return {HTMLElement}
      */
 
 
     _createClass(Iframe, [{
-      key: "getDocument",
-      value: function getDocument() {
-        return this.element.contentDocument;
-      }
-      /**
-       * Create a placeholder element
-       *
-       * @return {HTMLElement}
-       */
-
-    }, {
       key: "createPlaceholderElement",
       value: function createPlaceholderElement() {
         return document.createElement('void');
@@ -153,7 +146,7 @@
       key: "addStyle",
       value: function addStyle(key, element) {
         this.storedStyles[key] = element;
-        this.getDocument().head.appendChild(element);
+        this.head.appendChild(element);
       }
       /**
        * Add an element to the iframe.
@@ -166,7 +159,7 @@
       key: "addElement",
       value: function addElement(key, element) {
         this.storedElements[key] = element || this.createPlaceholderElement();
-        this.getDocument().body.appendChild(this.storedElements[key]);
+        this.body.appendChild(this.storedElements[key]);
       }
       /**
        * Update an element of the iframe.
@@ -182,7 +175,8 @@
           return;
         }
 
-        this.getDocument().body.replaceChild(newElement, this.storedElements[key]);
+        this.body.replaceChild(newElement, this.storedElements[key]);
+        this.storedElements[key] = newElement;
       }
       /**
        * Update a style of the iframe.
@@ -198,14 +192,17 @@
           return;
         }
 
-        this.getDocument().head.replaceChild(newElement, this.storedStyles[key]);
+        this.head.replaceChild(newElement, this.storedStyles[key]);
+        this.storedStyles[key] = newElement;
       }
     }]);
 
     return Iframe;
   }();
 
-  var style = document.createElement('style');style.innerHTML = 'body{cursor:text;font-size:32px;margin:0}mje-cursor{background-color:red;position:absolute;width:1px}mjx-container{outline:0}[type=eof]{opacity:0}';
+  var style = document.createElement('style');style.innerHTML = 'body{cursor:text;font-size:32px;margin:0;padding:1em}mje-cursor{background-color:#000;position:absolute;width:1px}mje-cursor.hidden{display:none}mjx-container{outline:0}[type=eof]{opacity:0}[type=placeholder]{opacity:.25}';
+
+  var CURSOR_BLINK = 600;
 
   var Display = /*#__PURE__*/function () {
     /**
@@ -224,8 +221,10 @@
 
       this.iframe = new Iframe(options.target || document.body);
       this.cursor = document.createElement('mje-cursor');
+      this.cursorBlink = null;
       this.prepareHead();
       this.prepareBody();
+      this.updateCursorBlink();
     }
     /**
      * Prepare iframe head.
@@ -272,6 +271,27 @@
         });
       }
       /**
+       * Get element rect.
+       *
+       * @param {HTMLElement} element
+       */
+
+    }, {
+      key: "getElementRect",
+      value: function getElementRect(element) {
+        var rect = element.getBoundingClientRect();
+
+        if (this.iframe.body.scrollLeft > 0) {
+          rect.x += this.iframe.body.scrollLeft;
+        }
+
+        if (this.iframe.body.scrollTop > 0) {
+          rect.y += this.iframe.body.scrollTop;
+        }
+
+        return rect;
+      }
+      /**
        * Get element from iframe.
        *
        * @param {String} id
@@ -280,10 +300,11 @@
     }, {
       key: "getElementById",
       value: function getElementById(id) {
-        var dom = this.iframe.getDocument().getElementById(id);
+        var dom = this.iframe.document.getElementById(id);
+        var rect = this.getElementRect(dom);
         return {
           dom: dom,
-          rect: dom.getBoundingClientRect()
+          rect: rect
         };
       }
       /**
@@ -295,20 +316,50 @@
     }, {
       key: "getEndOfLineByIndex",
       value: function getEndOfLineByIndex(index) {
-        return this.iframe.getDocument().querySelectorAll('[type=eof]')[index];
+        var dom = this.iframe.document.querySelectorAll('[type=eof]')[index];
+        var rect = this.getElementRect(dom);
+        return {
+          dom: dom,
+          rect: rect
+        };
       }
       /**
        * Update cursor position on the iframe.
        *
        * @param {Object} properties
+       * @param {Boolean} disableScrollIntoView
        */
 
     }, {
       key: "updateCursor",
-      value: function updateCursor(properties) {
+      value: function updateCursor(properties, disableScrollIntoView) {
         this.cursor.style.left = properties.x + 'px';
         this.cursor.style.top = properties.y + 'px';
         this.cursor.style.height = properties.height + 'px';
+
+        if (!disableScrollIntoView) {
+          this.iframe.body.scrollLeft = properties.x - this.iframe.window.innerWidth / 2;
+        }
+
+        this.updateCursorBlink(true);
+      }
+    }, {
+      key: "updateCursorBlink",
+      value: function updateCursorBlink() {
+        var _this2 = this;
+
+        var reset = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+        clearInterval(this.cursorBlink);
+
+        if (reset) {
+          this.cursor.className = '';
+        }
+
+        this.cursorBlink = setInterval(function () {
+          _this2.cursor.classList.toggle('hidden');
+
+          _this2.updateCursorBlink();
+        }, CURSOR_BLINK);
       }
       /**
        * Listen to events on the iframe.
@@ -320,7 +371,18 @@
     }, {
       key: "on",
       value: function on(type, listener) {
-        return this.iframe.getDocument().addEventListener(type, listener);
+        return this.iframe.document.addEventListener(type, listener);
+      }
+      /**
+       * Focus the editor.
+       *
+       * @return {Void}
+       */
+
+    }, {
+      key: "focus",
+      value: function focus() {
+        this.iframe.window.focus();
       }
     }]);
 
@@ -367,13 +429,101 @@
     iterator(root);
   }
   /**
+   * Create a HTML element.
+   *
+   * @param {String} tagName
+   * @param {String} textContent
+   */
+
+  function createElement(tagName, textContent) {
+    var element = document.createElement(tagName);
+    element.textContent = textContent;
+    return element;
+  }
+  /**
+   * Add an element next to the current cursor positon.
+   *
+   * @param {HTMLElement} element
+   * @param {HTMLElement} reference
+   */
+
+  function insertElement(element, reference) {
+    if (isContainer(reference)) {
+      if (!reference.children.length) {
+        reference.appendChild(element);
+        return true;
+      }
+
+      reference.insertBefore(element, reference.lastElementChild.nextSibling);
+    } else {
+      reference.parentNode.insertBefore(element, reference);
+    }
+
+    return true;
+  }
+  /**
+   * Delete current HTML element.
+   *
+   * @param {HTMLElement} value
+   * @param {HTMLElement} current
+   * @param {HTMLElement} initial
+   */
+
+  function deleteElement(value, current, initial) {
+    var parent = current.parentNode;
+
+    if (current.hasAttribute('editable')) {
+      return initial || current;
+    }
+
+    if (isRow(current)) {
+      return deleteElement(value, parent, current);
+    } else if (isMath(current)) {
+      return current;
+    }
+
+    var to = current.nextElementSibling || parent;
+    parent.removeChild(current);
+    return to;
+  }
+  /**
+   * Perform a backspace deletion relative to current cursor position.
+   *
+   * @param {HTMLElement} value
+   * @param {HTMLElement} current
+   * @return {HTMLElement} New cursor position.
+   */
+
+  function deleteBeforeElement(value, current) {
+    var parent = current.parentNode;
+    var previous = current.previousElementSibling;
+
+    if (isContainer(current)) {
+      if (current.lastElementChild) {
+        return deleteElement(value, current.lastElementChild, current);
+      }
+
+      if (isMath(current)) {
+        return current;
+      }
+
+      return deleteElement(value, parent, current);
+    }
+
+    if (!previous && isMath(parent)) {
+      return current;
+    }
+
+    return deleteElement(value, previous || parent, current);
+  }
+  /**
    * Checks if element is an <math> element.
    *
    * @param {HTMLElement} element
    */
 
   function isMath(element) {
-    return element.tagName === 'MATH';
+    return element && element.tagName === 'MATH';
   }
   /**
    * Checks if element is an <mrow> element.
@@ -396,8 +546,14 @@
   }
 
   var DisplayHelper = {
+    createSpace: function createSpace() {
+      var el = document.createElement('mspace');
+      el.setAttribute('width', 'thinmathspace');
+      return el;
+    },
     createContainerPlaceholder: function createContainerPlaceholder() {
       var mo = document.createElement('mo');
+      mo.setAttribute('type', 'placeholder');
       mo.textContent = '?';
       return mo;
     },
@@ -412,8 +568,12 @@
 
       var clone = math.cloneNode(true);
       walk(clone, function (element) {
-        if (isContainer(element) && !element.children.length) {
-          element.appendChild(_this.createContainerPlaceholder());
+        if (isContainer(element)) {
+          if (!element.children.length) {
+            element.appendChild(_this.createContainerPlaceholder());
+          }
+
+          element.appendChild(_this.createSpace());
         }
       });
       clone.appendChild(this.createEndOfLine());
@@ -421,8 +581,32 @@
     }
   };
 
+  var operators = {
+    '*': '⋅',
+    '/': '÷',
+    '+': '+',
+    '-': '-',
+    '=': '=',
+    '<': '<',
+    '>': '>',
+    '|': '|',
+    '%': '%',
+    ',': ',',
+    '.': '.',
+    $: '$',
+    '(': '(',
+    ')': ')',
+    '[': '[',
+    ']': ']',
+    '!': '!'
+  };
+
   var ARROW_LEFT = 37;
   var ARROW_RIGHT = 39;
+  var BACKSPACE = 8;
+  var DELETE = 46;
+  var IS_NUMBER = /^\d$/;
+  var IS_LETTER = /^[a-z]$/i;
 
   var Editor = /*#__PURE__*/function () {
     /**
@@ -455,6 +639,11 @@
         this.cursor = this.math;
         this.update();
       }
+    }, {
+      key: "setCursor",
+      value: function setCursor(value) {
+        this.cursor = value;
+      }
       /**
        * Update the editor displayed math.
        *
@@ -477,6 +666,7 @@
        * Set cursor position.
        *
        * @param {HTMLElement} value
+       * @param {Boolean} disableScrollIntoView
        *
        * @return {Void}
        */
@@ -484,14 +674,16 @@
     }, {
       key: "updateCursor",
       value: function updateCursor(value) {
+        var disableScrollIntoView = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
         if (value) {
-          this.cursor = value;
+          this.setCursor(value);
         }
 
         var _this$getCurrentStep = this.getCurrentStep(),
             cursor = _this$getCurrentStep.cursor;
 
-        this.display.updateCursor(cursor);
+        this.display.updateCursor(cursor, disableScrollIntoView);
       }
       /**
        * Assign an id to every element.
@@ -528,27 +720,35 @@
         };
         var previousStep = null;
 
+        var findStep = function findStep(element) {
+          return path.find(function (other) {
+            return other.element === element;
+          });
+        };
+
         var createStep = function createStep(element) {
           var _this2$display$getEle = _this2.display.getElementById(element.id),
               dom = _this2$display$getEle.dom,
               rect = _this2$display$getEle.rect;
 
-          var x = rect.x + (isRow(element) ? rect.width : 0);
+          var x = rect.x;
           var y = rect.y;
           var height = rect.height;
 
-          if (isMath(element) || isMath(element.parentNode)) {
-            height = line.rect.height;
-            y = line.rect.y;
-          }
-
-          if (isMath(element)) {
-            x = line.rect.x + 5;
+          if (isContainer(element)) {
+            // Cursor should be placed after last element child.
+            if (element.children.length) {
+              var lastChildStep = findStep(element.lastElementChild);
+              x = lastChildStep.rect.x + lastChildStep.rect.width;
+              y = lastChildStep.rect.y;
+              height = lastChildStep.rect.height;
+            }
           }
 
           var step = {
             dom: dom,
             element: element,
+            rect: rect,
             next: null,
             previous: previousStep,
             cursor: {
@@ -569,7 +769,7 @@
         walk(this.math, {
           before: function before(element) {
             if (!line.rect) {
-              line.rect = _this2.display.getEndOfLineByIndex(line.index).getBoundingClientRect();
+              line.rect = _this2.display.getEndOfLineByIndex(line.index).rect;
             }
 
             if (!isContainer(element)) {
@@ -602,17 +802,26 @@
     }, {
       key: "handleKeyboardInteraction",
       value: function handleKeyboardInteraction(e) {
-        var step = this.getCurrentStep();
+        var keyCode = e.keyCode,
+            key = e.key;
 
-        if (!step) {
-          return;
+        if (keyCode === ARROW_RIGHT) {
+          this.moveRight();
+        } else if (keyCode === ARROW_LEFT) {
+          this.moveLeft();
+        } else if (keyCode === BACKSPACE) {
+          this.applyBackspace();
+        } else if (keyCode === DELETE) {
+          this.applyDelete();
+        } else if (key.match(IS_NUMBER)) {
+          this.addNumber(key);
+        } else if (key.match(IS_LETTER)) {
+          this.addIdentifier(key);
+        } else if (operators[key]) {
+          this.addOperator(operators[key]);
         }
 
-        if (e.keyCode === ARROW_RIGHT && step.next) {
-          this.updateCursor(step.next.element);
-        } else if (e.keyCode === ARROW_LEFT && step.previous) {
-          this.updateCursor(step.previous.element);
-        }
+        e.preventDefault();
       }
       /**
        * Handles mouse events.
@@ -654,7 +863,114 @@
           return;
         }
 
-        this.updateCursor(candidate.element);
+        this.updateCursor(candidate.element, true);
+      }
+      /**
+       * Perform a delete opertion.
+       *
+       * @return {Void}
+       */
+
+    }, {
+      key: "applyDelete",
+      value: function applyDelete() {
+        this.setCursor(deleteElement(this.math, this.cursor));
+        this.update();
+      }
+      /**
+       * Perform a backspace opertion.
+       *
+       * @return {Void}
+       */
+
+    }, {
+      key: "applyBackspace",
+      value: function applyBackspace() {
+        this.setCursor(deleteBeforeElement(this.math, this.cursor));
+        this.update();
+      }
+      /**
+       * Move to next element.
+       *
+       * @return {Void}
+       */
+
+    }, {
+      key: "moveRight",
+      value: function moveRight() {
+        var step = this.getCurrentStep();
+
+        if (step.next) {
+          this.updateCursor(step.next.element);
+        }
+      }
+      /**
+       * Perform to previous element.
+       *
+       * @return {Void}
+       */
+
+    }, {
+      key: "moveLeft",
+      value: function moveLeft() {
+        var step = this.getCurrentStep();
+
+        if (step.previous) {
+          this.updateCursor(step.previous.element);
+        }
+      }
+      /**
+       * Add element to math.
+       *
+       * @param {HTMLElement} element
+       * @param {HTMLElement} newCursor
+       */
+
+    }, {
+      key: "add",
+      value: function add(element) {
+        var newCursor = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+        insertElement(element, this.cursor);
+
+        if (newCursor) {
+          this.setCursor(newCursor);
+        }
+
+        this.display.focus();
+        this.update();
+      }
+      /**
+       * Add a <mn> to the math.
+       *
+       * @param {String} number
+       */
+
+    }, {
+      key: "addNumber",
+      value: function addNumber(number) {
+        this.add(createElement('mn', number));
+      }
+      /**
+       * Add a <mi> to the math.
+       *
+       * @param {String} number
+       */
+
+    }, {
+      key: "addIdentifier",
+      value: function addIdentifier(letter) {
+        this.add(createElement('mi', letter));
+      }
+      /**
+       * Add a <mo> to the math.
+       *
+       * @param {String} number
+       */
+
+    }, {
+      key: "addOperator",
+      value: function addOperator(operator) {
+        this.add(createElement('mo', operator));
       }
     }]);
 
