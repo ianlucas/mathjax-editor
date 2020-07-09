@@ -99,11 +99,15 @@ export default class Display {
    * Update cursor position on the iframe.
    *
    * @param {Object} properties
+   * @param {Boolean} disableScrollIntoView
    */
-  updateCursor (properties) {
+  updateCursor (properties, disableScrollIntoView) {
     this.cursor.style.left = properties.x + 'px'
     this.cursor.style.top = properties.y + 'px'
     this.cursor.style.height = properties.height + 'px'
+    if (!disableScrollIntoView) {
+      this.iframe.body.scrollLeft = properties.x - (this.iframe.window.innerWidth / 2)
+    }
     this.updateCursorBlink(true)
   }
 

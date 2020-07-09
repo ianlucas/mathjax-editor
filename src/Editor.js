@@ -61,15 +61,16 @@ export default class Editor {
    * Set cursor position.
    *
    * @param {HTMLElement} value
+   * @param {Boolean} disableScrollIntoView
    *
    * @return {Void}
    */
-  updateCursor (value) {
+  updateCursor (value, disableScrollIntoView = false) {
     if (value) {
       this.setCursor(value)
     }
     const { cursor } = this.getCurrentStep()
-    this.display.updateCursor(cursor)
+    this.display.updateCursor(cursor, disableScrollIntoView)
   }
 
   /**
@@ -197,6 +198,8 @@ export default class Editor {
     } else if (operators[key]) {
       this.addOperator(operators[key])
     }
+
+    e.preventDefault()
   }
 
   /**
@@ -226,7 +229,7 @@ export default class Editor {
       return
     }
 
-    this.updateCursor(candidate.element)
+    this.updateCursor(candidate.element, true)
   }
 
   /**
