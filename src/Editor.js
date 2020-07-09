@@ -1,6 +1,6 @@
 import Display from './Display'
 import DisplayHelper from './DisplayHelper'
-import { createId, isContainer, walk, insertElement, deleteElement, deleteBeforeElement } from './utils'
+import { createId, isContainer, walk, insertElement, deleteElement, deleteBeforeElement, createElement } from './utils'
 import { operators } from './constants'
 
 const ARROW_LEFT = 37
@@ -229,16 +229,31 @@ export default class Editor {
     this.updateCursor(candidate.element)
   }
 
+  /**
+   * Perform a delete opertion.
+   *
+   * @return {Void}
+   */
   applyDelete () {
     this.setCursor(deleteElement(this.math, this.cursor))
     this.update()
   }
 
+  /**
+   * Perform a backspace opertion.
+   *
+   * @return {Void}
+   */
   applyBackspace () {
     this.setCursor(deleteBeforeElement(this.math, this.cursor))
     this.update()
   }
 
+  /**
+   * Move to next element.
+   *
+   * @return {Void}
+   */
   moveRight () {
     const step = this.getCurrentStep()
     if (step.next) {
@@ -246,6 +261,11 @@ export default class Editor {
     }
   }
 
+  /**
+   * Perform to previous element.
+   *
+   * @return {Void}
+   */
   moveLeft () {
     const step = this.getCurrentStep()
     if (step.previous) {
@@ -253,24 +273,45 @@ export default class Editor {
     }
   }
 
+  /**
+   * Add element to math.
+   *
+   * @param {HTMLElement} element
+   * @param {HTMLElement} newCursor
+   */
+  add (element, newCursor = null) {
+    insertElement(element, this.cursor)
+    if (newCursor) {
+      this.setCursor(newCursor)
+    }
+    this.display.focus()
+    this.update()
+  }
+
+  /**
+   * Add a <mn> to the math.
+   *
+   * @param {String} number
+   */
   addNumber (number) {
-    const mn = document.createElement('mn')
-    mn.textContent = number
-    insertElement(mn, this.cursor)
-    this.update()
+    this.add(createElement('mn', number))
   }
 
+  /**
+   * Add a <mi> to the math.
+   *
+   * @param {String} number
+   */
   addIdentifier (letter) {
-    const mi = document.createElement('mi')
-    mi.textContent = letter
-    insertElement(mi, this.cursor)
-    this.update()
+    this.add(createElement('mi', letter))
   }
 
+  /**
+   * Add a <mo> to the math.
+   *
+   * @param {String} number
+   */
   addOperator (operator) {
-    const mo = document.createElement('mo')
-    mo.textContent = operator
-    insertElement(mo, this.cursor)
-    this.update()
+    this.add(createElement('mo', operator))
   }
 }

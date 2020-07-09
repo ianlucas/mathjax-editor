@@ -127,4 +127,13 @@ export default class Display {
   on (type, listener) {
     return this.iframe.document.addEventListener(type, listener)
   }
+
+  /**
+   * Focus the editor.
+   *
+   * @return {Void}
+   */
+  focus () {
+    this.iframe.window.focus()
+  }
 }

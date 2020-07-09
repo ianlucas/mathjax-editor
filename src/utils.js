@@ -39,6 +39,18 @@ export function walk (root, actions) {
 }
 
 /**
+ * Create a HTML element.
+ *
+ * @param {String} tagName
+ * @param {String} textContent
+ */
+export function createElement (tagName, textContent) {
+  const element = document.createElement(tagName)
+  element.textContent = textContent
+  return element
+}
+
+/**
  * Add an element next to the current cursor positon.
  *
  * @param {HTMLElement} element
