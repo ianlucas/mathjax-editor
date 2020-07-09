@@ -6,6 +6,7 @@ export default class Iframe {
    */
   constructor (target) {
     this.element = document.createElement('iframe')
+    this.element.className = 'mathjax-editor-input'
     this.storedStyles = {}
     this.storedElements = {}
     if (typeof target === 'string') {
@@ -16,6 +17,9 @@ export default class Iframe {
     this.window = this.element.contentWindow
     this.body = this.document.body
     this.head = this.document.head
+
+    this.window.addEventListener('focus', () => this.handleFocus())
+    this.window.addEventListener('blur', () => this.handleBlur())
   }
 
   /**
@@ -86,5 +90,19 @@ export default class Iframe {
       this.storedStyles[key]
     )
     this.storedStyles[key] = newElement
+  }
+
+  /**
+   * Handles iframe focus.
+   */
+  handleFocus () {
+    this.element.classList.add('isActive')
+  }
+
+  /**
+   * Handles iframe blur.
+   */
+  handleBlur () {
+    this.element.classList.remove('isActive')
   }
 }
