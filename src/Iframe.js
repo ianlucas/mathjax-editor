@@ -13,6 +13,7 @@ export default class Iframe {
     }
     target.appendChild(this.element)
     this.document = this.element.contentDocument
+    this.window = this.element.contentWindow
     this.body = this.document.body
     this.head = this.document.head
   }
