@@ -6,6 +6,10 @@
   <title>MathJax v3</title>
 </head>
 <body>
+  <div>
+    <button id="msqrt">msqrt</button>
+    <button id="mfrac">mfrac</button>
+  </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fontfaceobserver/2.1.0/fontfaceobserver.standalone.js"></script>
   <script
     async
@@ -28,6 +32,22 @@
           '</mrow>' +
         '</msqrt>'
       )
+      
+      document.getElementById('msqrt').addEventListener('click', () => {
+        const msqrt = document.createElement('msqrt')
+        const mrow = document.createElement('mrow')
+        msqrt.appendChild(mrow)
+        window.editor.add(msqrt, mrow)
+      })
+
+      document.getElementById('mfrac').addEventListener('click', () => {
+        const mfrac = document.createElement('mfrac')
+        const mrow1 = document.createElement('mrow')
+        const mrow2 = document.createElement('mrow')
+        mfrac.appendChild(mrow1)
+        mfrac.appendChild(mrow2)
+        window.editor.add(mfrac, mrow1)
+      })
     })
   </script>
 </body>
