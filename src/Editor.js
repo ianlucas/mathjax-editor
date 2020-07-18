@@ -201,9 +201,9 @@ export default class Editor {
     const { keyCode, key } = e
 
     if (keyCode === ARROW_RIGHT) {
-      this.moveNextPosition()
+      this.moveToNextPosition()
     } else if (keyCode === ARROW_LEFT) {
-      this.movePreviousPosition()
+      this.moveToPreviousPosition()
     } else if (keyCode === BACKSPACE) {
       this.applyBackspace()
     } else if (keyCode === DELETE) {
@@ -267,7 +267,7 @@ export default class Editor {
   /**
    * @return {Void}
    */
-  moveNextPosition () {
+  moveToNextPosition () {
     const position = this.getCurrentPosition()
     if (position.next) {
       this.updateCursor(position.next.element)
@@ -277,7 +277,7 @@ export default class Editor {
   /**
    * @return {Void}
    */
-  movePreviousPosition () {
+  moveToPreviousPosition () {
     const position = this.getCurrentPosition()
     if (position.previous) {
       this.updateCursor(position.previous.element)
