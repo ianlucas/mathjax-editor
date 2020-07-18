@@ -27,6 +27,7 @@ export default class IFrame {
 
     this.window.addEventListener('focus', () => this.handleFocus())
     this.window.addEventListener('blur', () => this.handleBlur())
+    this.body.classList.add('isInactive')
   }
 
   /**
@@ -98,6 +99,7 @@ export default class IFrame {
    */
   handleFocus () {
     this.element.classList.add('isActive')
+    this.body.classList.remove('isInactive')
   }
 
   /**
@@ -105,5 +107,6 @@ export default class IFrame {
    */
   handleBlur () {
     this.element.classList.remove('isActive')
+    this.body.classList.add('isInactive')
   }
 }

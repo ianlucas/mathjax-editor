@@ -26,3 +26,7 @@ mjx-container {
 [type=placeholder] {
   opacity: 0.25;
 }
+
+body.isInactive mje-cursor {
+  display: none;
+}
