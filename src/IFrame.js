@@ -1,4 +1,4 @@
-export default class Iframe {
+export default class IFrame {
   /**
    * @param {HTMLElement} target
    */

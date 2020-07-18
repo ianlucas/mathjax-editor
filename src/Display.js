@@ -1,4 +1,4 @@
-import Iframe from './Iframe'
+import IFrame from './IFrame'
 import editorStyle from './styles/editor.css'
 
 const CURSOR_BLINK = 600
@@ -13,8 +13,8 @@ export default class Display {
     /** @type {MathJax} */
     this.mathJax = mathJax
     // @TODO: Remove this default, target should be required.
-    /** @type {Iframe} */
-    this.iframe = new Iframe(options.target || document.body)
+    /** @type {IFrame} */
+    this.iframe = new IFrame(options.target || document.body)
     /** @type {HTMLElement} */
     this.cursor = document.createElement('mje-cursor')
     /** @type {Number|null} */
