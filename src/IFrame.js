@@ -14,7 +14,7 @@ export default class IFrame {
     if (typeof target === 'string') {
       target = document.querySelector(target)
     }
-    target.appendChild(this.element)
+    target.parentNode.replaceChild(this.element, target)
 
     /** @type {Document} */
     this.document = this.element.contentDocument
@@ -43,8 +43,8 @@ export default class IFrame {
    * @return {Void}
    */
   addStyle (key, element) {
-    this.storedStyles[key] = element
-    this.head.appendChild(element)
+    this.storedStyles[key] = element.cloneNode(true)
+    this.head.appendChild(this.storedStyles[key])
   }
 
   /**
@@ -87,11 +87,12 @@ export default class IFrame {
     if (!this.storedStyles[key]) {
       return
     }
+    const cloneElement = newElement.cloneNode(true)
     this.head.replaceChild(
-      newElement,
+      cloneElement,
       this.storedStyles[key]
     )
-    this.storedStyles[key] = newElement
+    this.storedStyles[key] = cloneElement
   }
 
   /**
