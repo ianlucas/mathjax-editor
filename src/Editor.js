@@ -29,15 +29,15 @@ export default class Editor {
    */
   constructor (mathJax) {
     /** @type {HTMLElement} */
-    this.math = document.createElement('math')
+    this.value = document.createElement('math')
     /** @type {Editor} */
     this.display = new Display(mathJax)
     /** @type {HTMLElement} */
-    this.cursor = this.math
+    this.cursor = this.value
     /** @type {ElementPosition[]} */
     this.path = []
 
-    this.math.setAttribute('id', 'root')
+    this.value.setAttribute('id', 'root')
     this.display.on('keydown', this.handleKeyboardInteraction.bind(this))
     this.display.on('mouseup', this.handleMouseInteraction.bind(this))
   }
@@ -47,8 +47,8 @@ export default class Editor {
    * @return {Void}
    */
   setValue (value) {
-    this.math.innerHTML = value
-    this.cursor = this.math
+    this.value.innerHTML = value
+    this.cursor = this.value
     this.update()
   }
 
@@ -66,7 +66,7 @@ export default class Editor {
   update () {
     this.prepareMath()
     this.display.render(
-      DisplayHelper.prepare(this.math)
+      DisplayHelper.prepare(this.value)
     ).then(() => {
       this.preparePath()
       this.updateCursor()
@@ -90,7 +90,7 @@ export default class Editor {
    * @return {Void}
    */
   prepareMath () {
-    walk(this.math, (element) => {
+    walk(this.value, (element) => {
       if (!element.hasAttribute('id')) {
         element.setAttribute('id', createId())
       }
@@ -162,7 +162,7 @@ export default class Editor {
       path.push(position)
     }
 
-    walk(this.math, {
+    walk(this.value, {
       before: (element) => {
         if (!line.rect) {
           line.rect = this.display.getEndOfLineByIndex(
@@ -252,7 +252,7 @@ export default class Editor {
    * @return {Void}
    */
   applyDelete () {
-    this.setCursor(deleteElement(this.math, this.cursor))
+    this.setCursor(deleteElement(this.value, this.cursor))
     this.update()
   }
 
@@ -260,7 +260,7 @@ export default class Editor {
    * @return {Void}
    */
   applyBackspace () {
-    this.setCursor(deleteBeforeElement(this.math, this.cursor))
+    this.setCursor(deleteBeforeElement(this.value, this.cursor))
     this.update()
   }
 
