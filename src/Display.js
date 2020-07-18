@@ -5,17 +5,19 @@ const CURSOR_BLINK = 600
 
 export default class Display {
   /**
-   * This class handles math rendering and DOM manipulation.
-   *
-   * @param {MathJax} mathJax - MathJax instance.`
+   * @param {MathJax} mathJax
    * @param {Object} options
    * @param {HTMLElement} options.target
    */
   constructor (mathJax, options = {}) {
+    /** @type {MathJax} */
     this.mathJax = mathJax
     // @TODO: Remove this default, target should be required.
+    /** @type {Iframe} */
     this.iframe = new Iframe(options.target || document.body)
+    /** @type {HTMLElement} */
     this.cursor = document.createElement('mje-cursor')
+    /** @type {Number|null} */
     this.cursorBlink = null
 
     this.prepareHead()
@@ -24,8 +26,6 @@ export default class Display {
   }
 
   /**
-   * Prepare iframe head.
-   *
    * @return {Void}
    */
   prepareHead () {
@@ -34,8 +34,6 @@ export default class Display {
   }
 
   /**
-   * Prepare iframe body.
-   *
    * @return {Void}
    */
   prepareBody () {
@@ -44,10 +42,7 @@ export default class Display {
   }
 
   /**
-   * Render the inputed math in the iframe.
-   *
    * @param {HTMLElement} math
-   *
    * @return {Promise}
    */
   render (math) {
@@ -58,9 +53,8 @@ export default class Display {
   }
 
   /**
-   * Get element rect.
-   *
    * @param {HTMLElement} element
+   * @return {DOMRect}
    */
   getElementRect (element) {
     const rect = element.getBoundingClientRect()
@@ -74,9 +68,13 @@ export default class Display {
   }
 
   /**
-   * Get element from iframe.
-   *
+   * @typedef {Object} DisplayElement
+   * @property {HTMLElement} dom
+   * @property {DOMRect} rect
+   */
+  /**
    * @param {String} id
+   * @return {DisplayElement}
    */
   getElementById (id) {
     const dom = this.iframe.document.getElementById(id)
@@ -85,9 +83,8 @@ export default class Display {
   }
 
   /**
-   * Get end of line by index.
-   *
    * @param {Number} index
+   * @return {DisplayElement}
    */
   getEndOfLineByIndex (index) {
     const dom = this.iframe.document.querySelectorAll('[type=eof]')[index]
@@ -96,10 +93,9 @@ export default class Display {
   }
 
   /**
-   * Update cursor position on the iframe.
-   *
    * @param {Object} properties
    * @param {Boolean} disableScrollIntoView
+   * @return {Void}
    */
   updateCursor (properties, disableScrollIntoView) {
     this.cursor.style.left = properties.x + 'px'
@@ -111,6 +107,10 @@ export default class Display {
     this.updateCursorBlink(true)
   }
 
+  /**
+   * @param {Boolean} reset
+   * @return {Void}
+   */
   updateCursorBlink (reset = false) {
     clearInterval(this.cursorBlink)
     if (reset) {
@@ -123,18 +123,15 @@ export default class Display {
   }
 
   /**
-   * Listen to events on the iframe.
-   *
    * @param {String} type
    * @param {Function} listener
+   * @return {Void}
    */
   on (type, listener) {
     return this.iframe.document.addEventListener(type, listener)
   }
 
   /**
-   * Focus the editor.
-   *
    * @return {Void}
    */
   focus () {

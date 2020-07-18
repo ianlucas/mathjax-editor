@@ -1,21 +1,28 @@
 export default class Iframe {
   /**
-   * Creates and appends an iframe to a target element.
-   *
    * @param {HTMLElement} target
    */
   constructor (target) {
+    /** @type {HTMLIFrameElement} */
     this.element = document.createElement('iframe')
     this.element.className = 'mathjax-editor-input'
+    /** @type {Object} */
     this.storedStyles = {}
+    /** @type {Object} */
     this.storedElements = {}
+
     if (typeof target === 'string') {
       target = document.querySelector(target)
     }
     target.appendChild(this.element)
+
+    /** @type {Document} */
     this.document = this.element.contentDocument
+    /** @type {Window} */
     this.window = this.element.contentWindow
+    /** @type {HTMLElement} */
     this.body = this.document.body
+    /** @type {HTMLHeadElement} */
     this.head = this.document.head
 
     this.window.addEventListener('focus', () => this.handleFocus())
@@ -23,8 +30,6 @@ export default class Iframe {
   }
 
   /**
-   * Create a placeholder element
-   *
    * @return {HTMLElement}
    */
   createPlaceholderElement () {
@@ -32,10 +37,9 @@ export default class Iframe {
   }
 
   /**
-   * Add a style to the iframe.
-   *
    * @param {String} key
    * @param {HTMLElement} element
+   * @return {Void}
    */
   addStyle (key, element) {
     this.storedStyles[key] = element
@@ -43,10 +47,9 @@ export default class Iframe {
   }
 
   /**
-   * Add an element to the iframe.
-   *
    * @param {String} key
    * @param {HTMLElement} element
+   * @return {Void}
    */
   addElement (key, element) {
     this.storedElements[key] = (
@@ -59,10 +62,9 @@ export default class Iframe {
   }
 
   /**
-   * Update an element of the iframe.
-   *
    * @param {String} key
-   * @param {HTMLElement} element
+   * @param {HTMLElement} newElement
+   * @return {Void}
    */
   updateElement (key, newElement) {
     if (!this.storedElements[key]) {
@@ -76,10 +78,9 @@ export default class Iframe {
   }
 
   /**
-   * Update a style of the iframe.
-   *
    * @param {String} key
-   * @param {HTMLElement} element
+   * @param {HTMLElement} newElement
+   * @return {Void}
    */
   updateStyle (key, newElement) {
     if (!this.storedStyles[key]) {
@@ -93,14 +94,14 @@ export default class Iframe {
   }
 
   /**
-   * Handles iframe focus.
+   * @return {Void}
    */
   handleFocus () {
     this.element.classList.add('isActive')
   }
 
   /**
-   * Handles iframe blur.
+   * @return {Void}
    */
   handleBlur () {
     this.element.classList.remove('isActive')

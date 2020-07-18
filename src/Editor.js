@@ -12,14 +12,28 @@ const IS_LETTER = /^[a-z]$/i
 
 export default class Editor {
   /**
-   * Creates a editor instance.
-   *
    * @param {MathJax} mathJax
    */
   constructor (mathJax) {
+    /** @type {HTMLElement} */
     this.math = document.createElement('math')
+    /** @type {Editor} */
     this.display = new Display(mathJax)
+    /** @type {HTMLElement} */
     this.cursor = this.math
+    /**
+     * @typedef {Object} Step
+     * @property {HTMLElement} dom
+     * @property {HTMLElement} element
+     * @property {DOMRect} rect
+     * @property {Step|null} next
+     * @property {Step|null} previous
+     * @property {Object} cursor
+     * @property {Number} cursor.x
+     * @property {Number} cursor.y
+     * @property {Number} cursor.height
+     */
+    /** @type {Step[]} */
     this.path = []
 
     this.math.setAttribute('id', 'root')
@@ -28,9 +42,8 @@ export default class Editor {
   }
 
   /**
-   * Set the value of the editor.
-   *
    * @param {String} value
+   * @return {Void}
    */
   setValue (value) {
     this.math.innerHTML = value
@@ -38,13 +51,15 @@ export default class Editor {
     this.update()
   }
 
+  /**
+   * @param {HTMLElement} value
+   * @return {Void}
+   */
   setCursor (value) {
     this.cursor = value
   }
 
   /**
-   * Update the editor displayed math.
-   *
    * @return {Void}
    */
   update () {
@@ -58,11 +73,8 @@ export default class Editor {
   }
 
   /**
-   * Set cursor position.
-   *
    * @param {HTMLElement} value
    * @param {Boolean} disableScrollIntoView
-   *
    * @return {Void}
    */
   updateCursor (value, disableScrollIntoView = false) {
@@ -74,8 +86,6 @@ export default class Editor {
   }
 
   /**
-   * Assign an id to every element.
-   *
    * @return {Void}
    */
   prepareMath () {
@@ -87,10 +97,6 @@ export default class Editor {
   }
 
   /**
-   * Creates a path for the cursor. Path is an array of steps.
-   * Each step has its attached element and size/positioning
-   * for cursor placement.
-   *
    * @return {Void}
    */
   preparePath () {
@@ -169,6 +175,9 @@ export default class Editor {
     this.path = path
   }
 
+  /**
+   * @return {Step}
+   */
   getCurrentStep () {
     return this.path.find((step) => (
       this.cursor === step.element
@@ -176,9 +185,8 @@ export default class Editor {
   }
 
   /**
-   * Handles keyboard events.
-   *
    * @param {KeyboardEvent} e
+   * @return {Void}
    */
   handleKeyboardInteraction (e) {
     const { keyCode, key } = e
@@ -203,9 +211,8 @@ export default class Editor {
   }
 
   /**
-   * Handles mouse events.
-   *
    * @param {MouseEvent} e
+   * @return {Void}
    */
   handleMouseInteraction (e) {
     const x = e.pageX
@@ -233,8 +240,6 @@ export default class Editor {
   }
 
   /**
-   * Perform a delete opertion.
-   *
    * @return {Void}
    */
   applyDelete () {
@@ -243,8 +248,6 @@ export default class Editor {
   }
 
   /**
-   * Perform a backspace opertion.
-   *
    * @return {Void}
    */
   applyBackspace () {
@@ -253,8 +256,6 @@ export default class Editor {
   }
 
   /**
-   * Move to next element.
-   *
    * @return {Void}
    */
   moveRight () {
@@ -265,8 +266,6 @@ export default class Editor {
   }
 
   /**
-   * Perform to previous element.
-   *
    * @return {Void}
    */
   moveLeft () {
@@ -277,10 +276,9 @@ export default class Editor {
   }
 
   /**
-   * Add element to math.
-   *
    * @param {HTMLElement} element
-   * @param {HTMLElement} newCursor
+   * @param {HTMLElement|null} newCursor
+   * @return {Void}
    */
   add (element, newCursor = null) {
     insertElement(element, this.cursor)
@@ -292,27 +290,24 @@ export default class Editor {
   }
 
   /**
-   * Add a <mn> to the math.
-   *
    * @param {String} number
+   * @return {Void}
    */
   addNumber (number) {
     this.add(createElement('mn', number))
   }
 
   /**
-   * Add a <mi> to the math.
-   *
-   * @param {String} number
+   * @param {String} letter
+   * @return {Void}
    */
   addIdentifier (letter) {
     this.add(createElement('mi', letter))
   }
 
   /**
-   * Add a <mo> to the math.
-   *
-   * @param {String} number
+   * @param {String} operator
+   * @return {Void}
    */
   addOperator (operator) {
     this.add(createElement('mo', operator))

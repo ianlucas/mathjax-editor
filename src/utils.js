@@ -1,8 +1,6 @@
 let idCount = 0
 
 /**
- * Creates an unique id.
- *
  * @return {String}
  */
 export function createId () {
@@ -11,10 +9,9 @@ export function createId () {
 }
 
 /**
- * Iterate through an element and its children.
- *
  * @param {HTMLElement} root
  * @param {Object|Function} actions
+ * @return {Void}
  */
 export function walk (root, actions) {
   const iterator = (element) => {
@@ -39,10 +36,9 @@ export function walk (root, actions) {
 }
 
 /**
- * Create a HTML element.
- *
  * @param {String} tagName
  * @param {String} textContent
+ * @return {HTMLElement}
  */
 export function createElement (tagName, textContent) {
   const element = document.createElement(tagName)
@@ -51,10 +47,9 @@ export function createElement (tagName, textContent) {
 }
 
 /**
- * Add an element next to the current cursor positon.
- *
  * @param {HTMLElement} element
  * @param {HTMLElement} reference
+ * @return {Boolean}
  */
 export function insertElement (element, reference) {
   if (isContainer(reference)) {
@@ -70,11 +65,10 @@ export function insertElement (element, reference) {
 }
 
 /**
- * Delete current HTML element.
- *
  * @param {HTMLElement} value
  * @param {HTMLElement} current
  * @param {HTMLElement} initial
+ * @return {HTMLElement}
  */
 export function deleteElement (value, current, initial) {
   const parent = current.parentNode
@@ -96,11 +90,9 @@ export function deleteElement (value, current, initial) {
 }
 
 /**
- * Perform a backspace deletion relative to current cursor position.
- *
  * @param {HTMLElement} value
  * @param {HTMLElement} current
- * @return {HTMLElement} New cursor position.
+ * @return {HTMLElement}
  */
 export function deleteBeforeElement (value, current) {
   const parent = current.parentNode
@@ -124,9 +116,8 @@ export function deleteBeforeElement (value, current) {
 }
 
 /**
- * Checks if element is an <math> element.
- *
  * @param {HTMLElement} element
+ * @return {Boolean}
  */
 export function isMath (element) {
   return (
@@ -136,19 +127,16 @@ export function isMath (element) {
 }
 
 /**
- * Checks if element is an <mrow> element.
- *
  * @param {HTMLElement} element
+ * @return {Boolean}
  */
 export function isRow (element) {
   return element.tagName === 'MROW'
 }
 
 /**
- * Checks if element is a container element.
- * (That is, an element that can hold other elements)
- *
  * @param {HTMLElement} element
+ * @return {Boolean}
  */
 export function isContainer (element) {
   return (
