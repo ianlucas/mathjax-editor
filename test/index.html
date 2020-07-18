@@ -19,6 +19,8 @@
   <div>
     <button id="msqrt">msqrt</button>
     <button id="mfrac">mfrac</button>
+    <textarea id="editor"></textarea>
+    <mathjax-editor></mathjax-editor>
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fontfaceobserver/2.1.0/fontfaceobserver.standalone.js"></script>
   <script
@@ -40,7 +42,10 @@
       new FontFaceObserver('MJXTEX').load(),
       new FontFaceObserver('MJXZERO').load()
     ]).then(() => {
-      const editor = MathJaxEditor.createUsing(MathJax)
+      const editor = MathJaxEditor.create({
+        mathJax: MathJax,
+        target: '#editor'
+      })
       
       editor.setValue(
         '<msqrt editable>' +
@@ -70,6 +75,8 @@
       })
 
       window.editor = editor
+
+      MathJaxEditor.initialize()
     })
   </script>
 </body>

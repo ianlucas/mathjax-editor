@@ -24,6 +24,7 @@ const IS_LETTER = /^[a-z]$/i
  */
 /**
  * @typedef {Object} MathJaxEditorOptions
+ * @property {MathJax} mathJax
  * @property {HTMLElement} target
  * @property {String[]} allowedTags
  * @property {Boolean} readonly
@@ -34,11 +35,11 @@ export default class Editor {
    * @param {MathJax} mathJax
    * @param {MathJaxEditorOptions} options
    */
-  constructor (mathJax, options = {}) {
+  constructor (options) {
     /** @type {HTMLElement} */
     this.value = document.createElement('math')
     /** @type {Editor} */
-    this.display = new Display(mathJax)
+    this.display = new Display(options)
     /** @type {HTMLElement} */
     this.cursor = this.value
     /** @type {ElementPosition[]} */
@@ -51,6 +52,7 @@ export default class Editor {
     this.value.setAttribute('id', 'root')
     this.display.on('keydown', this.handleKeyboardInteraction.bind(this))
     this.display.on('mouseup', this.handleMouseInteraction.bind(this))
+    this.update()
   }
 
   /**

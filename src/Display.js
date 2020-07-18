@@ -5,16 +5,15 @@ const CURSOR_BLINK = 600
 
 export default class Display {
   /**
-   * @param {MathJax} mathJax
    * @param {Object} options
+   * @param {MathJax} options.mathJax
    * @param {HTMLElement} options.target
    */
-  constructor (mathJax, options = {}) {
+  constructor (options = {}) {
     /** @type {MathJax} */
-    this.mathJax = mathJax
-    // @TODO: Remove this default, target should be required.
+    this.mathJax = options.mathJax
     /** @type {IFrame} */
-    this.iframe = new IFrame(options.target || document.body)
+    this.iframe = new IFrame(options.target)
     /** @type {HTMLElement} */
     this.cursor = document.createElement('mje-cursor')
     /** @type {Number|null} */
