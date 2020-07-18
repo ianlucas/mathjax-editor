@@ -29,12 +29,20 @@
   ></script>
   <script src="MathJaxEditor.js"></script>
   <script>
+    function onClick (selector, listener) {
+      document.querySelector(selector).addEventListener('click', listener)
+    }
+
+    // Ensure that MathJax fonts did load before set the editor up.
+    // We can have some problems with the rendered math while the fonts aren't loaded
+    // so we need to wait them to load to avoid DOMRect problems.
     Promise.all([
       new FontFaceObserver('MJXTEX').load(),
       new FontFaceObserver('MJXZERO').load()
     ]).then(() => {
-      window.editor = MathJaxEditor.createUsing(MathJax)
-      window.editor.setValue(
+      const editor = MathJaxEditor.createUsing(MathJax)
+      
+      editor.setValue(
         '<msqrt>' +
           '<mrow>' +
             '<mn>2</mn>' +
@@ -42,22 +50,25 @@
           '</mrow>' +
         '</msqrt>'
       )
-      
-      document.getElementById('msqrt').addEventListener('click', () => {
-        const msqrt = document.createElement('msqrt')
-        const mrow = document.createElement('mrow')
-        msqrt.appendChild(mrow)
-        window.editor.add(msqrt, mrow)
+
+      onClick('#msqrt', () => {
+        editor.insertCustom((createElement) => {
+          const msqrt = createElement('msqrt')
+          const mrow = createElement('mrow').appendTo(msqrt)
+          return [msqrt, mrow]
+        })
       })
 
-      document.getElementById('mfrac').addEventListener('click', () => {
-        const mfrac = document.createElement('mfrac')
-        const mrow1 = document.createElement('mrow')
-        const mrow2 = document.createElement('mrow')
-        mfrac.appendChild(mrow1)
-        mfrac.appendChild(mrow2)
-        window.editor.add(mfrac, mrow1)
+      onClick('#mfrac', () => {
+        editor.insertCustom((createElement) => {
+          const mfrac = createElement('mfrac')
+          const numerator = createElement('mrow').appendTo(mfrac)
+          const denominator = createElement('mrow').appendTo(mfrac)
+          return [mfrac, numerator]
+        })
       })
+
+      window.editor = editor
     })
   </script>
 </body>

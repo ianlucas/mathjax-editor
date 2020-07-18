@@ -1,6 +1,6 @@
 import Display from './Display'
 import DisplayHelper from './DisplayHelper'
-import { createId, isContainer, walk, insertElement, deleteElement, deleteBeforeElement, createElement } from './utils'
+import { createId, isContainer, walk, insertElement, deleteElement, deleteBeforeElement, createElement, extractElement } from './utils'
 import { operators } from './constants'
 
 const ARROW_LEFT = 37
@@ -9,6 +9,19 @@ const BACKSPACE = 8
 const DELETE = 46
 const IS_NUMBER = /^\d$/
 const IS_LETTER = /^[a-z]$/i
+
+/**
+ * @typedef {Object} Step
+ * @property {HTMLElement} dom
+ * @property {HTMLElement} element
+ * @property {DOMRect} rect
+ * @property {Step|null} next
+ * @property {Step|null} previous
+ * @property {Object} cursor
+ * @property {Number} cursor.x
+ * @property {Number} cursor.y
+ * @property {Number} cursor.height
+ */
 
 export default class Editor {
   /**
@@ -21,18 +34,6 @@ export default class Editor {
     this.display = new Display(mathJax)
     /** @type {HTMLElement} */
     this.cursor = this.math
-    /**
-     * @typedef {Object} Step
-     * @property {HTMLElement} dom
-     * @property {HTMLElement} element
-     * @property {DOMRect} rect
-     * @property {Step|null} next
-     * @property {Step|null} previous
-     * @property {Object} cursor
-     * @property {Number} cursor.x
-     * @property {Number} cursor.y
-     * @property {Number} cursor.height
-     */
     /** @type {Step[]} */
     this.path = []
 
@@ -68,6 +69,7 @@ export default class Editor {
       DisplayHelper.prepare(this.math)
     ).then(() => {
       this.preparePath()
+      console.log('going to update cursor')
       this.updateCursor()
     })
   }
@@ -276,17 +278,30 @@ export default class Editor {
   }
 
   /**
-   * @param {HTMLElement} element
-   * @param {HTMLElement|null} newCursor
+   * @param {String|HTMLElement|CreateElementObject} elementToInsert
+   * @param {HTMLElement|null} elementToCursor
    * @return {Void}
    */
-  add (element, newCursor = null) {
+  insert (elementToInsert, elementToCursor = null) {
+    const element = extractElement(elementToInsert)
     insertElement(element, this.cursor)
-    if (newCursor) {
-      this.setCursor(newCursor)
+    if (elementToCursor) {
+      this.setCursor(
+        extractElement(elementToCursor)
+      )
     }
     this.display.focus()
     this.update()
+  }
+
+  /**
+   * @param {Function} factory
+   * @return {Void}
+   */
+  insertCustom (factory) {
+    const [elementToInsert, elementToCursor] = factory(createElement)
+    console.log(elementToInsert, elementToCursor)
+    this.insert(elementToInsert, elementToCursor)
   }
 
   /**
@@ -294,7 +309,7 @@ export default class Editor {
    * @return {Void}
    */
   addNumber (number) {
-    this.add(createElement('mn', number))
+    this.insert(createElement('mn', number))
   }
 
   /**
@@ -302,7 +317,7 @@ export default class Editor {
    * @return {Void}
    */
   addIdentifier (letter) {
-    this.add(createElement('mi', letter))
+    this.insert(createElement('mi', letter))
   }
 
   /**
@@ -310,6 +325,6 @@ export default class Editor {
    * @return {Void}
    */
   addOperator (operator) {
-    this.add(createElement('mo', operator))
+    this.insert(createElement('mo', operator))
   }
 }

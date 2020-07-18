@@ -36,14 +36,39 @@ export function walk (root, actions) {
 }
 
 /**
+ * @typedef CreateElementObject
+ * @property {HTMLElement} element
+ * @property {Function} appendTo
+ */
+/**
  * @param {String} tagName
  * @param {String} textContent
- * @return {HTMLElement}
+ * @return {CreateElementObject}
  */
 export function createElement (tagName, textContent) {
   const element = document.createElement(tagName)
-  element.textContent = textContent
-  return element
+  if (textContent) {
+    element.textContent = textContent
+  }
+  return {
+    element,
+
+    /**
+     * @param {HTMLElement} other
+     */
+    appendTo (other) {
+      extractElement(other).appendChild(element)
+      return this
+    }
+  }
+}
+
+/**
+ * @param {HTMLElementObject|HTMLElement} subject
+ * @return {HTMLElement}
+ */
+export function extractElement (subject) {
+  return subject.element || subject
 }
 
 /**
