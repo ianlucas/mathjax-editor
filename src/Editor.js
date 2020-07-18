@@ -11,12 +11,12 @@ const IS_NUMBER = /^\d$/
 const IS_LETTER = /^[a-z]$/i
 
 /**
- * @typedef {Object} Step
+ * @typedef {Object} ElementPosition
  * @property {HTMLElement} dom
  * @property {HTMLElement} element
  * @property {DOMRect} rect
- * @property {Step|null} next
- * @property {Step|null} previous
+ * @property {ElementPosition|null} next
+ * @property {ElementPosition|null} previous
  * @property {Object} cursor
  * @property {Number} cursor.x
  * @property {Number} cursor.y
@@ -34,7 +34,7 @@ export default class Editor {
     this.display = new Display(mathJax)
     /** @type {HTMLElement} */
     this.cursor = this.math
-    /** @type {Step[]} */
+    /** @type {ElementPosition[]} */
     this.path = []
 
     this.math.setAttribute('id', 'root')
@@ -82,7 +82,7 @@ export default class Editor {
     if (value) {
       this.setCursor(value)
     }
-    const { cursor } = this.getCurrentStep()
+    const { cursor } = this.getCurrentPosition()
     this.display.updateCursor(cursor, disableScrollIntoView)
   }
 
@@ -106,15 +106,23 @@ export default class Editor {
       index: 0,
       rect: null
     }
-    let previousStep = null
+    let lastPosition = null
 
-    const findStep = (element) => {
+    /**
+     * @param {HTMLElement} element
+     * @return {ElementPosition}
+     */
+    const findPosition = (element) => {
       return path.find((other) => (
         other.element === element
       ))
     }
 
-    const createStep = (element) => {
+    /**
+     * @param {HTMLElement} element
+     * @return {ElementPosition}
+     */
+    const createPosition = (element) => {
       const { dom, rect } = this.display.getElementById(element.id)
 
       let x = rect.x
@@ -124,20 +132,20 @@ export default class Editor {
       if (isContainer(element)) {
         // Cursor should be placed after last element child.
         if (element.children.length) {
-          const lastChildStep = findStep(element.lastElementChild)
-          x = lastChildStep.rect.x + lastChildStep.rect.width
-          y = lastChildStep.rect.y
-          height = lastChildStep.rect.height
+          const lastChildPosition = findPosition(element.lastElementChild)
+          x = lastChildPosition.rect.x + lastChildPosition.rect.width
+          y = lastChildPosition.rect.y
+          height = lastChildPosition.rect.height
         }
       }
 
-      const step = {
+      const position = {
         dom,
         element,
         rect,
 
         next: null,
-        previous: previousStep,
+        previous: lastPosition,
 
         cursor: {
           x,
@@ -146,12 +154,12 @@ export default class Editor {
         }
       }
 
-      if (previousStep) {
-        previousStep.next = step
+      if (lastPosition) {
+        lastPosition.next = position
       }
 
-      previousStep = step
-      path.push(step)
+      lastPosition = position
+      path.push(position)
     }
 
     walk(this.math, {
@@ -162,13 +170,13 @@ export default class Editor {
           ).rect
         }
         if (!isContainer(element)) {
-          createStep(element)
+          createPosition(element)
         }
       },
 
       after (element) {
         if (isContainer(element)) {
-          createStep(element)
+          createPosition(element)
         }
       }
     })
@@ -177,11 +185,11 @@ export default class Editor {
   }
 
   /**
-   * @return {Step}
+   * @return {ElementPosition}
    */
-  getCurrentStep () {
-    return this.path.find((step) => (
-      this.cursor === step.element
+  getCurrentPosition () {
+    return this.path.find((position) => (
+      this.cursor === position.element
     ))
   }
 
@@ -193,9 +201,9 @@ export default class Editor {
     const { keyCode, key } = e
 
     if (keyCode === ARROW_RIGHT) {
-      this.moveRight()
+      this.moveNextPosition()
     } else if (keyCode === ARROW_LEFT) {
-      this.moveLeft()
+      this.movePreviousPosition()
     } else if (keyCode === BACKSPACE) {
       this.applyBackspace()
     } else if (keyCode === DELETE) {
@@ -222,14 +230,14 @@ export default class Editor {
     let smaller = Infinity
     let candidate = null
 
-    for (const step of this.path) {
-      const p1x = step.cursor.x
-      const p1y = step.cursor.y
-      const p2y = p1y + step.cursor.height
+    for (const position of this.path) {
+      const p1x = position.cursor.x
+      const p1y = position.cursor.y
+      const p2y = p1y + position.cursor.height
       const d = Math.abs(p1x - x)
       if (p1y <= y && y <= p2y && smaller > d) {
         smaller = d
-        candidate = step
+        candidate = position
       }
     }
 
@@ -259,20 +267,20 @@ export default class Editor {
   /**
    * @return {Void}
    */
-  moveRight () {
-    const step = this.getCurrentStep()
-    if (step.next) {
-      this.updateCursor(step.next.element)
+  moveNextPosition () {
+    const position = this.getCurrentPosition()
+    if (position.next) {
+      this.updateCursor(position.next.element)
     }
   }
 
   /**
    * @return {Void}
    */
-  moveLeft () {
-    const step = this.getCurrentStep()
-    if (step.previous) {
-      this.updateCursor(step.previous.element)
+  movePreviousPosition () {
+    const position = this.getCurrentPosition()
+    if (position.previous) {
+      this.updateCursor(position.previous.element)
     }
   }
 
