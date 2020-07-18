@@ -69,7 +69,6 @@ export default class Editor {
       DisplayHelper.prepare(this.math)
     ).then(() => {
       this.preparePath()
-      console.log('going to update cursor')
       this.updateCursor()
     })
   }
@@ -300,7 +299,6 @@ export default class Editor {
    */
   insertCustom (factory) {
     const [elementToInsert, elementToCursor] = factory(createElement)
-    console.log(elementToInsert, elementToCursor)
     this.insert(elementToInsert, elementToCursor)
   }
 
