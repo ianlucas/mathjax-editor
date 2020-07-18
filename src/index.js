@@ -4,10 +4,14 @@ export default {
   version: '4.0.0',
 
   /**
+   * @typedef {Object} MathJaxEditorOptions
+   * @property {HTMLElement} target
+   * @property {String[]} allowedTags
+   * @property {Boolean} readonly
+   */
+  /**
    * @param {MathJax} mathJax
-   * @param {Object} options
-   * @param {HTMLElement} options.target
-   * @return {Editor}
+   * @param {MathJaxEditorOptions} options
    */
   createUsing (mathJax, options) {
     return new Editor(mathJax, options)

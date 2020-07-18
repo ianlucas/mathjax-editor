@@ -43,7 +43,7 @@
       const editor = MathJaxEditor.createUsing(MathJax)
       
       editor.setValue(
-        '<msqrt>' +
+        '<msqrt editable>' +
           '<mrow>' +
             '<mn>2</mn>' +
             '<mn>3</mn>' +
@@ -64,6 +64,7 @@
           const mfrac = createElement('mfrac')
           const numerator = createElement('mrow').appendTo(mfrac)
           const denominator = createElement('mrow').appendTo(mfrac)
+          mfrac.element.setAttribute('editable')
           return [mfrac, numerator]
         })
       })

@@ -22,12 +22,19 @@ const IS_LETTER = /^[a-z]$/i
  * @property {Number} cursor.y
  * @property {Number} cursor.height
  */
+/**
+ * @typedef {Object} MathJaxEditorOptions
+ * @property {HTMLElement} target
+ * @property {String[]} allowedTags
+ * @property {Boolean} readonly
+ */
 
 export default class Editor {
   /**
    * @param {MathJax} mathJax
+   * @param {MathJaxEditorOptions} options
    */
-  constructor (mathJax) {
+  constructor (mathJax, options = {}) {
     /** @type {HTMLElement} */
     this.value = document.createElement('math')
     /** @type {Editor} */
@@ -36,6 +43,10 @@ export default class Editor {
     this.cursor = this.value
     /** @type {ElementPosition[]} */
     this.path = []
+    /** @type {String[]} */
+    this.allowedTags = (options.allowedTags || [])
+    /** @type {Boolean} */
+    this.readonly = (options.readonly || false)
 
     this.value.setAttribute('id', 'root')
     this.display.on('keydown', this.handleKeyboardInteraction.bind(this))
@@ -194,6 +205,42 @@ export default class Editor {
   }
 
   /**
+   * @return {Boolean}
+   */
+  canInsertAtCursorPosition () {
+    if (!this.readonly) {
+      return true
+    }
+    let curr = this.cursor.parentNode
+    while (curr) {
+      if (curr.hasAttribute('editable')) {
+        return true
+      }
+      curr = curr.parentNode
+    }
+    return false
+  }
+
+  /**
+   * @param {HTMLElement} element
+   * @return {Boolean}
+   */
+  canInsert (element) {
+    if (!this.canInsertAtCursorPosition()) {
+      return false
+    }
+    const tagName = (element ? element.tagName.toLowerCase() : null)
+    if (
+      tagName &&
+      this.allowedTags.length &&
+      this.allowedTags.indexOf(tagName) === -1
+    ) {
+      return false
+    }
+    return true
+  }
+
+  /**
    * @param {KeyboardEvent} e
    * @return {Void}
    */
@@ -287,10 +334,13 @@ export default class Editor {
   /**
    * @param {String|HTMLElement|CreateElementObject} elementToInsert
    * @param {HTMLElement|null} elementToCursor
-   * @return {Void}
+   * @return {Boolean}
    */
   insert (elementToInsert, elementToCursor = null) {
     const element = extractElement(elementToInsert)
+    if (!this.canInsert(element)) {
+      return false
+    }
     insertElement(element, this.cursor)
     if (elementToCursor) {
       this.setCursor(
@@ -299,15 +349,16 @@ export default class Editor {
     }
     this.display.focus()
     this.update()
+    return true
   }
 
   /**
    * @param {Function} factory
-   * @return {Void}
+   * @return {Boolean}
    */
   insertCustom (factory) {
     const [elementToInsert, elementToCursor] = factory(createElement)
-    this.insert(elementToInsert, elementToCursor)
+    return this.insert(elementToInsert, elementToCursor)
   }
 
   /**
