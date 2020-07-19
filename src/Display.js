@@ -8,6 +8,7 @@ export default class Display {
    * @param {Object} options
    * @param {MathJax} options.mathJax
    * @param {HTMLElement} options.target
+   * @param {String} options.fontSize
    */
   constructor (options = {}) {
     /** @type {MathJax} */
@@ -19,6 +20,7 @@ export default class Display {
     /** @type {Number|null} */
     this.cursorBlink = null
 
+    this.iframe.body.style.fontSize = (options.fontSize || '32px')
     this.prepareHead()
     this.prepareBody()
     this.updateCursorBlink()

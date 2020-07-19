@@ -29,7 +29,9 @@ const IS_LETTER = /^[a-z]$/i
  * @property {MathJax} mathJax
  * @property {HTMLElement} target
  * @property {String[]} allowTags
+ * @property {Boolean} allowNewline
  * @property {Boolean} readonly
+ * @property {String} fontSize
  */
 
 export default class Editor {
