@@ -1,12 +1,13 @@
 import Display from './Display'
 import DisplayHelper from './DisplayHelper'
-import { createId, isContainer, walk, insertElement, deleteElement, deleteBeforeElement, createElement, extractElement } from './utils'
+import { createId, isContainer, walk, insertElement, deleteElement, backspaceElement, createElement, extractElement, isIgnoredElement, isMath } from './utils'
 import { operators } from './constants'
 
 const ARROW_LEFT = 37
 const ARROW_RIGHT = 39
 const BACKSPACE = 8
 const DELETE = 46
+const ENTER = 13
 const IS_NUMBER = /^\d$/
 const IS_LETTER = /^[a-z]$/i
 
@@ -15,6 +16,7 @@ const IS_LETTER = /^[a-z]$/i
  * @property {HTMLElement} dom
  * @property {HTMLElement} element
  * @property {DOMRect} rect
+ * @property {Number} line
  * @property {ElementPosition|null} next
  * @property {ElementPosition|null} previous
  * @property {Object} cursor
@@ -26,7 +28,7 @@ const IS_LETTER = /^[a-z]$/i
  * @typedef {Object} MathJaxEditorOptions
  * @property {MathJax} mathJax
  * @property {HTMLElement} target
- * @property {String[]} allowedTags
+ * @property {String[]} allowTags
  * @property {Boolean} readonly
  */
 
@@ -37,19 +39,23 @@ export default class Editor {
    */
   constructor (options) {
     /** @type {HTMLElement} */
-    this.value = document.createElement('math')
-    /** @type {Editor} */
+    this.value = document.createElement('mathjax-editor-value')
+    this.value.innerHTML = '<math></math>'
+    /** @type {Display} */
     this.display = new Display(options)
     /** @type {HTMLElement} */
-    this.cursor = this.value
+    this.cursor = this.value.firstElementChild
     /** @type {ElementPosition[]} */
     this.path = []
     /** @type {String[]} */
-    this.allowedTags = (options.allowedTags || [])
+    this.allowTags = (options.allowTags || [])
+    /** @type {Boolean} */
+    this.allowNewline = (options.allowNewline || true)
     /** @type {Boolean} */
     this.readonly = (options.readonly || false)
 
     this.value.setAttribute('id', 'root')
+    this.display.iframe.element.__EDITOR__ = this
     this.display.on('keydown', this.handleKeyboardInteraction.bind(this))
     this.display.on('mouseup', this.handleMouseInteraction.bind(this))
     this.update()
@@ -61,7 +67,7 @@ export default class Editor {
    */
   setValue (value) {
     this.value.innerHTML = value
-    this.cursor = this.value
+    this.cursor = this.value.firstElementChild
     this.update()
   }
 
@@ -115,10 +121,6 @@ export default class Editor {
    */
   preparePath () {
     const path = []
-    const line = {
-      index: 0,
-      rect: null
-    }
     let lastPosition = null
 
     /**
@@ -136,7 +138,7 @@ export default class Editor {
      * @return {ElementPosition}
      */
     const createPosition = (element) => {
-      const { dom, rect } = this.display.getElementById(element.id)
+      const { dom, rect } = this.display.getElement(element)
 
       let x = rect.x
       let y = rect.y
@@ -147,9 +149,12 @@ export default class Editor {
         if (element.children.length) {
           const lastChildPosition = findPosition(element.lastElementChild)
           x = lastChildPosition.rect.x + lastChildPosition.rect.width
-          y = lastChildPosition.rect.y
-          height = lastChildPosition.rect.height
         }
+      } else {
+        // Use parent rect to adjust cursor height and y.
+        const { rect: parentRect } = this.display.getElement(element.parentNode)
+        height = parentRect.height
+        y = parentRect.y
       }
 
       const position = {
@@ -177,18 +182,19 @@ export default class Editor {
 
     walk(this.value, {
       before: (element) => {
-        if (!line.rect) {
-          line.rect = this.display.getEndOfLineByIndex(
-            line.index
-          ).rect
-        }
-        if (!isContainer(element)) {
+        if (
+          !isContainer(element) &&
+          !isIgnoredElement(element)
+        ) {
           createPosition(element)
         }
       },
 
       after (element) {
-        if (isContainer(element)) {
+        if (
+          isContainer(element) &&
+          !isIgnoredElement(element)
+        ) {
           createPosition(element)
         }
       }
@@ -234,8 +240,8 @@ export default class Editor {
     const tagName = (element ? element.tagName.toLowerCase() : null)
     if (
       tagName &&
-      this.allowedTags.length &&
-      this.allowedTags.indexOf(tagName) === -1
+      this.allowTags.length &&
+      this.allowTags.indexOf(tagName) === -1
     ) {
       return false
     }
@@ -257,6 +263,8 @@ export default class Editor {
       this.applyBackspace()
     } else if (keyCode === DELETE) {
       this.applyDelete()
+    } else if (keyCode === ENTER) {
+      this.addNewline()
     } else if (key.match(IS_NUMBER)) {
       this.addNumber(key)
     } else if (key.match(IS_LETTER)) {
@@ -309,7 +317,7 @@ export default class Editor {
    * @return {Void}
    */
   applyBackspace () {
-    this.setCursor(deleteBeforeElement(this.value, this.cursor))
+    this.setCursor(backspaceElement(this.value, this.cursor))
     this.update()
   }
 
@@ -361,6 +369,39 @@ export default class Editor {
   insertCustom (factory) {
     const [elementToInsert, elementToCursor] = factory(createElement)
     return this.insert(elementToInsert, elementToCursor)
+  }
+
+  /**
+   * @return {Void}
+   */
+  addNewline () {
+    const currentNode = this.cursor
+    const parentNode = currentNode.parentNode
+    if (
+      !this.allowNewline ||
+      (
+        !isMath(currentNode) &&
+        !isMath(parentNode)
+      )
+    ) {
+      return
+    }
+    const math = document.createElement('math')
+    const br = document.createElement('br')
+    let context = currentNode
+    let newPosition = math
+    if (!isMath(currentNode)) {
+      while (currentNode.nextSibling) {
+        math.appendChild(currentNode.nextSibling)
+      }
+      math.insertBefore(currentNode, math.firstChild)
+      context = parentNode
+      newPosition = math.firstChild
+    }
+    this.value.insertBefore(math, context.nextSibling)
+    this.value.insertBefore(br, math)
+    this.setCursor(newPosition)
+    this.update()
   }
 
   /**

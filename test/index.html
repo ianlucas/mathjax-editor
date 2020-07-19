@@ -48,12 +48,19 @@
       })
       
       editor.setValue(
-        '<msqrt editable>' +
-          '<mrow>' +
-            '<mn>2</mn>' +
-            '<mn>3</mn>' +
-          '</mrow>' +
-        '</msqrt>'
+        '<math>' +
+          '<msqrt editable>' +
+            '<mrow>' +
+              '<mn>1</mn>' +
+              '<mn>2</mn>' +
+            '</mrow>' +
+          '</msqrt>' +
+        '</math>' +
+        '<br>' +
+        '<math>' +
+          '<mn>1</mn>' +
+          '<mn>2</mn>' +
+        '</math>'
       )
 
       onClick('#msqrt', () => {
@@ -69,7 +76,7 @@
           const mfrac = createElement('mfrac')
           const numerator = createElement('mrow').appendTo(mfrac)
           const denominator = createElement('mrow').appendTo(mfrac)
-          mfrac.element.setAttribute('editable')
+          mfrac.element.setAttribute('editable', true)
           return [mfrac, numerator]
         })
       })

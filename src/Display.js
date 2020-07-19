@@ -45,8 +45,8 @@ export default class Display {
    * @return {Promise}
    */
   render (math) {
-    return this.mathJax.mathml2chtmlPromise(math.outerHTML).then((renderedMath) => {
-      this.iframe.updateElement('mathjax', renderedMath)
+    this.iframe.updateElement('mathjax', math)
+    return this.mathJax.typesetPromise([math]).then(() => {
       this.iframe.updateStyle('mathjax', this.mathJax.chtmlStylesheet())
     })
   }
@@ -72,11 +72,11 @@ export default class Display {
    * @property {DOMRect} rect
    */
   /**
-   * @param {String} id
+   * @param {HTMLElement} element
    * @return {DisplayElement}
    */
-  getElementById (id) {
-    const dom = this.iframe.document.getElementById(id)
+  getElement (element) {
+    const dom = this.iframe.document.getElementById(element.id)
     const rect = this.getElementRect(dom)
     return { dom, rect }
   }

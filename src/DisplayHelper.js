@@ -1,33 +1,22 @@
-import { isContainer, walk } from './utils'
+import { isContainer, walk, createElement } from './utils'
 
 export default {
   /**
    * @return {HTMLElement}
    */
   createSpace () {
-    const el = document.createElement('mspace')
-    el.setAttribute('width', 'thinmathspace')
-    return el
+    const mspace = createElement('mspace')
+    mspace.element.setAttribute('width', 'thinmathspace')
+    return mspace.element
   },
 
   /**
    * @return {HTMLElement}
    */
   createContainerPlaceholder () {
-    const mo = document.createElement('mo')
-    mo.setAttribute('type', 'placeholder')
-    mo.textContent = '?'
-    return mo
-  },
-
-  /**
-   * @return {HTMLElement}
-   */
-  createEndOfLine () {
-    const mo = document.createElement('mo')
-    mo.setAttribute('type', 'eof')
-    mo.textContent = '|'
-    return mo
+    const mo = createElement('mo', '?')
+    mo.element.setAttribute('type', 'placeholder')
+    return mo.element
   },
 
   /**
@@ -46,7 +35,6 @@ export default {
         element.appendChild(this.createSpace())
       }
     })
-    clone.appendChild(this.createEndOfLine())
     return clone
   }
 }

@@ -5,6 +5,10 @@ body {
   padding: 1em;
 }
 
+br {
+  font-size: 0;
+}
+
 mje-cursor {
   background-color: #000;
   position: absolute;
@@ -20,11 +24,11 @@ mjx-container {
 }
 
 [type=eof] {
-  opacity: 0;
+  opacity: 1;
 }
 
 [type=placeholder] {
-  opacity: 0.25;
+  opacity: 0;
 }
 
 body.isInactive mje-cursor {

@@ -105,11 +105,21 @@ export function deleteElement (value, current, initial) {
   if (isRow(current)) {
     return deleteElement(value, parent, current)
   } else if (isMath(current)) {
+    if (current.nextSibling) {
+      const siblingMath = current.nextSibling.nextSibling
+      const newPosition = siblingMath.firstChild
+      while (siblingMath.firstChild) {
+        current.appendChild(siblingMath.firstChild)
+      }
+      removeChild(current.nextSibling)
+      removeChild(siblingMath)
+      return newPosition || current
+    }
     return current
   }
 
   const to = current.nextElementSibling || parent
-  parent.removeChild(current)
+  removeChild(current)
 
   return to
 }
@@ -119,7 +129,7 @@ export function deleteElement (value, current, initial) {
  * @param {HTMLElement} current
  * @return {HTMLElement}
  */
-export function deleteBeforeElement (value, current) {
+export function backspaceElement (value, current) {
   const parent = current.parentNode
   const previous = current.previousElementSibling
 
@@ -128,16 +138,46 @@ export function deleteBeforeElement (value, current) {
       return deleteElement(value, current.lastElementChild, current)
     }
     if (isMath(current)) {
+      // Handling newline deletion. If a <math> element has a sibling,
+      // that means it is a <br> element. In this case, it is empty
+      // and we should only remove it and its line break element.
+      if (current.previousSibling) {
+        const newPosition = current.previousSibling.previousSibling
+        removeChild(current.previousSibling)
+        removeChild(current)
+        return newPosition
+      }
       return current
     }
     return deleteElement(value, parent, current)
   }
 
   if (!previous && isMath(parent)) {
+    // Handling newline deletion. If the parent is a <math> element,
+    // we check if it has a sibling (<br> element). If that is true,
+    // we then merge all contents of this line with its sibling <math>.
+    if (parent.previousSibling) {
+      const newPosition = parent.firstChild
+      const siblingMath = parent.previousSibling.previousSibling
+      while (parent.firstChild) {
+        siblingMath.appendChild(parent.firstChild)
+      }
+      removeChild(parent)
+      return newPosition || siblingMath
+    }
     return current
   }
 
   return deleteElement(value, previous || parent, current)
+}
+
+/**
+ * @param {String} a
+ * @param {String} b
+ * @return {Boolean}
+ */
+export function equals (a, b) {
+  return a.toLowerCase() === b
 }
 
 /**
@@ -147,7 +187,7 @@ export function deleteBeforeElement (value, current) {
 export function isMath (element) {
   return (
     element &&
-    element.tagName === 'MATH'
+    equals(element.tagName, 'math')
   )
 }
 
@@ -156,7 +196,7 @@ export function isMath (element) {
  * @return {Boolean}
  */
 export function isRow (element) {
-  return element.tagName === 'MROW'
+  return equals(element.tagName, 'mrow')
 }
 
 /**
@@ -168,4 +208,23 @@ export function isContainer (element) {
     isMath(element) ||
     isRow(element)
   )
+}
+
+/**
+ * @param {HTMLElement} element
+ * @return {Boolean}
+ */
+export function isIgnoredElement (element) {
+  return (
+    equals(element.tagName, 'mathjax-editor-value') ||
+    equals(element.tagName, 'br')
+  )
+}
+
+/**
+ * @param {HTMLElement} element
+ * @return {Void}
+ */
+export function removeChild (element) {
+  element.parentNode.removeChild(element)
 }
