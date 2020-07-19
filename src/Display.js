@@ -84,16 +84,6 @@ export default class Display {
   }
 
   /**
-   * @param {Number} index
-   * @return {DisplayElement}
-   */
-  getEndOfLineByIndex (index) {
-    const dom = this.iframe.document.querySelectorAll('[type=eof]')[index]
-    const rect = this.getElementRect(dom)
-    return { dom, rect }
-  }
-
-  /**
    * @param {Object} properties
    * @param {Boolean} disableScrollIntoView
    * @return {Void}
