@@ -64,7 +64,7 @@
       )
 
       onClick('#msqrt', () => {
-        editor.insertCustom((createElement) => {
+        MathJaxEditor.activeEditor.insertCustom((createElement) => {
           const msqrt = createElement('msqrt')
           const mrow = createElement('mrow').appendTo(msqrt)
           return [msqrt, mrow]
@@ -72,7 +72,7 @@
       })
 
       onClick('#mfrac', () => {
-        editor.insertCustom((createElement) => {
+        MathJaxEditor.activeEditor.insertCustom((createElement) => {
           const mfrac = createElement('mfrac')
           const numerator = createElement('mrow').appendTo(mfrac)
           const denominator = createElement('mrow').appendTo(mfrac)

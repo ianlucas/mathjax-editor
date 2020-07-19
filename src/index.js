@@ -3,6 +3,8 @@ import Editor from './Editor'
 export default {
   version: '4.0.0',
 
+  activeEditor: null,
+
   /**
    * @typedef {Object} MathJaxEditorOptions
    * @property {MathJax} mathJax
@@ -14,7 +16,11 @@ export default {
    * @param {MathJaxEditorOptions} options
    */
   create (options) {
-    return new Editor(options)
+    const editor = new Editor(options)
+    editor.display.iframe.window.addEventListener('focus', () => {
+      this.activeEditor = editor
+    })
+    return editor
   },
 
   /**
@@ -22,11 +28,14 @@ export default {
    */
   initialize (options = {}) {
     return Array.from(document.querySelectorAll('mathjax-editor')).forEach((element) => {
-      return new Editor(Object.assign(options, {
+      const editor = new Editor(Object.assign(options, {
         // We assume there is a global MathJax if it is not passed in the options.
         mathJax: options.MathJax || window.MathJax,
         target: element
       }))
+      editor.display.iframe.window.addEventListener('focus', () => {
+        this.activeEditor = editor
+      })
     })
   }
 }
