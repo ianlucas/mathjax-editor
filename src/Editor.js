@@ -1,5 +1,6 @@
 import Display from './Display'
 import DisplayHelper from './DisplayHelper'
+import IOHelper from './IOHelper'
 import { createId, isContainer, walk, insertElement, deleteElement, backspaceElement, createElement, extractElement, isIgnoredElement, isMath } from './utils'
 import { operators } from './constants'
 
@@ -10,7 +11,6 @@ const DELETE = 46
 const ENTER = 13
 const IS_NUMBER = /^\d$/
 const IS_LETTER = /^[a-z]$/i
-const WHITESPACE = />\s+</g
 
 /**
  * @typedef {Object} ElementPosition
@@ -69,9 +69,23 @@ export default class Editor {
    * @return {Void}
    */
   setValue (value) {
-    this.value.innerHTML = value.replace(WHITESPACE, '><').trim()
+    this.value.innerHTML = IOHelper.in(value)
     this.cursor = this.value.firstChild
     this.update()
+  }
+
+  /**
+   * @return {HTMLElement}
+   */
+  getValue () {
+    return IOHelper.out(this.value)
+  }
+
+  /**
+   * @return {String}
+   */
+  getValueAsString () {
+    return this.getValue().outerHTML
   }
 
   /**

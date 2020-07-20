@@ -9,7 +9,8 @@ export default {
    * @typedef {Object} MathJaxEditorOptions
    * @property {MathJax} mathJax
    * @property {HTMLElement} target
-   * @property {String[]} allowedTags
+   * @property {String[]} allowTags
+   * @property {String[]} allowNewline
    * @property {Boolean} readonly
    */
   /**
