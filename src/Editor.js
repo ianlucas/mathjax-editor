@@ -283,11 +283,11 @@ export default class Editor {
     } else if (keyCode === ENTER) {
       this.addNewline()
     } else if (key.match(IS_NUMBER)) {
-      this.addNumber(key)
+      this.insertNumber(key)
     } else if (key.match(IS_LETTER)) {
-      this.addIdentifier(key)
+      this.insertIdentifier(key)
     } else if (operators[key]) {
-      this.addOperator(operators[key])
+      this.insertOperator(operators[key])
     }
 
     e.preventDefault()
@@ -425,7 +425,7 @@ export default class Editor {
    * @param {String} number
    * @return {Void}
    */
-  addNumber (number) {
+  insertNumber (number) {
     this.insert(createElement('mn', number))
   }
 
@@ -433,7 +433,7 @@ export default class Editor {
    * @param {String} letter
    * @return {Void}
    */
-  addIdentifier (letter) {
+  insertIdentifier (letter) {
     this.insert(createElement('mi', letter))
   }
 
@@ -441,7 +441,7 @@ export default class Editor {
    * @param {String} operator
    * @return {Void}
    */
-  addOperator (operator) {
+  insertOperator (operator) {
     this.insert(createElement('mo', operator))
   }
 }
