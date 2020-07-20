@@ -26,6 +26,41 @@
     return Constructor;
   }
 
+  function _slicedToArray(arr, i) {
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
+  }
+
+  function _arrayWithHoles(arr) {
+    if (Array.isArray(arr)) return arr;
+  }
+
+  function _iterableToArrayLimit(arr, i) {
+    if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _e = undefined;
+
+    try {
+      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+        _arr.push(_s.value);
+
+        if (i && _arr.length === i) break;
+      }
+    } catch (err) {
+      _d = true;
+      _e = err;
+    } finally {
+      try {
+        if (!_n && _i["return"] != null) _i["return"]();
+      } finally {
+        if (_d) throw _e;
+      }
+    }
+
+    return _arr;
+  }
+
   function _unsupportedIterableToArray(o, minLen) {
     if (!o) return;
     if (typeof o === "string") return _arrayLikeToArray(o, minLen);
@@ -41,6 +76,10 @@
     for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
 
     return arr2;
+  }
+
+  function _nonIterableRest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
   function _createForOfIteratorHelper(o, allowArrayLike) {
@@ -100,59 +139,76 @@
     };
   }
 
-  var Iframe = /*#__PURE__*/function () {
+  var IFrame = /*#__PURE__*/function () {
     /**
-     * Creates and appends an iframe to a target element.
-     *
      * @param {HTMLElement} target
      */
-    function Iframe(target) {
-      _classCallCheck(this, Iframe);
+    function IFrame(target) {
+      var _this = this;
 
+      _classCallCheck(this, IFrame);
+
+      /** @type {HTMLIFrameElement} */
       this.element = document.createElement('iframe');
+      this.element.className = 'mathjax-editor-input';
+      /** @type {Object} */
+
       this.storedStyles = {};
+      /** @type {Object} */
+
       this.storedElements = {};
 
       if (typeof target === 'string') {
         target = document.querySelector(target);
       }
 
-      target.appendChild(this.element);
+      target.parentNode.replaceChild(this.element, target);
+      /** @type {Document} */
+
       this.document = this.element.contentDocument;
+      /** @type {Window} */
+
       this.window = this.element.contentWindow;
+      /** @type {HTMLElement} */
+
       this.body = this.document.body;
+      /** @type {HTMLHeadElement} */
+
       this.head = this.document.head;
+      this.window.addEventListener('focus', function () {
+        return _this.handleFocus();
+      });
+      this.window.addEventListener('blur', function () {
+        return _this.handleBlur();
+      });
+      this.body.classList.add('isInactive');
     }
     /**
-     * Create a placeholder element
-     *
      * @return {HTMLElement}
      */
 
 
-    _createClass(Iframe, [{
+    _createClass(IFrame, [{
       key: "createPlaceholderElement",
       value: function createPlaceholderElement() {
         return document.createElement('void');
       }
       /**
-       * Add a style to the iframe.
-       *
        * @param {String} key
        * @param {HTMLElement} element
+       * @return {Void}
        */
 
     }, {
       key: "addStyle",
       value: function addStyle(key, element) {
-        this.storedStyles[key] = element;
-        this.head.appendChild(element);
+        this.storedStyles[key] = element.cloneNode(true);
+        this.head.appendChild(this.storedStyles[key]);
       }
       /**
-       * Add an element to the iframe.
-       *
        * @param {String} key
        * @param {HTMLElement} element
+       * @return {Void}
        */
 
     }, {
@@ -162,10 +218,9 @@
         this.body.appendChild(this.storedElements[key]);
       }
       /**
-       * Update an element of the iframe.
-       *
        * @param {String} key
-       * @param {HTMLElement} element
+       * @param {HTMLElement} newElement
+       * @return {Void}
        */
 
     }, {
@@ -179,10 +234,9 @@
         this.storedElements[key] = newElement;
       }
       /**
-       * Update a style of the iframe.
-       *
        * @param {String} key
-       * @param {HTMLElement} element
+       * @param {HTMLElement} newElement
+       * @return {Void}
        */
 
     }, {
@@ -192,43 +246,68 @@
           return;
         }
 
-        this.head.replaceChild(newElement, this.storedStyles[key]);
-        this.storedStyles[key] = newElement;
+        var cloneElement = newElement.cloneNode(true);
+        this.head.replaceChild(cloneElement, this.storedStyles[key]);
+        this.storedStyles[key] = cloneElement;
+      }
+      /**
+       * @return {Void}
+       */
+
+    }, {
+      key: "handleFocus",
+      value: function handleFocus() {
+        this.element.classList.add('isActive');
+        this.body.classList.remove('isInactive');
+      }
+      /**
+       * @return {Void}
+       */
+
+    }, {
+      key: "handleBlur",
+      value: function handleBlur() {
+        this.element.classList.remove('isActive');
+        this.body.classList.add('isInactive');
       }
     }]);
 
-    return Iframe;
+    return IFrame;
   }();
 
-  var style = document.createElement('style');style.innerHTML = 'body{cursor:text;font-size:32px;margin:0;padding:1em}mje-cursor{background-color:#000;position:absolute;width:1px}mje-cursor.hidden{display:none}mjx-container{outline:0}[type=eof]{opacity:0}[type=placeholder]{opacity:.25}';
+  var style = document.createElement('style');style.innerHTML = 'body{cursor:text;margin:0;padding:1em}br{font-size:0}mje-cursor{background-color:#000;position:absolute;width:1px}mje-cursor.hidden{display:none}mjx-container{outline:0}[type=eof]{opacity:1}[type=placeholder]{opacity:0}body.isInactive mje-cursor{display:none}';
 
   var CURSOR_BLINK = 600;
 
   var Display = /*#__PURE__*/function () {
     /**
-     * This class handles math rendering and DOM manipulation.
-     *
-     * @param {MathJax} mathJax - MathJax instance.`
      * @param {Object} options
+     * @param {MathJax} options.mathJax
      * @param {HTMLElement} options.target
+     * @param {String} options.fontSize
      */
-    function Display(mathJax) {
-      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    function Display() {
+      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
       _classCallCheck(this, Display);
 
-      this.mathJax = mathJax; // @TODO: Remove this default, target should be required.
+      /** @type {MathJax} */
+      this.mathJax = options.mathJax;
+      /** @type {IFrame} */
 
-      this.iframe = new Iframe(options.target || document.body);
+      this.iframe = new IFrame(options.target);
+      /** @type {HTMLElement} */
+
       this.cursor = document.createElement('mje-cursor');
+      /** @type {Number|null} */
+
       this.cursorBlink = null;
+      this.iframe.body.style.fontSize = options.fontSize || '32px';
       this.prepareHead();
       this.prepareBody();
       this.updateCursorBlink();
     }
     /**
-     * Prepare iframe head.
-     *
      * @return {Void}
      */
 
@@ -240,8 +319,6 @@
         this.iframe.addStyle('editor', style);
       }
       /**
-       * Prepare iframe body.
-       *
        * @return {Void}
        */
 
@@ -252,10 +329,7 @@
         this.iframe.addElement('cursor', this.cursor);
       }
       /**
-       * Render the inputed math in the iframe.
-       *
        * @param {HTMLElement} math
-       *
        * @return {Promise}
        */
 
@@ -264,16 +338,14 @@
       value: function render(math) {
         var _this = this;
 
-        return this.mathJax.mathml2chtmlPromise(math.outerHTML).then(function (renderedMath) {
-          _this.iframe.updateElement('mathjax', renderedMath);
-
+        this.iframe.updateElement('mathjax', math);
+        return this.mathJax.typesetPromise([math]).then(function () {
           _this.iframe.updateStyle('mathjax', _this.mathJax.chtmlStylesheet());
         });
       }
       /**
-       * Get element rect.
-       *
        * @param {HTMLElement} element
+       * @return {DOMRect}
        */
 
     }, {
@@ -292,15 +364,20 @@
         return rect;
       }
       /**
-       * Get element from iframe.
-       *
-       * @param {String} id
+       * @typedef {Object} DisplayElement
+       * @property {HTMLElement} dom
+       * @property {DOMRect} rect
+       */
+
+      /**
+       * @param {HTMLElement} element
+       * @return {DisplayElement}
        */
 
     }, {
-      key: "getElementById",
-      value: function getElementById(id) {
-        var dom = this.iframe.document.getElementById(id);
+      key: "getElement",
+      value: function getElement(element) {
+        var dom = this.iframe.document.getElementById(element.id);
         var rect = this.getElementRect(dom);
         return {
           dom: dom,
@@ -308,26 +385,9 @@
         };
       }
       /**
-       * Get end of line by index.
-       *
-       * @param {Number} index
-       */
-
-    }, {
-      key: "getEndOfLineByIndex",
-      value: function getEndOfLineByIndex(index) {
-        var dom = this.iframe.document.querySelectorAll('[type=eof]')[index];
-        var rect = this.getElementRect(dom);
-        return {
-          dom: dom,
-          rect: rect
-        };
-      }
-      /**
-       * Update cursor position on the iframe.
-       *
        * @param {Object} properties
        * @param {Boolean} disableScrollIntoView
+       * @return {Void}
        */
 
     }, {
@@ -343,6 +403,11 @@
 
         this.updateCursorBlink(true);
       }
+      /**
+       * @param {Boolean} reset
+       * @return {Void}
+       */
+
     }, {
       key: "updateCursorBlink",
       value: function updateCursorBlink() {
@@ -362,10 +427,9 @@
         }, CURSOR_BLINK);
       }
       /**
-       * Listen to events on the iframe.
-       *
        * @param {String} type
        * @param {Function} listener
+       * @return {Void}
        */
 
     }, {
@@ -374,8 +438,6 @@
         return this.iframe.document.addEventListener(type, listener);
       }
       /**
-       * Focus the editor.
-       *
        * @return {Void}
        */
 
@@ -391,8 +453,6 @@
 
   var idCount = 0;
   /**
-   * Creates an unique id.
-   *
    * @return {String}
    */
 
@@ -401,10 +461,9 @@
     return "mje-node".concat(idCount);
   }
   /**
-   * Iterate through an element and its children.
-   *
    * @param {HTMLElement} root
    * @param {Object|Function} actions
+   * @return {Void}
    */
 
   function walk(root, actions) {
@@ -429,22 +488,48 @@
     iterator(root);
   }
   /**
-   * Create a HTML element.
-   *
+   * @typedef CreateElementObject
+   * @property {HTMLElement} element
+   * @property {Function} appendTo
+   */
+
+  /**
    * @param {String} tagName
    * @param {String} textContent
+   * @return {CreateElementObject}
    */
 
   function createElement(tagName, textContent) {
     var element = document.createElement(tagName);
-    element.textContent = textContent;
-    return element;
+
+    if (textContent) {
+      element.textContent = textContent;
+    }
+
+    return {
+      element: element,
+
+      /**
+       * @param {HTMLElement} other
+       */
+      appendTo: function appendTo(other) {
+        extractElement(other).appendChild(element);
+        return this;
+      }
+    };
   }
   /**
-   * Add an element next to the current cursor positon.
-   *
+   * @param {HTMLElementObject|HTMLElement} subject
+   * @return {HTMLElement}
+   */
+
+  function extractElement(subject) {
+    return subject.element || subject;
+  }
+  /**
    * @param {HTMLElement} element
    * @param {HTMLElement} reference
+   * @return {Boolean}
    */
 
   function insertElement(element, reference) {
@@ -462,11 +547,10 @@
     return true;
   }
   /**
-   * Delete current HTML element.
-   *
    * @param {HTMLElement} value
    * @param {HTMLElement} current
    * @param {HTMLElement} initial
+   * @return {HTMLElement}
    */
 
   function deleteElement(value, current, initial) {
@@ -479,31 +563,52 @@
     if (isRow(current)) {
       return deleteElement(value, parent, current);
     } else if (isMath(current)) {
+      if (current.nextSibling) {
+        var siblingMath = current.nextSibling.nextSibling;
+        var newPosition = siblingMath.firstChild;
+
+        while (siblingMath.firstChild) {
+          current.appendChild(siblingMath.firstChild);
+        }
+
+        removeChild(current.nextSibling);
+        removeChild(siblingMath);
+        return newPosition || current;
+      }
+
       return current;
     }
 
     var to = current.nextElementSibling || parent;
-    parent.removeChild(current);
+    removeChild(current);
     return to;
   }
   /**
-   * Perform a backspace deletion relative to current cursor position.
-   *
    * @param {HTMLElement} value
    * @param {HTMLElement} current
-   * @return {HTMLElement} New cursor position.
+   * @return {HTMLElement}
    */
 
-  function deleteBeforeElement(value, current) {
+  function backspaceElement(value, current) {
     var parent = current.parentNode;
     var previous = current.previousElementSibling;
 
     if (isContainer(current)) {
-      if (current.lastElementChild) {
-        return deleteElement(value, current.lastElementChild, current);
+      if (current.lastChild) {
+        return deleteElement(value, current.lastChild, current);
       }
 
       if (isMath(current)) {
+        // Handling newline deletion. If a <math> element has a sibling,
+        // that means it is a <br> element. In this case, it is empty
+        // and we should only remove it and its line break element.
+        if (current.previousSibling) {
+          var newPosition = current.previousSibling.previousSibling;
+          removeChild(current.previousSibling);
+          removeChild(current);
+          return newPosition;
+        }
+
         return current;
       }
 
@@ -511,58 +616,99 @@
     }
 
     if (!previous && isMath(parent)) {
+      // Handling newline deletion. If the parent is a <math> element,
+      // we check if it has a sibling (<br> element). If that is true,
+      // we then merge all contents of this line with its sibling <math>.
+      if (parent.previousSibling) {
+        var _newPosition = parent.firstChild;
+        var siblingMath = parent.previousSibling.previousSibling;
+
+        while (parent.firstChild) {
+          siblingMath.appendChild(parent.firstChild);
+        }
+
+        removeChild(parent);
+        return _newPosition || siblingMath;
+      }
+
       return current;
     }
 
     return deleteElement(value, previous || parent, current);
   }
   /**
-   * Checks if element is an <math> element.
-   *
+   * @param {String} a
+   * @param {String} b
+   * @return {Boolean}
+   */
+
+  function equals(a, b) {
+    return a.toLowerCase() === b;
+  }
+  /**
    * @param {HTMLElement} element
+   * @return {Boolean}
    */
 
   function isMath(element) {
-    return element && element.tagName === 'MATH';
+    return element && equals(element.tagName, 'math');
   }
   /**
-   * Checks if element is an <mrow> element.
-   *
    * @param {HTMLElement} element
+   * @return {Boolean}
    */
 
   function isRow(element) {
-    return element.tagName === 'MROW';
+    return equals(element.tagName, 'mrow');
   }
   /**
-   * Checks if element is a container element.
-   * (That is, an element that can hold other elements)
-   *
    * @param {HTMLElement} element
+   * @return {Boolean}
    */
 
   function isContainer(element) {
     return isMath(element) || isRow(element);
   }
+  /**
+   * @param {HTMLElement} element
+   * @return {Boolean}
+   */
+
+  function isIgnoredElement(element) {
+    return equals(element.tagName, 'mathjax-editor-value') || equals(element.tagName, 'br');
+  }
+  /**
+   * @param {HTMLElement} element
+   * @return {Void}
+   */
+
+  function removeChild(element) {
+    element.parentNode.removeChild(element);
+  }
 
   var DisplayHelper = {
+    /**
+     * @return {HTMLElement}
+     */
     createSpace: function createSpace() {
-      var el = document.createElement('mspace');
-      el.setAttribute('width', 'thinmathspace');
-      return el;
+      var mspace = createElement('mspace');
+      mspace.element.setAttribute('width', 'thinmathspace');
+      return mspace.element;
     },
+
+    /**
+     * @return {HTMLElement}
+     */
     createContainerPlaceholder: function createContainerPlaceholder() {
-      var mo = document.createElement('mo');
-      mo.setAttribute('type', 'placeholder');
-      mo.textContent = '?';
-      return mo;
+      var mo = createElement('mo', '?');
+      mo.element.setAttribute('type', 'placeholder');
+      return mo.element;
     },
-    createEndOfLine: function createEndOfLine() {
-      var mo = document.createElement('mo');
-      mo.setAttribute('type', 'eof');
-      mo.textContent = '|';
-      return mo;
-    },
+
+    /**
+     * @param {HTMLElement} math
+     * @return {HTMLElement}
+     */
     prepare: function prepare(math) {
       var _this = this;
 
@@ -576,8 +722,74 @@
           element.appendChild(_this.createSpace());
         }
       });
-      clone.appendChild(this.createEndOfLine());
       return clone;
+    }
+  };
+
+  var WHITESPACE = />\s+</g;
+  var IOHelper = {
+    /**
+     * @param {String} value
+     * @return {String}
+     */
+    "in": function _in(value) {
+      var parser = document.createElement('div');
+      parser.innerHTML = value.replace(WHITESPACE, '><').trim();
+
+      if (parser.children.length > 1) {
+        throw new Error('MathJax Editor: the input value should have a single <math> element.');
+      }
+
+      if (!isMath(parser.firstChild)) {
+        throw new Error('MathJax Editor: the input value should have a single <math> element.');
+      }
+
+      var currentMath = null;
+      Array.from(parser.firstChild.children).forEach(function (child) {
+        var isNewline = equals(child.tagName, 'mspace') && child.getAttribute('linebreak') === 'newline';
+
+        if (isNewline) {
+          currentMath = document.createElement('math');
+          parser.appendChild(document.createElement('br'));
+          parser.appendChild(currentMath);
+        } else if (currentMath) {
+          currentMath.appendChild(child);
+        }
+
+        if (isNewline) {
+          removeChild(child);
+        }
+      });
+      return parser.innerHTML;
+    },
+
+    /**
+     * @param {HTMLElement} value
+     * @return {HTMLElement}
+     */
+    out: function out(value) {
+      var clone = value.cloneNode(true);
+      var math = document.createElement('math');
+      Array.from(clone.children).forEach(function (otherMath, i) {
+        if (isIgnoredElement(otherMath)) {
+          return;
+        }
+
+        Array.from(otherMath.children).forEach(function (element) {
+          walk(element, function (otherElement) {
+            otherElement.removeAttribute('editable');
+            otherElement.removeAttribute('id');
+          });
+          math.appendChild(element);
+        });
+
+        if (i !== clone.children.length - 1) {
+          var mspace = document.createElement('mspace');
+          mspace.setAttribute('linebreak', 'newline');
+          math.appendChild(mspace);
+        }
+      });
+      return math;
     }
   };
 
@@ -605,48 +817,110 @@
   var ARROW_RIGHT = 39;
   var BACKSPACE = 8;
   var DELETE = 46;
+  var ENTER = 13;
   var IS_NUMBER = /^\d$/;
   var IS_LETTER = /^[a-z]$/i;
+  /**
+   * @typedef {Object} ElementPosition
+   * @property {HTMLElement} dom
+   * @property {HTMLElement} element
+   * @property {DOMRect} rect
+   * @property {Number} line
+   * @property {ElementPosition|null} next
+   * @property {ElementPosition|null} previous
+   * @property {Object} cursor
+   * @property {Number} cursor.x
+   * @property {Number} cursor.y
+   * @property {Number} cursor.height
+   */
+
+  /**
+   * @typedef {Object} MathJaxEditorOptions
+   * @property {MathJax} mathJax
+   * @property {HTMLElement} target
+   * @property {String[]} allowTags
+   * @property {Boolean} allowNewline
+   * @property {Boolean} readonly
+   * @property {String} fontSize
+   */
 
   var Editor = /*#__PURE__*/function () {
     /**
-     * Creates a editor instance.
-     *
      * @param {MathJax} mathJax
+     * @param {MathJaxEditorOptions} options
      */
-    function Editor(mathJax) {
+    function Editor(options) {
       _classCallCheck(this, Editor);
 
-      this.math = document.createElement('math');
-      this.display = new Display(mathJax);
-      this.cursor = this.math;
+      /** @type {HTMLElement} */
+      this.value = document.createElement('mathjax-editor-value');
+      this.value.innerHTML = '<math></math>';
+      /** @type {Display} */
+
+      this.display = new Display(options);
+      /** @type {HTMLElement} */
+
+      this.cursor = this.value.firstChild;
+      /** @type {ElementPosition[]} */
+
       this.path = [];
-      this.math.setAttribute('id', 'root');
+      /** @type {String[]} */
+
+      this.allowTags = options.allowTags || [];
+      /** @type {Boolean} */
+
+      this.allowNewline = options.allowNewline || true;
+      /** @type {Boolean} */
+
+      this.readonly = options.readonly || false;
+      this.value.setAttribute('id', 'root');
+      this.display.iframe.element.__EDITOR__ = this;
       this.display.on('keydown', this.handleKeyboardInteraction.bind(this));
       this.display.on('mouseup', this.handleMouseInteraction.bind(this));
+      this.update();
     }
     /**
-     * Set the value of the editor.
-     *
      * @param {String} value
+     * @return {Void}
      */
 
 
     _createClass(Editor, [{
       key: "setValue",
       value: function setValue(value) {
-        this.math.innerHTML = value;
-        this.cursor = this.math;
+        this.value.innerHTML = IOHelper["in"](value);
+        this.cursor = this.value.firstChild;
         this.update();
       }
+      /**
+       * @return {HTMLElement}
+       */
+
+    }, {
+      key: "getValue",
+      value: function getValue() {
+        return IOHelper.out(this.value);
+      }
+      /**
+       * @return {String}
+       */
+
+    }, {
+      key: "getValueAsString",
+      value: function getValueAsString() {
+        return this.getValue().outerHTML;
+      }
+      /**
+       * @param {HTMLElement} value
+       * @return {Void}
+       */
+
     }, {
       key: "setCursor",
       value: function setCursor(value) {
         this.cursor = value;
       }
       /**
-       * Update the editor displayed math.
-       *
        * @return {Void}
        */
 
@@ -656,18 +930,15 @@
         var _this = this;
 
         this.prepareMath();
-        this.display.render(DisplayHelper.prepare(this.math)).then(function () {
+        this.display.render(DisplayHelper.prepare(this.value)).then(function () {
           _this.preparePath();
 
           _this.updateCursor();
         });
       }
       /**
-       * Set cursor position.
-       *
        * @param {HTMLElement} value
        * @param {Boolean} disableScrollIntoView
-       *
        * @return {Void}
        */
 
@@ -680,31 +951,25 @@
           this.setCursor(value);
         }
 
-        var _this$getCurrentStep = this.getCurrentStep(),
-            cursor = _this$getCurrentStep.cursor;
+        var _this$getCurrentPosit = this.getCurrentPosition(),
+            cursor = _this$getCurrentPosit.cursor;
 
         this.display.updateCursor(cursor, disableScrollIntoView);
       }
       /**
-       * Assign an id to every element.
-       *
        * @return {Void}
        */
 
     }, {
       key: "prepareMath",
       value: function prepareMath() {
-        walk(this.math, function (element) {
+        walk(this.value, function (element) {
           if (!element.hasAttribute('id')) {
             element.setAttribute('id', createId());
           }
         });
       }
       /**
-       * Creates a path for the cursor. Path is an array of steps.
-       * Each step has its attached element and size/positioning
-       * for cursor placement.
-       *
        * @return {Void}
        */
 
@@ -714,20 +979,25 @@
         var _this2 = this;
 
         var path = [];
-        var line = {
-          index: 0,
-          rect: null
-        };
-        var previousStep = null;
+        var lastPosition = null;
+        /**
+         * @param {HTMLElement} element
+         * @return {ElementPosition}
+         */
 
-        var findStep = function findStep(element) {
+        var findPosition = function findPosition(element) {
           return path.find(function (other) {
             return other.element === element;
           });
         };
+        /**
+         * @param {HTMLElement} element
+         * @return {ElementPosition}
+         */
 
-        var createStep = function createStep(element) {
-          var _this2$display$getEle = _this2.display.getElementById(element.id),
+
+        var createPosition = function createPosition(element) {
+          var _this2$display$getEle = _this2.display.getElement(element),
               dom = _this2$display$getEle.dom,
               rect = _this2$display$getEle.rect;
 
@@ -738,19 +1008,24 @@
           if (isContainer(element)) {
             // Cursor should be placed after last element child.
             if (element.children.length) {
-              var lastChildStep = findStep(element.lastElementChild);
-              x = lastChildStep.rect.x + lastChildStep.rect.width;
-              y = lastChildStep.rect.y;
-              height = lastChildStep.rect.height;
+              var lastChildPosition = findPosition(element.lastChild);
+              x = lastChildPosition.rect.x + lastChildPosition.rect.width;
             }
+          } else {
+            // Use parent rect to adjust cursor height and y.
+            var _this2$display$getEle2 = _this2.display.getElement(element.parentNode),
+                parentRect = _this2$display$getEle2.rect;
+
+            height = parentRect.height;
+            y = parentRect.y;
           }
 
-          var step = {
+          var position = {
             dom: dom,
             element: element,
             rect: rect,
             next: null,
-            previous: previousStep,
+            previous: lastPosition,
             cursor: {
               x: x,
               y: y,
@@ -758,45 +1033,87 @@
             }
           };
 
-          if (previousStep) {
-            previousStep.next = step;
+          if (lastPosition) {
+            lastPosition.next = position;
           }
 
-          previousStep = step;
-          path.push(step);
+          lastPosition = position;
+          path.push(position);
         };
 
-        walk(this.math, {
+        walk(this.value, {
           before: function before(element) {
-            if (!line.rect) {
-              line.rect = _this2.display.getEndOfLineByIndex(line.index).rect;
-            }
-
-            if (!isContainer(element)) {
-              createStep(element);
+            if (!isContainer(element) && !isIgnoredElement(element)) {
+              createPosition(element);
             }
           },
           after: function after(element) {
-            if (isContainer(element)) {
-              createStep(element);
+            if (isContainer(element) && !isIgnoredElement(element)) {
+              createPosition(element);
             }
           }
         });
         this.path = path;
       }
+      /**
+       * @return {ElementPosition}
+       */
+
     }, {
-      key: "getCurrentStep",
-      value: function getCurrentStep() {
+      key: "getCurrentPosition",
+      value: function getCurrentPosition() {
         var _this3 = this;
 
-        return this.path.find(function (step) {
-          return _this3.cursor === step.element;
+        return this.path.find(function (position) {
+          return _this3.cursor === position.element;
         });
       }
       /**
-       * Handles keyboard events.
-       *
+       * @return {Boolean}
+       */
+
+    }, {
+      key: "canInsertAtCursorPosition",
+      value: function canInsertAtCursorPosition() {
+        if (!this.readonly) {
+          return true;
+        }
+
+        var curr = this.cursor.parentNode;
+
+        while (curr) {
+          if (curr.hasAttribute('editable')) {
+            return true;
+          }
+
+          curr = curr.parentNode;
+        }
+
+        return false;
+      }
+      /**
+       * @param {HTMLElement} element
+       * @return {Boolean}
+       */
+
+    }, {
+      key: "canInsert",
+      value: function canInsert(element) {
+        if (!this.canInsertAtCursorPosition()) {
+          return false;
+        }
+
+        var tagName = element ? element.tagName.toLowerCase() : null;
+
+        if (tagName && this.allowTags.length && this.allowTags.indexOf(tagName) === -1) {
+          return false;
+        }
+
+        return true;
+      }
+      /**
        * @param {KeyboardEvent} e
+       * @return {Void}
        */
 
     }, {
@@ -806,13 +1123,15 @@
             key = e.key;
 
         if (keyCode === ARROW_RIGHT) {
-          this.moveRight();
+          this.moveToNextPosition();
         } else if (keyCode === ARROW_LEFT) {
-          this.moveLeft();
+          this.moveToPreviousPosition();
         } else if (keyCode === BACKSPACE) {
           this.applyBackspace();
         } else if (keyCode === DELETE) {
           this.applyDelete();
+        } else if (keyCode === ENTER) {
+          this.addNewline();
         } else if (key.match(IS_NUMBER)) {
           this.addNumber(key);
         } else if (key.match(IS_LETTER)) {
@@ -824,9 +1143,8 @@
         e.preventDefault();
       }
       /**
-       * Handles mouse events.
-       *
        * @param {MouseEvent} e
+       * @return {Void}
        */
 
     }, {
@@ -842,15 +1160,15 @@
 
         try {
           for (_iterator.s(); !(_step = _iterator.n()).done;) {
-            var step = _step.value;
-            var p1x = step.cursor.x;
-            var p1y = step.cursor.y;
-            var p2y = p1y + step.cursor.height;
+            var position = _step.value;
+            var p1x = position.cursor.x;
+            var p1y = position.cursor.y;
+            var p2y = p1y + position.cursor.height;
             var d = Math.abs(p1x - x);
 
             if (p1y <= y && y <= p2y && smaller > d) {
               smaller = d;
-              candidate = step;
+              candidate = position;
             }
           }
         } catch (err) {
@@ -866,111 +1184,155 @@
         this.updateCursor(candidate.element, true);
       }
       /**
-       * Perform a delete opertion.
-       *
        * @return {Void}
        */
 
     }, {
       key: "applyDelete",
       value: function applyDelete() {
-        this.setCursor(deleteElement(this.math, this.cursor));
+        this.setCursor(deleteElement(this.value, this.cursor));
         this.update();
       }
       /**
-       * Perform a backspace opertion.
-       *
        * @return {Void}
        */
 
     }, {
       key: "applyBackspace",
       value: function applyBackspace() {
-        this.setCursor(deleteBeforeElement(this.math, this.cursor));
+        this.setCursor(backspaceElement(this.value, this.cursor));
         this.update();
       }
       /**
-       * Move to next element.
-       *
        * @return {Void}
        */
 
     }, {
-      key: "moveRight",
-      value: function moveRight() {
-        var step = this.getCurrentStep();
+      key: "moveToNextPosition",
+      value: function moveToNextPosition() {
+        var position = this.getCurrentPosition();
 
-        if (step.next) {
-          this.updateCursor(step.next.element);
+        if (position.next) {
+          this.updateCursor(position.next.element);
         }
       }
       /**
-       * Perform to previous element.
-       *
        * @return {Void}
        */
 
     }, {
-      key: "moveLeft",
-      value: function moveLeft() {
-        var step = this.getCurrentStep();
+      key: "moveToPreviousPosition",
+      value: function moveToPreviousPosition() {
+        var position = this.getCurrentPosition();
 
-        if (step.previous) {
-          this.updateCursor(step.previous.element);
+        if (position.previous) {
+          this.updateCursor(position.previous.element);
         }
       }
       /**
-       * Add element to math.
-       *
-       * @param {HTMLElement} element
-       * @param {HTMLElement} newCursor
+       * @param {String|HTMLElement|CreateElementObject} elementToInsert
+       * @param {HTMLElement|null} elementToCursor
+       * @return {Boolean}
        */
 
     }, {
-      key: "add",
-      value: function add(element) {
-        var newCursor = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+      key: "insert",
+      value: function insert(elementToInsert) {
+        var elementToCursor = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+        var element = extractElement(elementToInsert);
+
+        if (!this.canInsert(element)) {
+          return false;
+        }
+
         insertElement(element, this.cursor);
 
-        if (newCursor) {
-          this.setCursor(newCursor);
+        if (elementToCursor) {
+          this.setCursor(extractElement(elementToCursor));
         }
 
         this.display.focus();
         this.update();
+        return true;
       }
       /**
-       * Add a <mn> to the math.
-       *
+       * @param {Function} factory
+       * @return {Boolean}
+       */
+
+    }, {
+      key: "insertCustom",
+      value: function insertCustom(factory) {
+        var _factory = factory(createElement),
+            _factory2 = _slicedToArray(_factory, 2),
+            elementToInsert = _factory2[0],
+            elementToCursor = _factory2[1];
+
+        return this.insert(elementToInsert, elementToCursor);
+      }
+      /**
+       * @return {Void}
+       */
+
+    }, {
+      key: "addNewline",
+      value: function addNewline() {
+        var currentNode = this.cursor;
+        var parentNode = currentNode.parentNode;
+
+        if (!this.allowNewline || !isMath(currentNode) && !isMath(parentNode)) {
+          return;
+        }
+
+        var math = document.createElement('math');
+        var br = document.createElement('br');
+        var context = currentNode;
+        var newPosition = math;
+
+        if (!isMath(currentNode)) {
+          while (currentNode.nextSibling) {
+            math.appendChild(currentNode.nextSibling);
+          }
+
+          math.insertBefore(currentNode, math.firstChild);
+          context = parentNode;
+          newPosition = math.firstChild;
+        }
+
+        this.value.insertBefore(math, context.nextSibling);
+        this.value.insertBefore(br, math);
+        this.setCursor(newPosition);
+        this.update();
+      }
+      /**
        * @param {String} number
+       * @return {Void}
        */
 
     }, {
       key: "addNumber",
       value: function addNumber(number) {
-        this.add(createElement('mn', number));
+        this.insert(createElement('mn', number));
       }
       /**
-       * Add a <mi> to the math.
-       *
-       * @param {String} number
+       * @param {String} letter
+       * @return {Void}
        */
 
     }, {
       key: "addIdentifier",
       value: function addIdentifier(letter) {
-        this.add(createElement('mi', letter));
+        this.insert(createElement('mi', letter));
       }
       /**
-       * Add a <mo> to the math.
-       *
-       * @param {String} number
+       * @param {String} operator
+       * @return {Void}
        */
 
     }, {
       key: "addOperator",
       value: function addOperator(operator) {
-        this.add(createElement('mo', operator));
+        this.insert(createElement('mo', operator));
       }
     }]);
 
@@ -979,16 +1341,47 @@
 
   var index = {
     version: '4.0.0',
+    activeEditor: null,
 
     /**
-     * Creates an instance of the editor.
-     *
-     * @param {MathJax} mathJax
-     * @param {Object} options
-     * @param {HTMLElement} options.target
+     * @typedef {Object} MathJaxEditorOptions
+     * @property {MathJax} mathJax
+     * @property {HTMLElement} target
+     * @property {String[]} allowTags
+     * @property {String[]} allowNewline
+     * @property {Boolean} readonly
      */
-    createUsing: function createUsing(mathJax, options) {
-      return new Editor(mathJax, options);
+
+    /**
+     * @param {MathJaxEditorOptions} options
+     */
+    create: function create(options) {
+      var _this = this;
+
+      var editor = new Editor(options);
+      editor.display.iframe.window.addEventListener('focus', function () {
+        _this.activeEditor = editor;
+      });
+      return editor;
+    },
+
+    /**
+     * @param {MathJaxEditorOptions} options
+     */
+    initialize: function initialize() {
+      var _this2 = this;
+
+      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      return Array.from(document.querySelectorAll('mathjax-editor')).forEach(function (element) {
+        var editor = new Editor(Object.assign(options, {
+          // We assume there is a global MathJax if it is not passed in the options.
+          mathJax: options.MathJax || window.MathJax,
+          target: element
+        }));
+        editor.display.iframe.window.addEventListener('focus', function () {
+          _this2.activeEditor = editor;
+        });
+      });
     }
   };
 
