@@ -134,8 +134,8 @@ export function backspaceElement (value, current) {
   const previous = current.previousElementSibling
 
   if (isContainer(current)) {
-    if (current.lastElementChild) {
-      return deleteElement(value, current.lastElementChild, current)
+    if (current.lastChild) {
+      return deleteElement(value, current.lastChild, current)
     }
     if (isMath(current)) {
       // Handling newline deletion. If a <math> element has a sibling,

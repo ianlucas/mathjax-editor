@@ -10,6 +10,7 @@ const DELETE = 46
 const ENTER = 13
 const IS_NUMBER = /^\d$/
 const IS_LETTER = /^[a-z]$/i
+const WHITESPACE = />\s+</g
 
 /**
  * @typedef {Object} ElementPosition
@@ -46,7 +47,7 @@ export default class Editor {
     /** @type {Display} */
     this.display = new Display(options)
     /** @type {HTMLElement} */
-    this.cursor = this.value.firstElementChild
+    this.cursor = this.value.firstChild
     /** @type {ElementPosition[]} */
     this.path = []
     /** @type {String[]} */
@@ -68,8 +69,8 @@ export default class Editor {
    * @return {Void}
    */
   setValue (value) {
-    this.value.innerHTML = value
-    this.cursor = this.value.firstElementChild
+    this.value.innerHTML = value.replace(WHITESPACE, '><').trim()
+    this.cursor = this.value.firstChild
     this.update()
   }
 
@@ -149,7 +150,7 @@ export default class Editor {
       if (isContainer(element)) {
         // Cursor should be placed after last element child.
         if (element.children.length) {
-          const lastChildPosition = findPosition(element.lastElementChild)
+          const lastChildPosition = findPosition(element.lastChild)
           x = lastChildPosition.rect.x + lastChildPosition.rect.width
         }
       } else {
