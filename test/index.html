@@ -19,6 +19,7 @@
   <div>
     <button id="msqrt">msqrt</button>
     <button id="mfrac">mfrac</button>
+    <button id="mfenced">mfenced</button>
     <textarea id="editor"></textarea>
     <mathjax-editor></mathjax-editor>
   </div>
@@ -76,6 +77,22 @@
           const denominator = createElement('mrow').appendTo(mfrac)
           mfrac.element.setAttribute('editable', true)
           return [mfrac, numerator]
+        })
+      })
+
+      onClick('#mfenced', () => {
+        MathJaxEditor.activeEditor.insertCustom((createElement) => {
+          const mfenced = createElement('mfenced')
+          mfenced.element.setAttribute('open', '|')
+          mfenced.element.setAttribute('close', '|')
+          const mtable = createElement('mtable').appendTo(mfenced)
+          const mtr1 = createElement('mtr').appendTo(mtable)
+          const mtd = createElement('mtd').appendTo(mtr1)
+          createElement('mtd').appendTo(mtr1)
+          const mtr2 = createElement('mtr').appendTo(mtable)
+          createElement('mtd').appendTo(mtr2)
+          createElement('mtd').appendTo(mtr2)
+          return [mfenced, mtd]
         })
       })
 

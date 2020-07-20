@@ -196,7 +196,10 @@ export function isMath (element) {
  * @return {Boolean}
  */
 export function isRow (element) {
-  return equals(element.tagName, 'mrow')
+  return (
+    equals(element.tagName, 'mrow') ||
+    equals(element.tagName, 'mtd')
+  )
 }
 
 /**
@@ -217,7 +220,9 @@ export function isContainer (element) {
 export function isIgnoredElement (element) {
   return (
     equals(element.tagName, 'mathjax-editor-value') ||
-    equals(element.tagName, 'br')
+    equals(element.tagName, 'br') ||
+    equals(element.tagName, 'mtable') ||
+    equals(element.tagName, 'mtr')
   )
 }
 
