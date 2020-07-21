@@ -281,7 +281,7 @@ export default class Editor {
     } else if (keyCode === DELETE) {
       this.applyDelete()
     } else if (keyCode === ENTER) {
-      this.addNewline()
+      this.insertNewline()
     } else if (key.match(IS_NUMBER)) {
       this.insertNumber(key)
     } else if (key.match(IS_LETTER)) {
@@ -391,7 +391,7 @@ export default class Editor {
   /**
    * @return {Void}
    */
-  addNewline () {
+  insertNewline () {
     const currentNode = this.cursor
     const parentNode = currentNode.parentNode
     if (
