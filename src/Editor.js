@@ -53,7 +53,7 @@ export default class Editor {
     /** @type {String[]} */
     this.allowTags = (options.allowTags || [])
     /** @type {Boolean} */
-    this.allowNewline = (options.allowNewline || true)
+    this.allowNewline = (options.allowNewline !== false)
     /** @type {Boolean} */
     this.readonly = (options.readonly || false)
 
